@@ -1,0 +1,62 @@
+
+/* AI-GROEIKOMPAS — second design iteration.
+   Contrast-first, calmer typography, accessible focus, responsive spacing. */
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172a40;background:#f5f7fb;font-synthesis:none}
+body{background:radial-gradient(circle at 78% 1%,#e9f4f7 0,transparent 31%),#f5f7fb}
+aside{background:#101d32;width:270px;padding:28px 18px;box-shadow:8px 0 32px #0c20300b}
+aside h2{display:flex;align-items:center;gap:9px;letter-spacing:-.5px;font-weight:800;font-size:18px;padding:0 8px 18px;border-bottom:1px solid #324057}
+aside .mark{background:linear-gradient(140deg,#78e0c3,#58a5d5);width:39px;height:39px;display:inline-grid;place-items:center;border-radius:12px;padding:0;font-size:25px}
+nav{gap:7px}
+nav button{font-weight:550;line-height:1.4;padding:14px;border:1px solid transparent;transition:background .16s,border-color .16s}
+nav button.active{background:#254461;border-color:#376482;box-shadow:inset 3px 0 #76dec9}
+nav button:hover{background:#233750}
+.sidefoot{border-top:1px solid #31435b;padding:15px 9px;color:#b2c4da}
+main{margin-left:270px;padding:42px 44px;max-width:1620px}
+.header{margin-bottom:27px;align-items:center}
+.eyebrow{color:#588c9d;font-size:11px;letter-spacing:1.65px}
+h1{font-size:35px;letter-spacing:-1.5px;line-height:1.1;font-weight:800;margin:8px 0 9px}
+h2{font-size:19px;letter-spacing:-.5px}
+h3{font-size:15px;letter-spacing:-.2px}
+.card{box-shadow:0 9px 32px #142e4810;border:1px solid #e3eaf0;border-radius:17px;padding:25px;margin-bottom:18px}
+.grid{gap:18px}
+.card p{line-height:1.7}
+.big,.stat{letter-spacing:-1px}
+.muted{color:#63788f}
+.btn{background:#125c84;box-shadow:0 4px 10px #12496c12;border-radius:9px;transition:transform .12s,filter .12s}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn.alt{background:#fff;border:1px solid #cedde8;color:#1c547a}
+.btn.alt:hover{background:#e8f4f6}
+.pill{background:#e5f4f6;color:#116b72;padding:7px 12px;font-weight:700}
+.pill.warning{background:#fff1db;color:#916026}
+.pill.ok{background:#dff5ed;color:#126c53}
+.phasegrid{gap:14px}
+.phase{border-radius:14px;padding:19px;background:linear-gradient(180deg,#fff,#f9fcff);box-shadow:0 4px 18px #2645630a;transition:transform .15s,box-shadow .15s,border-color .15s}
+.phase:hover{transform:translateY(-3px);border-color:#51a2bb;box-shadow:0 13px 26px #1b4c6318}
+.phase strong{font-size:14px;line-height:1.45}
+.phase small{line-height:1.5}
+.num{background:#e4f2ef;color:#167d75}
+.field input,.field textarea,.field select{background:#fcfdff;border-color:#cbd9e5;transition:border-color .12s,box-shadow .12s}
+.field input:focus,.field textarea:focus,.field select:focus,td input:focus{outline:none;border-color:#289d9a;box-shadow:0 0 0 3px #69c4b72f}
+button:focus-visible,a:focus-visible,input[type=checkbox]:focus-visible{outline:3px solid #6bc7bb;outline-offset:3px}
+th{background:#f3f7f9;color:#46647e}
+td,th{border-color:#e5edf3}
+td input[type=number]{text-align:center}
+.checkrow{line-height:1.5}
+.checkrow input{width:17px;height:17px;flex:0 0 17px}
+.hint{background:#eaf5f7;border:1px solid #cae6e9;border-left:4px solid #218a9c;padding:17px 18px;color:#245e70;border-radius:10px;line-height:1.7}
+.issue{position:relative}
+.issue .eyebrow{margin-bottom:9px}
+.issue p{max-width:900px}
+.issue.done{opacity:.85}
+.hero{background:linear-gradient(112deg,#12304b 0%,#174e61 69%,#237b84 100%);border-radius:19px;padding:33px 35px;color:#fff;position:relative;overflow:hidden;margin-bottom:20px;box-shadow:0 13px 36px #0e405138}
+.hero:after{content:"";position:absolute;border:40px solid #ffffff0d;border-radius:50%;width:220px;height:220px;right:-85px;top:-110px}
+.hero .eyebrow{color:#8ce4d2}
+.hero h2{font-size:26px;line-height:1.25;max-width:700px;letter-spacing:-.6px;margin:14px 0}
+.hero p{max-width:690px;color:#c7e2e9;font-size:14px;line-height:1.65}
+.hero .hero-actions{margin-top:22px;display:flex;gap:11px}
+.hero .btn{background:#7addc5;color:#133a44;box-shadow:none}
+.hero .btn.alt{background:#ffffff1a;border:1px solid #ffffff5a;color:#fff}
+.overview-note{padding:14px 16px;border:1px solid #d7e7eb;border-radius:12px;background:#f5fafb;color:#46667a;font-size:13px;line-height:1.6}
+@media(max-width:1100px){aside{width:240px}main{margin-left:240px;padding:30px}.phasegrid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:850px){aside{position:relative;width:100%;padding:15px 16px;gap:10px}aside h2{border:0;padding:3px}nav{display:flex;overflow-x:auto;padding-bottom:5px}nav button{white-space:nowrap;padding:10px}main{margin:0;padding:24px}.phasegrid{grid-template-columns:repeat(2,1fr)}.sidefoot{display:none}}
+@media(max-width:650px){h1{font-size:29px}.header{flex-direction:column;align-items:flex-start}.grid,.formgrid{grid-template-columns:1fr}.phasegrid{grid-template-columns:1fr}.hero{padding:25px}.hero h2{font-size:23px}.hero .hero-actions{flex-wrap:wrap}.card{padding:19px}}
