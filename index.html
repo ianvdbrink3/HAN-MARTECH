@@ -2,10 +2,10 @@
 <html lang="nl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AI-GROEIKOMPAS | HAN Martech</title>
 <style>
 :root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#1d3049;background:#f4f7fb}*{box-sizing:border-box}body{margin:0}button,input,textarea,select{font:inherit}button{cursor:pointer}aside{position:fixed;left:0;top:0;bottom:0;width:258px;background:#111e34;color:#d8e4f3;padding:25px 16px;display:flex;flex-direction:column;gap:25px}aside h2{font-size:19px;color:#fff;margin:0;padding:9px}aside .mark{display:inline-block;background:#58c4b0;color:#10243a;padding:9px;border-radius:10px;margin-right:6px}nav{display:grid;gap:6px}nav button{background:none;border:0;color:#c7d4e7;text-align:left;padding:13px;border-radius:10px;font-size:13px}nav button:hover,nav button.active{background:#2b415e;color:#fff}.sidefoot{margin-top:auto;font-size:12px;color:#9db0c9;line-height:1.6;padding:12px;border-top:1px solid #35455b}main{margin-left:258px;padding:34px;max-width:1580px}.header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:24px}.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#6784a6;font-weight:800}h1{font-size:31px;letter-spacing:-1px;margin:5px 0}h2{font-size:21px;margin:0 0 13px}h3{font-size:16px;margin:0 0 10px}.muted{color:#71839a}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{background:#fff;border:1px solid #e3eaf4;border-radius:17px;padding:22px;box-shadow:0 7px 22px #12244007;margin-bottom:16px}.big{font-size:32px;font-weight:800}.small{font-size:12px}.pill{background:#e7f2ff;border-radius:30px;color:#31608c;padding:7px 10px;display:inline-block;font-size:12px;font-weight:700}.warning{background:#fff2d6;color:#845b19}.ok{background:#ddf5ea;color:#196c4b}.progress{height:9px;background:#e8eef6;border-radius:20px;overflow:hidden;margin:10px 0}.progress span{display:block;background:#28a78d;height:100%;border-radius:20px}.phasegrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.phase{padding:18px;background:white;border:1px solid #e1e9f4;border-radius:14px;text-align:left;min-height:135px}.phase:hover{border-color:#6baed3}.num{display:inline-grid;place-items:center;background:#e9f5f6;color:#167d88;border-radius:10px;width:34px;height:34px;font-weight:800;margin-bottom:12px}.phase strong{display:block;font-size:13px}.phase small{display:block;color:#7e91a7;margin-top:10px}.btn{border:0;background:#1d739f;color:white;padding:11px 15px;border-radius:10px;font-weight:700;font-size:13px}.btn.alt{background:#eef4fa;color:#315779}.btn:disabled{opacity:.5}.toolbar{display:flex;flex-wrap:wrap;gap:9px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:grid;gap:7px;margin:10px 0}.field label{font-size:12px;font-weight:700;color:#465b75}.field input,.field textarea,.field select{border:1px solid #d6e1ed;border-radius:9px;background:white;padding:11px;width:100%;color:#1c3047}.field textarea{min-height:100px;resize:vertical}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:12px 10px;border-bottom:1px solid #e8edf4;text-align:left;vertical-align:top}th{background:#f4f7fb;color:#57718d;font-size:12px}td input[type=number]{width:68px;padding:7px;border:1px solid #d9e2ed;border-radius:7px}td input[type=text]{min-width:125px;padding:8px;border:1px solid #d9e2ed;border-radius:7px}.checkrow{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #edf0f5}.checkrow input{margin-top:3px;accent-color:#198e79}.issue{border-left:4px solid #d7a048}.issue.high{border-left-color:#db6464}.issue.done{border-left-color:#29a780}.issuehead{display:flex;justify-content:space-between;gap:12px;align-items:start}.issuehead strong{font-size:14px}.issue p{font-size:13px;color:#667c94;line-height:1.6}.issue label{font-size:13px}.issue textarea{margin-top:10px;width:100%;min-height:60px;padding:9px;border:1px solid #dbe3ed;border-radius:8px}.hint{border-left:3px solid #4b9bb7;padding:10px 14px;background:#eff8fb;color:#426578;border-radius:5px;font-size:13px;line-height:1.6;margin-bottom:15px}.stat{font-size:28px;font-weight:800}.line{border-top:1px solid #edf0f4;margin:20px 0}.hide{display:none}@media(max-width:1050px){aside{position:relative;width:auto;min-height:0}nav{display:flex;overflow:auto}nav button{white-space:nowrap}.sidefoot{display:none}main{margin-left:0}.phasegrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){main{padding:18px}.grid,.formgrid{grid-template-columns:1fr}.phasegrid{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}h1{font-size:26px}}
-</style><link rel="stylesheet" href="assets/dashboard.css"><link rel="stylesheet" href="assets/guided.css"><link rel="stylesheet" href="assets/mobile-first.css"></head><body>
+</style><link rel="stylesheet" href="assets/dashboard.css"><link rel="stylesheet" href="assets/guided.css"><link rel="stylesheet" href="assets/mobile-first.css"><link rel="stylesheet" href="assets/dossiers.css"></head><body>
 <div id="menuScrim" class="mobile-scrim" aria-hidden="true"></div><button id="mobileMenu" class="mobile-trigger" type="button" aria-label="Open navigatiemenu" aria-expanded="false" aria-controls="nav">☰</button>
 <aside><h2><span class="mark">✦</span> AI-GROEIKOMPAS</h2><nav id="nav"></nav><div class="sidefoot">HAN · GHUB Martech & Innovatie<br>Conceptadviesmodel · G-cluster<br><b>Onderzoek en validatie nog in uitvoering</b></div></aside>
-<main><header class="header"><div><div class="eyebrow">HAN · AI & MARKETING</div><h1 id="heading">Dashboard</h1><div class="muted" id="subheading">Van marketingvraagstuk naar meetbare AI-toepassing</div></div><div class="toolbar"><button class="btn alt" id="export">Exporteer gegevens</button><button class="btn alt" id="import">Importeer gegevens</button><input type="file" id="importFile" accept="application/json" hidden></div></header><div id="view"></div></main>
+<main><header class="header"><div><div class="eyebrow">HAN · AI & MARKETING</div><h1 id="heading">Dashboard</h1><div class="muted" id="subheading">Van marketingvraagstuk naar meetbare AI-toepassing</div></div><div class="toolbar"><button class="btn alt" id="export">Exporteer gegevens</button><button class="btn alt" id="import">Importeer gegevens</button><input type="file" id="importFile" accept="application/json" hidden></div></header><div id="dossierBar"></div><div id="view"></div></main>
 <script>
 (function(){
 "use strict";
@@ -32,9 +32,85 @@ var issues=[
 ];
 var issueDetails=[["De schaal 1–5 is niet uitgelegd. Daardoor kan een score subjectief zijn en kunnen twee gebruikers verschillende conclusies trekken.","Schrijf per criterium scoreankers voor 1, 3 en 5, test deze op dezelfde casus en werk daarna ook 2 en 4 uit.","Een scorehandleiding en aantoonbaar geteste voorbeeldbeoordelingen."],["De verdeling van de gewichten is een ontwerpvoorstel, geen wetenschappelijke norm. Daarmee kan één criterium de uitkomst te sterk beïnvloeden.","Vraag meerdere experts naar de relatieve belangrijkheid, vergelijk antwoorden en voer een gevoeligheidsanalyse uit.","Onderbouwde wegingen, expertfeedback en een vergelijking met alternatieve gewichten."],["Zonder formule en regels voor lege antwoorden is een score van bijvoorbeeld 80/100 niet navolgbaar.","Documenteer formule, afronding, schaalrichting en ontbrekende input; toets met een handmatig rekenvoorbeeld.","Geverifieerde formule en controleerbare testberekening."],["Je kent de gekozen leverancier nog niet in fase 3. Privacy-, opslag- en contractrisico's kunnen pas daarna concreet worden vastgesteld.","Behoud een algemene risicoanalyse in fase 3 en voer een tweede leverancierscontrole uit in fase 4.","Twee aantoonbare controlepunten met duidelijke go/no-go-vragen."],["Een nulmeting na de pilot is niet valide als die wordt gebruikt om achteraf succes vast te stellen.","Leg KPI's, nulwaarde en succescriteria vast voordat de pilot start; evalueer in fase 5.","Een vooraf gedateerd meetplan en achteraf vergelijkbare metingen."],["Een lijst met hulpmiddelen is niet hetzelfde als een werkend adviesinstrument. Zonder instructies moet de gebruiker zelf de methode ontwerpen.","Maak ieder hulpmiddel invulbaar met uitleg, invoervoorbeeld, beoordelingsregels, resultaat en vervolgstap.","Een complete gebruikersroute zonder aanvullende mondelinge uitleg."],["De hoeveelheid stappen en documenten kan voor een klein marketingteam te zwaar zijn.","Laat MKB-gebruikers de route uitvoeren en meet tijd, verwarring, benodigde hulp en bruikbaarheid.","Een praktijktest met tijdsregistratie en verwerkte gebruiksfeedback."],["Het samengestelde model is nog niet getest als één geheel. Een logisch verhaal is nog geen bewezen effectiviteit.","Test een representatieve casus, leg onderzoeksmethode en observaties vast en verwerk de uitkomsten aantoonbaar.","Een validatierapport met beperkingen en gedocumenteerde verbeteringen."],["Fase 2 en 4 bespreken deels dezelfde thema's, waardoor de gebruiker dubbel werk kan krijgen.","Fase 2 kiest de taak; fase 4 vergelijkt concrete oplossingen. Hergebruik bekende antwoorden.","Twee verschillende, helder begrensde beslisproducten."],["Alleen functieomschrijvingen en leveranciersinformatie bewijzen niet welke oplossing geschikt is.","Laat twee of drie oplossingen dezelfde taken uitvoeren; meet kwaliteit, correctietijd en gebruiksgemak.","Een toetsbare vergelijking met concrete testresultaten."],["De literatuur over acceptatie is niet vertaald naar een eenvoudige medewerkersscan.","Maak vragen over nut, vaardigheid, vertrouwen, ondersteuning en controle; test begrijpelijkheid.","Een korte getoetste scan met passende trainingsacties."],["Zonder vooraf vastgestelde succes- en stopcriteria kan de pilot eindeloos doorgaan of achteraf positief worden uitgelegd.","Bepaal vooraf duur, taakfrequentie, verantwoordelijke, kwaliteitsnorm en stopmoment.","Een volledig pilotplan dat vóór de start is bevestigd."],["De KPI's missen soms eenheid, bron en berekening. Tijdwinst is bovendien niet hetzelfde als geld besparen.","Leg per KPI nulwaarde, eindwaarde, bron, formule en kwaliteitscriterium vast; scheid capaciteit van financiële besparing.","Controleerbaar KPI-formulier en financiële rekenvoorbeelden."],["Een geslaagde pilot kan alsnog mislukken bij overdracht of veranderende software.","Leg eigenaarschap, instructies, controles, evaluatiemoment en training vast.","Overdrachtsplan met verantwoordelijkheden en controlemomenten."],["De gebruikte theorieën zijn relevant, maar de reden voor iedere concrete modelstap is nog niet altijd traceerbaar.","Koppel iedere modelstap aan onderzoeksbevinding, bron, ontwerpbesluit en geplande toets.","Een onderzoeks-naar-ontwerp-matrix."],["Een generieke juridische checklist kan schijnzekerheid geven omdat de regels per toepassing verschillen.","Controleer actuele officiële bronnen en leg vast wanneer specialistische beoordeling nodig is.","Gecontroleerde bronverwijzingen, versiedatum en escalatiecriteria."],["Wisselende namen, losse bronregels en stijlverschillen maken het minder professioneel.","Gebruik overal AI-GROEIKOMPAS en voer een eindredactie op alle teksten en schermen uit.","Een consequent vormgegeven eindversie."]];
 var defaults={business:"",goal:"",problem:"",baseline:"",experience:"",resources:"",tasks:["Marketingrapportages","Contentcreatie","Campagneanalyse"],ratings:{},checks:{},issueChecks:{},issueNotes:{},tools:["Algemene AI-assistent","AI binnen bestaande software","Gespecialiseerde AI-tool"],toolScores:{},selectedTool:"",pilotTask:"",pilotDuration:"",pilotOwner:"",pilotSuccess:"",kpiName:"Tijd per taak (minuten)",kpiBefore:"",kpiAfter:"",kpiTarget:"",decision:"",phaseDone:{},notes:""};
-var data;try{data=Object.assign({},defaults,JSON.parse(localStorage.getItem(key)||"{}"))}catch(e){data=Object.assign({},defaults)}
+
+/* Dossiers are independent workspaces, stored in this browser. The legacy draft is migrated once. */
+var vaultKey="han-ai-groeikompas-dossiers-v1";
+function freshData(){
+ return Object.assign({},defaults,{
+  business:"",goal:"",problem:"",baseline:"",experience:"",resources:"",
+  tasks:[],ratings:{},checks:{},issueChecks:{},issueNotes:{},tools:["Optie 1","Optie 2"],toolScores:{},
+  selectedTool:"",pilotTask:"",pilotDuration:"",pilotOwner:"",pilotSuccess:"",
+  kpiName:"",kpiBefore:"",kpiAfter:"",kpiTarget:"",decision:"",phaseDone:{},notes:""
+ });
+}
+function normalizeData(record){
+ var src=record&&typeof record==="object"?record:{};
+ var d=freshData();
+ Object.keys(d).forEach(function(k){
+  if(!Object.prototype.hasOwnProperty.call(src,k))return;
+  if(Array.isArray(d[k])&&Array.isArray(src[k]))d[k]=src[k].slice();
+  else if(d[k]&&typeof d[k]==="object"&&!Array.isArray(d[k])&&src[k]&&typeof src[k]==="object"&&!Array.isArray(src[k]))d[k]=Object.assign({},src[k]);
+  else if(typeof d[k]==="string"&&typeof src[k]==="string")d[k]=src[k];
+ });
+ return d;
+}
+function dossierId(){return "case-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
+function newCase(name,record){return {id:dossierId(),name:name,data:normalizeData(record)}}
+var vault;
+try{
+ var saved=JSON.parse(localStorage.getItem(vaultKey)||"null");
+ if(saved&&saved.version===1&&Array.isArray(saved.cases)&&saved.cases.length){
+  vault={version:1,cases:saved.cases.filter(function(c){return c&&typeof c.id==="string"&&typeof c.name==="string"}).map(function(c){return {id:c.id,name:c.name,data:normalizeData(c.data)}}),active:saved.active};
+  if(!vault.cases.length)throw Error("Empty saved dossiers");
+ }else throw Error("No dossier storage");
+}catch(e){
+ var old=null;
+ try{old=JSON.parse(localStorage.getItem(key)||"null")}catch(e2){}
+ var initial=newCase(old?(old.business||"Bestaand dossier"):"Bedrijf 1",old);
+ vault={version:1,cases:[initial],active:initial.id};
+ try{localStorage.setItem(vaultKey,JSON.stringify(vault))}catch(e3){}
+}
+if(!vault.cases.some(function(c){return c.id===vault.active}))vault.active=vault.cases[0].id;
 var current="home";
-function save(){localStorage.setItem(key,JSON.stringify(data));}
+var data;
+function activeCase(){return vault.cases.find(function(c){return c.id===vault.active})||vault.cases[0]}
+function selectCase(id){
+ if(!vault.cases.some(function(c){return c.id===id}))return;
+ vault.active=id;data=activeCase().data;selectedTaskIndex=0;selectedToolIndex=0;current="home";save();render();
+}
+data=activeCase().data;
+function save(){
+ activeCase().data=data;
+ try{localStorage.setItem(vaultKey,JSON.stringify(vault))}catch(e){alert("Opslaan is mislukt. Exporteer je gegevens en controleer de browseropslag.")}
+}
+function createDossier(){
+ var name=prompt("Naam van het nieuwe bedrijf of de casus:","Bedrijf "+(vault.cases.length+1));
+ if(name===null)return;
+ name=name.trim().slice(0,90);
+ if(!name)return alert("Vul een bedrijfsnaam in.");
+ var c=newCase(name);
+ vault.cases.push(c);vault.active=c.id;data=c.data;current="p0";
+ selectedTaskIndex=0;selectedToolIndex=0;save();render();
+}
+function renameDossier(){
+ var c=activeCase();var name=prompt("Nieuwe naam voor dit dossier:",c.name);
+ if(name===null)return;
+ name=name.trim().slice(0,90);if(!name)return alert("Naam mag niet leeg zijn.");
+ c.name=name;save();render(true);
+}
+function deleteDossier(){
+ if(vault.cases.length===1)return alert("Er moet minstens één dossier blijven bestaan. Maak eerst een ander dossier aan.");
+ var c=activeCase();if(!confirm('Weet je zeker dat je dossier "'+c.name+'" wilt verwijderen? Exporteer eerst je werk; verwijderen kan niet ongedaan worden gemaakt.'))return;
+ vault.cases=vault.cases.filter(function(x){return x.id!==c.id});
+ vault.active=vault.cases[0].id;data=activeCase().data;current="home";selectedTaskIndex=0;selectedToolIndex=0;save();render();
+}
+function dossierUI(){
+ var c=activeCase(),options=vault.cases.map(function(x){return '<option value="'+esc(x.id)+'" '+(x.id===vault.active?"selected":"")+'>'+esc(x.name)+'</option>'}).join("");
+ return '<section class="dossier-toolbar" aria-label="Bedrijfsdossiers">'+
+ '<div class="dossier-picker"><label for="caseSelect">Je werkt nu aan het dossier van</label><select id="caseSelect">'+options+'</select></div>'+
+ '<div class="dossier-actions"><button class="btn" id="newDossier" type="button">+ Nieuw bedrijf</button><button class="btn alt" id="renameDossier" type="button">Hernoemen</button><button class="btn alt" id="deleteDossier" type="button">Verwijderen</button></div></section>'+
+ '<p class="dossier-help">Elk bedrijf heeft eigen antwoorden, taken, beoordelingen en voortgang. Wisselen verandert niets aan de andere dossiers. Alles wordt op dit apparaat opgeslagen; gebruik export om een back-up te maken.</p>';
+}
 function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function field(label,k,type){type=type||"text";return '<div class="field"><label>'+esc(label)+'</label>'+(type==="textarea"?'<textarea data-key="'+k+'">'+esc(data[k])+'</textarea>':'<input type="'+type+'" data-key="'+k+'" value="'+esc(data[k])+'">')+'</div>'}
 function card(title,inner){return '<section class="card"><h2>'+title+'</h2>'+inner+'</section>'}
@@ -138,8 +214,12 @@ function attention(){head("Aandachtspunten","Verbeterplan op basis van de kritis
 function issueCards(filter){return issues.map(function(x,i){var done=!!data.issueChecks[i],d=issueDetails[i];if(filter==="open"&&done||filter==="high"&&x[1]!=="Hoog")return "";return '<article class="card issue '+(x[1]==="Hoog"?"high":"")+' '+(done?"done":"")+'"><div class="issuehead"><div><div class="eyebrow">'+esc(x[2])+' · PRIORITEIT '+esc(x[1])+'</div><h3>'+(i+1)+'. '+esc(x[0])+'</h3></div><span class="pill '+(done?"ok":x[1]==="Hoog"?"warning":"")+'">'+(done?"Afgevinkt":"Open")+'</span></div><div class="issue-section"><b>Wat gaat er mis?</b><p>'+esc(d[0])+'</p></div><div class="issue-section"><b>Waarom is dit belangrijk?</b><p>'+esc(x[3])+'</p></div><div class="issue-section"><b>Hoe lossen we dit concreet op?</b><p>'+esc(d[1])+'</p></div><div class="evidence-box"><b>Wanneer mag je dit afvinken?</b><p>'+esc(d[2])+'</p></div><label class="checkrow"><input type="checkbox" data-issue="'+i+'" '+(done?"checked":"")+'><span><b>Actie opgelost en onderbouwing gecontroleerd</b><small>Vink pas af wanneer het resultaat beschikbaar is.</small></span></label><div class="field"><label>Feedback, bewijs en vervolgacties</label><textarea data-note="'+i+'" placeholder="Wat is veranderd en waar staat het bewijs?">'+esc(data.issueNotes[i]||"")+'</textarea></div></article>'}).join("")}
 function closeMenu(){document.body.classList.remove("menu-open");var btn=document.getElementById("mobileMenu");btn.setAttribute("aria-expanded","false");btn.textContent="☰"}
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeMenu()});
-function render(keepScroll){var oldScroll=keepScroll?window.scrollY:0;nav();var h=current==="home"?home():current==="issues"?attention():current==="p0"?phase0():current==="p1"?phase2():current==="p2"?phase3():current==="p3"?phase4():phase5();document.getElementById("view").innerHTML=h;window.scrollTo(0,keepScroll?oldScroll:0)}
+function render(keepScroll){var oldScroll=keepScroll?window.scrollY:0;nav();document.getElementById('dossierBar').innerHTML=dossierUI();var h=current==="home"?home():current==="issues"?attention():current==="p0"?phase0():current==="p1"?phase2():current==="p2"?phase3():current==="p3"?phase4():phase5();document.getElementById("view").innerHTML=h;window.scrollTo(0,keepScroll?oldScroll:0)}
 document.addEventListener("click",function(e){
+
+if(e.target.id==="newDossier"){createDossier();return}
+if(e.target.id==="renameDossier"){renameDossier();return}
+if(e.target.id==="deleteDossier"){deleteDossier();return}
 if(e.target.id==="mobileMenu"||e.target.closest("#mobileMenu")){var open=document.body.classList.toggle("menu-open");document.getElementById("mobileMenu").setAttribute("aria-expanded",String(open));document.getElementById("mobileMenu").textContent=open?"×":"☰";return}
 if(e.target.id==="menuScrim"){closeMenu();return}
 var choice=e.target.closest("[data-choice-group]");
@@ -153,10 +233,20 @@ var toolSelect=e.target.closest("[data-tool-index]");
 if(toolSelect){selectedToolIndex=Number(toolSelect.dataset.toolIndex);render(true);return}
 var el=e.target.closest("[data-nav]");if(el){current=el.dataset.nav;closeMenu();render();return}if(e.target.id==="addTask"){var v=document.getElementById("newTask").value.trim();if(v&&!data.tasks.includes(v)){data.tasks.push(v);save();render()}return}el=e.target.closest("[data-remove-task]");if(el){data.tasks.splice(Number(el.dataset.removeTask),1);save();render();return}el=e.target.closest("[data-filter]");if(el){document.getElementById("issueslist").innerHTML=issueCards(el.dataset.filter)}});
 document.addEventListener("input",function(e){var el=e.target;if(el.dataset.key){data[el.dataset.key]=el.value;save()}if(el.dataset.note!==undefined){data.issueNotes[el.dataset.note]=el.value;save()}if(el.dataset.rate){var val=el.value===""?0:Math.min(5,Math.max(1,Number(el.value)||1));data.ratings[el.dataset.rate]=val;save()}if(el.dataset.toolscore){data.toolScores[el.dataset.toolscore]=el.value===""?0:Math.min(5,Math.max(1,Number(el.value)||1));save()}if(el.dataset.toolname!==undefined){data.tools[Number(el.dataset.toolname)]=el.value;save()}});
-document.addEventListener("change",function(e){var el=e.target;if(el.dataset.issue!==undefined){data.issueChecks[el.dataset.issue]=el.checked;save();render()}else if(el.dataset.check){data.checks[el.dataset.check]=el.checked;save();render()}else if(el.dataset.phase!==undefined){if(el.checked&&!ready(Number(el.dataset.phase))){alert("Vul eerst de minimale voorwaarden in.");render();return}data.phaseDone[el.dataset.phase]=el.checked;save();render()}else if(el.dataset.key){data[el.dataset.key]=el.value;save()}else if(el.dataset.rate||el.dataset.toolscore){save();render()}});
-document.getElementById("export").onclick=function(){var blob=new Blob([JSON.stringify({format:"HAN-AI-GROEIKOMPAS",version:1,data:data},null,2)],{type:"application/json"});var u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download="AI-Groeikompas-voortgang.json";a.click();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+document.addEventListener("change",function(e){var el=e.target;if(el.id==="caseSelect"){selectCase(el.value);return}if(el.dataset.issue!==undefined){data.issueChecks[el.dataset.issue]=el.checked;save();render()}else if(el.dataset.check){data.checks[el.dataset.check]=el.checked;save();render()}else if(el.dataset.phase!==undefined){if(el.checked&&!ready(Number(el.dataset.phase))){alert("Vul eerst de minimale voorwaarden in.");render();return}data.phaseDone[el.dataset.phase]=el.checked;save();render()}else if(el.dataset.key){data[el.dataset.key]=el.value;save()}else if(el.dataset.rate||el.dataset.toolscore){save();render()}});
+document.getElementById("export").onclick=function(){var blob=new Blob([JSON.stringify({format:"HAN-AI-GROEIKOMPAS-DOSSIERS",version:1,cases:vault.cases,active:vault.active},null,2)],{type:"application/json"});var u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download="AI-Groeikompas-alle-bedrijfsdossiers.json";a.click();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
 document.getElementById("import").onclick=function(){document.getElementById("importFile").click()};
-document.getElementById("importFile").onchange=function(e){var file=e.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(reader.result);if(obj.format!=="HAN-AI-GROEIKOMPAS"||!obj.data||typeof obj.data!=="object")throw Error("Onjuist bestand");data=Object.assign({},defaults,obj.data);save();render()}catch(err){alert("Import mislukt: "+err.message)}};reader.readAsText(file)};
+document.getElementById("importFile").onchange=function(e){var file=e.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(reader.result);if(obj.format==="HAN-AI-GROEIKOMPAS-DOSSIERS"){
+ if(!Array.isArray(obj.cases)||obj.cases.length===0)throw Error("Geen bedrijfsdossiers gevonden");
+ if(!confirm("Dit vervangt alle bedrijfsdossiers in deze browser. Eerst een back-up exporteren? Kies Annuleren om te stoppen."))return;
+ vault.cases=obj.cases.filter(function(c){return c&&typeof c.name==="string"}).map(function(c){return newCase(c.name, c.data)});
+ if(!vault.cases.length)throw Error("Geen geldige dossiers");
+ vault.active=vault.cases[0].id;
+ }else if(obj.format==="HAN-AI-GROEIKOMPAS"&&obj.data&&typeof obj.data==="object"){
+ if(!confirm("Dit importeert één ouder dossier als nieuw bedrijf. Doorgaan?"))return;
+ var entry=newCase(obj.data.business||"Geïmporteerd dossier",obj.data);vault.cases.push(entry);vault.active=entry.id;
+ }else throw Error("Onbekend dossierbestand");
+ data=activeCase().data;current="home";selectedTaskIndex=0;selectedToolIndex=0;save();render()}catch(err){alert("Import mislukt: "+err.message)}};reader.readAsText(file)};
 render();
 })();
 </script></body></html>
