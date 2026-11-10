@@ -34,3 +34,11 @@ Gebaseerd op het aangeleverde `Vooronderzoek GHUB M7` en het concept `AI-Groeiko
 - Er wordt geen totaalscore getoond zolang niet alle betreffende criteria zijn ingevuld.
 - De 1–5-betekenissen en de wegingen zijn nog conceptueel. Toets deze met MKB-gebruikers en deskundigen voordat de score als beoordelingsinstrument wordt gebruikt.
 - HTML/JavaScript-rendertests en gesimuleerde interactietests zijn uitgevoerd; een visuele browsertest op echte telefoons staat nog open.
+
+## Bedrijfsdossiers (november 2026)
+- Gebruik **+ Nieuw bedrijf** om voor ieder MKB-bedrijf een **apart, leeg invulformulier** te starten.
+- Kies een bedrijfsdossier in de selector om tussen de vijf bedrijven te wisselen. Antwoorden, marketingtaken, AI-scores, checklists en fasevoortgang zijn per bedrijf gescheiden.
+- Bestaande gegevens uit de oudere dashboardversie worden bij de eerste opening automatisch behouden in een apart dossier.
+- De **exportknop** maakt nu één JSON-back-up met alle bedrijfsdossiers. Import vervangt alle dossiers alleen na een extra bevestiging; het oude exportformaat kan als nieuw dossier worden toegevoegd.
+- **Beperking:** dossiers zijn voorlopig opgeslagen in de browser van dit apparaat; andere groepsleden zien ze niet automatisch. Gebruik export/import voor uitwisseling, maar deel nooit vertrouwelijke of persoonsgegevens in een onveilig bestand. Voor gelijktijdig samenwerken zijn authenticatie en gedeelde opslag nodig.
+- Het verwijderen van een dossier vraagt bevestiging. Maak vooraf een export als back-up.
