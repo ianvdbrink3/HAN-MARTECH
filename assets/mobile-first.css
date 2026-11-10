@@ -1,0 +1,64 @@
+
+/* Mobile-first interaction layer for the HAN AI-GROEIKOMPAS. */
+*{ -webkit-tap-highlight-color:transparent }
+.rating-choice{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin-top:14px}
+.rating-button{border:1px solid #c8d9e3;border-radius:12px;min-width:0;min-height:50px;background:#f8fbfd;color:#274962;font-weight:800;font-size:17px;transition:.15s ease}
+.rating-button:hover{border-color:#148c84;background:#ecf8f6}
+.rating-button.picked{background:#0a756e;color:white;border-color:#0a756e;box-shadow:0 3px 12px #0b867b30}
+.rating-explain{font-size:12px;color:#53728a;margin-top:12px;line-height:1.6}
+.criterion-card{padding:21px 0;border-bottom:1px solid #e8edf1}
+.criterion-card:last-child{border:0}
+.criterion-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.criterion-top b{font-size:15px;color:#19374f}
+.criterion-top p{font-size:13px;color:#61798e;line-height:1.65;margin:7px 0 0}
+.criterion-weight{font-size:11px;white-space:nowrap;color:#236a72;background:#e9f5f4;padding:7px 9px;border-radius:20px;font-weight:800}
+.task-select{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.task-tab{border:1px solid #cbdde7;border-radius:12px;background:white;color:#3e6178;padding:12px 15px;min-height:48px;text-align:left;font-size:13px;font-weight:700}
+.task-tab.selected{border-color:#169b8b;color:#0b6865;background:#e7f6f3;box-shadow:inset 0 0 0 1px #169b8b}
+.task-list-add{border-top:1px solid #e7ecf1;padding-top:17px}
+.task-list-add label{display:block;font-weight:750;margin-bottom:10px;font-size:13px}
+.assessment-progress{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#eff8f9;padding:13px 17px;border-radius:11px;color:#2c6877;margin:16px 0 0;font-size:13px}
+.assessment-progress strong{color:#0b5a70}
+.ranking-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #e6ecf2}
+.ranking-row:last-child{border:0}
+.ranking-row b{font-size:14px}
+.ranking-row small{display:block;color:#74899b;margin-top:5px;font-size:12px}
+.ranking-row strong{font-size:17px;color:#0d6e75;white-space:nowrap}
+.mobile-trigger{display:none}
+.mobile-scrim{display:none}
+body.menu-open{overflow:hidden}
+@media(max-width:850px){
+.mobile-trigger{display:flex;align-items:center;justify-content:center;position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:55;width:56px;height:56px;border-radius:18px;border:0;background:#0b6f72;color:white;box-shadow:0 7px 25px #18465a55;font-size:22px}
+.mobile-trigger[aria-expanded="true"]{background:#133955}
+.mobile-scrim{display:none;position:fixed;inset:0;background:#07192995;z-index:39}
+body.menu-open .mobile-scrim{display:block}
+aside{position:fixed!important;top:0!important;left:0!important;bottom:0!important;width:min(330px,88vw)!important;padding:25px 17px!important;z-index:45;transform:translateX(-105%);transition:transform .22s ease;overflow-y:auto}
+body.menu-open aside{transform:translateX(0)}
+aside nav{display:grid!important;overflow:visible!important}
+aside nav button{white-space:normal!important;font-size:14px;padding:14px}
+aside .sidefoot{display:block!important}
+main{margin:0!important;padding:22px 15px calc(98px + env(safe-area-inset-bottom,0px))!important;width:100%;max-width:none}
+.header{display:flex;flex-direction:column;align-items:flex-start;gap:13px}
+.header .toolbar{display:grid;grid-template-columns:1fr 1fr;width:100%}
+.header .toolbar button{font-size:12px;min-height:45px;padding:12px}
+.card{padding:20px 17px;border-radius:15px}
+.guided-head{padding:24px 19px}
+.guided-head h2{font-size:23px}
+.rating-choice{gap:8px}
+.rating-button{min-height:54px}
+.task-select{display:grid;grid-template-columns:1fr}
+.task-tab{width:100%;min-height:49px}
+.helpfield{grid-template-columns:1fr}
+.field-control input,.field-control textarea{font-size:16px}
+.criterion-top{flex-direction:column;gap:10px}
+.criterion-weight{align-self:flex-start}
+.phasegrid{grid-template-columns:1fr}
+.grid,.formgrid,.measurement-grid{grid-template-columns:1fr}
+.stage-actions{display:grid;grid-template-columns:1fr;gap:9px}
+.stage-actions button{width:100%;min-height:48px}
+.btn{min-height:45px}
+.issuehead{flex-direction:column}
+.issue .field textarea{font-size:16px}
+}
+@media(max-width:370px){.rating-choice{gap:5px}.rating-button{min-height:49px;border-radius:9px}.card{padding:18px 13px}.guided-head{padding:20px 15px}}
+@media(prefers-reduced-motion:reduce){aside,.rating-button,.task-tab{transition:none}}
