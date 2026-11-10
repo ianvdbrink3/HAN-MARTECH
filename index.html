@@ -55,7 +55,7 @@ function normalizeData(record){
  return d;
 }
 function dossierId(){return "case-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
-function newCase(name,record){return {id:dossierId(),name:name,data:normalizeData(record)}}
+function newCase(name,record){var d=normalizeData(record);if(!record)d.business=name;return {id:dossierId(),name:name,data:d}}
 var vault;
 try{
  var saved=JSON.parse(localStorage.getItem(vaultKey)||"null");
@@ -163,7 +163,7 @@ var fitDone=suitability.filter(function(c){return rating(task,"fit:"+c)>=1}).len
 var prDone=priority.filter(function(p){return rating(task,"priority:"+p[0])>=1}).length;
 var fitScore=fitDone===suitability.length?(suitability.reduce(function(a,c){return a+rating(task,"fit:"+c)},0)/suitability.length).toFixed(1):null;
 var prScore=prDone===priority.length?(priority.reduce(function(a,p){return a+rating(task,"priority:"+p[0])*p[1]},0)/5).toFixed(0):null;
-var tabs='<div class="task-select">'+data.tasks.map(function(t,i){return '<button type="button" class="task-tab '+(i===selectedTaskIndex?"selected":"")+'" data-task-index="'+i+'">'+esc(t)+'</button>'}).join("")+'</div>';
+if(!data.tasks.length)return intro(2,"Welke marketingtaak wil je onderzoeken?","Begin met één concrete taak uit een van jullie vijf bedrijven. Voeg daarna meer taken toe om te vergelijken.","Bijvoorbeeld: maandelijkse campagnerapportages maken.","Een lijst van te beoordelen marketingtaken.")+guideCard("Stap 1 · Voeg eerst een marketingtaak toe",'<p class="guide-lead">Een nieuw bedrijfsdossier bevat nog geen taken of scores. Voeg hieronder de eerste taak van dit bedrijf toe.</p><div class="task-list-add"><label for="newTask">Naam van de concrete taak</label><div class="addrow"><input id="newTask" placeholder="Bijv. wekelijkse campagnerapportage" aria-label="Nieuwe marketingtaak"><button class="btn" id="addTask">Taak toevoegen</button></div></div>')+stepDone(1);var tabs='<div class="task-select">'+data.tasks.map(function(t,i){return '<button type="button" class="task-tab '+(i===selectedTaskIndex?"selected":"")+'" data-task-index="'+i+'">'+esc(t)+'</button>'}).join("")+'</div>';
 var list='<div class="task-list-add"><label for="newTask">Nog een marketingtaak toevoegen</label><div class="addrow"><input id="newTask" placeholder="Bijv. wekelijkse campagnerapportage" aria-label="Nieuwe marketingtaak"><button class="btn" id="addTask">Toevoegen</button></div></div>';
 var frows=suitability.map(function(c,i){return criterionCard(c,fitExplanations[i],"rate",task+"|fit:"+c,rating(task,"fit:"+c),null)}).join("");
 var prows=priority.map(function(p,i){return criterionCard(p[0],priorityExplanations[i],"rate",task+"|priority:"+p[0],rating(task,"priority:"+p[0]),p[1])}).join("");
