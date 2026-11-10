@@ -26,3 +26,11 @@ Importeer deze repository bij Vercel als statische website (Framework Preset: **
 
 ## Onderzoek
 Gebaseerd op het aangeleverde `Vooronderzoek GHUB M7` en het concept `AI-Groeikompas`. Voor definitieve oplevering moeten de hulpmiddelen, prioriteitswegingen en MKB-toepasbaarheid worden getest en onderbouwd.
+
+## Mobile UX update (november 2026)
+- Sidebar wordt op smalle schermen een uitschuifbaar menu met overlay en Escape-sluiting.
+- Fase 2 en fase 4 gebruiken mobiele, aantikbare scores van 1–5 in plaats van horizontale scoretabellen.
+- Taken en AI-oplossingen kunnen één voor één worden beoordeeld, met uitleg bij ieder criterium en een teller voor ontbrekende beoordelingen.
+- Er wordt geen totaalscore getoond zolang niet alle betreffende criteria zijn ingevuld.
+- De 1–5-betekenissen en de wegingen zijn nog conceptueel. Toets deze met MKB-gebruikers en deskundigen voordat de score als beoordelingsinstrument wordt gebruikt.
+- HTML/JavaScript-rendertests en gesimuleerde interactietests zijn uitgevoerd; een visuele browsertest op echte telefoons staat nog open.
