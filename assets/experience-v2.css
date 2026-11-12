@@ -64,3 +64,15 @@
 .report-evidence-grid{grid-template-columns:1fr}
 }
 @media print{.v2-stage-head,.v2-footer{display:none!important}.report-verdict{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
+/* Multi-company research comparison and live progress refinements. */
+.v2-home-rec{font-weight:800;color:#1e5a66;font-size:17px;line-height:1.35;margin:10px 0}
+.v2-phase-link{display:grid;gap:7px;align-content:start}
+.company-row{display:grid;grid-template-columns:1.3fr 1fr 1.2fr;gap:20px;align-items:start;border-bottom:1px solid #e0eaf0;padding:18px 0}
+.company-row:last-child{border:0}
+.company-row h3{margin:0 0 6px;color:#1c3c52}
+.company-row p{font-size:13px;color:#658093;line-height:1.6;margin:0}
+.company-row>div:not(:first-child){display:grid;gap:5px}
+.company-row small{color:#7891a1;font-size:11px}
+.company-row b{color:#2a5869;font-size:13px;line-height:1.45;margin-bottom:8px}
+@media(max-width:850px){.company-row{grid-template-columns:1fr;gap:12px;padding:15px 0}.v2-phase-link{min-height:96px}}
