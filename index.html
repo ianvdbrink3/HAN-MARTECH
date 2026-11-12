@@ -6,7 +6,7 @@
 <div id="menuScrim" class="mobile-scrim" aria-hidden="true"></div><button id="mobileMenu" class="mobile-trigger" type="button" aria-label="Open navigatiemenu" aria-expanded="false" aria-controls="nav">☰</button>
 <aside><h2><span class="mark">✦</span> AI-GROEIKOMPAS</h2><nav id="nav"></nav><div class="sidefoot">HAN · GHUB Martech & Innovatie<br>Conceptadviesmodel · G-cluster<br><b>Onderzoek en validatie nog in uitvoering</b></div></aside>
 <main><header class="header"><div><div class="eyebrow">HAN · AI & MARKETING</div><h1 id="heading">Dashboard</h1><div class="muted" id="subheading">Van marketingvraagstuk naar meetbare AI-toepassing</div></div><div class="toolbar"><button class="btn alt" id="export">Exporteer gegevens</button><button class="btn alt" id="import">Importeer gegevens</button><input type="file" id="importFile" accept="application/json" hidden></div></header><div id="dossierBar"></div><div id="view"></div></main>
-<script src="assets/report-engine.js"></script><script>
+<script src="assets/report-engine.js"></script><script src="assets/guidance-engine.js"></script><script>
 (function(){
 "use strict";
 var key="han-ai-groeikompas-v1";
@@ -281,6 +281,32 @@ function quickOptions(key,label,options,description){
   return '<button type="button" class="choice-tile '+(data[key]===x[0]?"is-selected":"")+'" data-quick-key="'+key+'" data-quick-value="'+esc(x[0])+'"><b>'+esc(x[1])+'</b>'+(x[2]?'<small>'+esc(x[2])+'</small>':'')+'</button>';
  }).join("")+'</div></div>';
 }
+
+function adaptiveGuidance(stageIndex){
+ var src=window.GroeikompasGuidance;if(!src)return "";
+ var prev=stageIndex-1;
+ var advice=src.stage(data,prev,window.GroeikompasReport.analyse(data));
+ var justification=advice.reasoning.length?'<details class="auto-proof"><summary>Waarom stelt het model dit voor?</summary><ul>'+advice.reasoning.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul></details>':
+ '<p class="auto-muted">Er zijn nog onvoldoende antwoorden om gerichte aanbevelingen te onderbouwen.</p>';
+ var cards=advice.recommendations.map(function(r){
+  var button=r.action?'<button type="button" class="btn alt auto-apply" data-guidance-action="'+esc(r.action.kind)+'" data-guidance-value="'+esc(r.action.value)+'">'+(r.action.kind==="add-task"?"Gebruik als onderzoekstaak":r.action.kind==="set-alternative"?"Neem over als alternatief":r.action.kind==="suggest-kpi"?"Gebruik als KPI-voorstel":"Voeg toe als te onderzoeken optie")+'</button>':"";
+  return '<div class="auto-card"><small>'+esc(r.title)+'</small><strong>'+esc(r.value)+'</strong><p>'+esc(r.detail)+'</p>'+button+'</div>'
+ }).join("");
+ return '<section class="auto-guidance" aria-label="Gegenereerd advies uit voorgaande fasen">'+
+ '<div class="auto-label"><span class="auto-sparkle">✦</span><span>GEGENEREERD UIT EERDERE ANTWOORDEN</span><em>Onderzoeksvoorstel</em></div>'+
+ '<h3>'+esc(advice.headline)+'</h3><p class="auto-intro">'+esc(advice.summary)+'</p>'+
+ (cards?'<div class="auto-cards">'+cards+'</div>':"")+
+ justification+
+ '<div class="auto-next"><span>VOLGENDE BESLISSING</span><p>'+esc(advice.next)+'</p></div>'+
+ '<p class="auto-caveat">'+esc(advice.limitations)+'</p></section>';
+}
+
+function adaptivePreview(stageIndex){
+ if(!window.GroeikompasGuidance)return "";
+ var a=window.GroeikompasGuidance.stage(data,stageIndex,window.GroeikompasReport.analyse(data));
+ if(!a.reasoning.length)return "";
+ return '<div class="auto-preview"><span>✦ VOLGENDE FASE WORDT AANGEPAST</span><p>'+esc(a.next)+'</p></div>';
+}
 function stageHeader(index,title,desc){
  return '<div class="v2-stage-head"><span>FASE '+index+' VAN 5</span><h2>'+esc(title)+'</h2><p>'+esc(desc)+'</p></div>';
 }
@@ -311,7 +337,7 @@ phase0=function(){
  compactField("goal","Wanneer zou het probleem opgelost zijn?","Omschrijf een toetsbaar doel zonder het resultaat alvast te claimen.","Dezelfde rapportage in vier uur met behoud van nauwkeurigheid.")+
  '<details class="v2-details"><summary>Extra context voor de onderzoeker (optioneel)</summary>'+
  compactField("resources","Welke middelen en systemen zijn beschikbaar?","Denk aan tools, tijd, budget en medewerkers.","GA4, CRM, twee medewerkers en beperkte tijd.")+
- compactField("problemEvidence","Waarop is het probleem gebaseerd?","Bijvoorbeeld observatie, tijdregistratie of interview. Geen gevoelige persoonsgegevens.","Tijdregistratie in vier weken.")+'</details>')+v2Footer(0);
+ compactField("problemEvidence","Waarop is het probleem gebaseerd?","Bijvoorbeeld observatie, tijdregistratie of interview. Geen gevoelige persoonsgegevens.","Tijdregistratie in vier weken.")+'</details>')+adaptivePreview(0)+v2Footer(0);
 };
 function taskChips(){
  return '<div class="v2-task-list">'+data.tasks.map(function(t,i){return '<button type="button" data-task-index="'+i+'" class="v2-task '+(data.candidateTask===t?"selected":"")+'">'+esc(t)+(data.candidateTask===t?'<small>Geselecteerde taak</small>':'')+'</button>'}).join("")+'</div>';
@@ -334,7 +360,7 @@ phase2=function(){
  '<div class="task-select">'+data.tasks.map(function(t,i){return '<button class="task-tab '+(i===selectedTaskIndex?"selected":"")+'" data-task-index="'+i+'">'+esc(t)+'</button>'}).join("")+'</div>'+
  '<h3>Geschiktheid</h3>'+fits+'<h3>Prioriteit (voorlopige gewichten)</h3>'+pr+'</details>';
  }
- return stageHeader(2,"Welk marketingproces verdient aandacht?","Je kiest een concrete taak, vergelijkt AI met een eenvoudiger oplossing en motiveert waarom. Je hoeft niet dertien scores te geven om verder te mogen.")+
+ return stageHeader(2,"Welk marketingproces verdient aandacht?","Je kiest een concrete taak, vergelijkt AI met een eenvoudiger oplossing en motiveert waarom. Je hoeft niet dertien scores te geven om verder te mogen.")+adaptiveGuidance(1)+
  guideCard("1. Kies de eerste taak",'<p class="guide-lead">Begin bij werk dat een concreet probleem veroorzaakt. Je kunt meer taken onderzoeken.</p>'+tasks+add)+
  guideCard("2. Onderzoek eerst het alternatief voor AI",
  compactField("nonAiAlternative","Hoe kan dit probleem mogelijk zonder AI worden opgelost?","Denk aan een bestaande systeemkoppeling, heldere instructies of gewone automatisering.","Een bestaande rapportagedashboard-koppeling.")+
@@ -357,7 +383,7 @@ function riskItem(key,name,description){
 phase3=function(){
  head("Fase 3 · Randvoorwaarden & risico's","Maak onzekerheid en risico's zichtbaar");
  var desc=["Zijn de gegevens nodig, actueel en bruikbaar?","Zijn doel en rechtsgrondslag beoordeeld?","Is beoordeeld of een DPIA vereist is?","Welke AI- en marketingregels zijn relevant?","Wie controleert AI-resultaten en beslist?","Wie kan bij de gegevens en systemen?","Wie is verantwoordelijk voor gebruik en opvolging?"];
- return stageHeader(3,"Wat moet eerst veilig geregeld zijn?","Je hoeft niet alles te weten. Kies bewust ‘Nog onbekend’ of ‘Blokkade’ als iets nog moet worden onderzocht. Afvinken zonder bewijs geldt niet als goedkeuring.")+
+ return stageHeader(3,"Wat moet eerst veilig geregeld zijn?","Je hoeft niet alles te weten. Kies bewust ‘Nog onbekend’ of ‘Blokkade’ als iets nog moet worden onderzocht. Afvinken zonder bewijs geldt niet als goedkeuring.")+adaptiveGuidance(2)+
  guideCard("Controleer de zeven randvoorwaarden",risks.map(function(x,i){return riskItem("risk"+i,x,desc[i])}).join("")+
  '<p class="form-note">Dit is geen juridisch advies. Bij een blokkade wordt de aanbeveling tegengehouden. Bij onbekende informatie is een echte pilot met persoonsgegevens nog niet verantwoord.</p>')+v2Footer(2);
 };
@@ -378,7 +404,7 @@ phase4=function(){
  var vendor=hasNoAI?'<p class="form-note">Geen AI-tool gekozen. Leveranciersspecifieke AI-controles zijn pas nodig als je alsnog een AI-toepassing wilt inzetten.</p>':
  riskItem("vendorPrivacy","Gegevensverwerking van de gekozen leverancier","Controleer opslag, toegang, training en afspraken.")+
  riskItem("vendorSecurity","Toegang en menselijke controle","Wie controleert resultaten en beveiliging?");
- return stageHeader(4,hasNoAI?"Test eerst de oplossing zonder AI":"Welke oplossing is aantoonbaar geschikt?","Kies één oplossingsrichting en leg een controleerbare test vast. Geen leveranciersreclame als bewijs gebruiken.")+
+ return stageHeader(4,hasNoAI?"Test eerst de oplossing zonder AI":"Welke oplossing is aantoonbaar geschikt?","Kies één oplossingsrichting en leg een controleerbare test vast. Geen leveranciersreclame als bewijs gebruiken.")+adaptiveGuidance(3)+
  (hasNoAI?guideCard("1. Geselecteerd alternatief",'<p><b>'+esc(data.nonAiAlternative||"Nog onbekend")+'</b></p><p>Ook een gewone automatisering moet op kwaliteit, kosten en haalbaarheid worden getoetst.</p>'):
  guideCard("1. Onderbouw de AI-toolkeuze",compactField("selectedTool","Welke AI-oplossing kies je voorlopig?","Noem waarom deze optie past en welke alternatieven zijn afgevallen.","Een AI-functie binnen het bestaande CRM.")+
  compactField("toolTestEvidence","Welk bewijs laat zien dat de tool werkt?","Testresultaat, proefopdracht, vergelijking; als dat ontbreekt, schrijf dat op.","Twee vergelijkbare rapportages getest; cijfers gecontroleerd door een marketeer.")+
@@ -395,7 +421,7 @@ phase5=function(){
  var signal=insight.mismatch||insight.kpi.unfavorable||insight.kpi.quality==="onvoldoende"?
  '<div class="decision-box v2-danger"><b>Let op: uitkomst vraagt herbeoordeling</b><p>'+esc(insight.redFlags.join(" "))+'</p></div>':
  '<p class="form-note">Het besluit wordt automatisch getoetst aan de opgegeven richting, meetresultaten en kwaliteit. Dat is nog geen bewijs voor een causaal effect.</p>';
- return stageHeader(5,"Wat heeft de proef werkelijk opgeleverd?","Vul alleen gemeten cijfers in. Vergelijk de kwaliteit en de tijd vóór en na uitvoering. Een slechter resultaat kan betekenen dat stoppen of bijsturen verstandiger is.")+
+ return stageHeader(5,"Wat heeft de proef werkelijk opgeleverd?","Vul alleen gemeten cijfers in. Vergelijk de kwaliteit en de tijd vóór en na uitvoering. Een slechter resultaat kan betekenen dat stoppen of bijsturen verstandiger is.")+adaptiveGuidance(4)+
  guideCard("1. Meet de resultaten",compactField("kpiName","Wat meet je?","Gebruik één duidelijke hoofd-KPI.","Minuten per gecontroleerde rapportage.","text")+
  quickOptions("kpiDirection","Wanneer is de KPI beter?",[["onbekend","Onbekend"],["lager","Lager is beter"],["hoger","Hoger is beter"]],"Bij tijd en kosten is lager vaak gunstig; bij conversie en leads meestal hoger.")+
  compactField("kpiTarget","Wat was vooraf de doelstelling?","Neem de oorspronkelijke doelstelling over.","Van 90 naar maximaal 60 minuten.","text")+
@@ -442,6 +468,26 @@ nav=function(){
 };
 function render(keepScroll){var oldScroll=keepScroll?window.scrollY:0;var openDetails=[...document.querySelectorAll("#view details")].map(function(el,i){return el.open?i:-1}).filter(function(i){return i>=0});nav();document.getElementById("dossierBar").innerHTML=dossierUI();var h=current==="home"?home():current==="report"?reportPage():current==="compare"?companyComparison():current==="issues"?attention():current==="p0"?phase0():current==="p1"?phase2():current==="p2"?phase3():current==="p3"?phase4():phase5();document.getElementById("view").innerHTML=h;if(keepScroll){var ds=document.querySelectorAll("#view details");openDetails.forEach(function(i){if(ds[i])ds[i].open=true})}window.scrollTo(0,keepScroll?oldScroll:0)}
 document.addEventListener("click",function(e){
+var recommendation=e.target.closest("[data-guidance-action]");
+if(recommendation){
+ var kind=recommendation.dataset.guidanceAction,value=recommendation.dataset.guidanceValue;
+ if(kind==="add-task"){
+  if(!data.tasks.includes(value))data.tasks.push(value);
+  if(!data.candidateTask)data.candidateTask=value;
+  selectedTaskIndex=data.tasks.indexOf(value);
+ }else if(kind==="set-alternative"){
+  if(data.nonAiAlternative&&data.nonAiAlternative!==value&&!confirm("Je hebt al een alternatief ingevuld. Wil je dat vervangen door dit onderzoeksvoorstel?"))return;
+  data.nonAiAlternative=value;
+ }else if(kind==="candidate-tool"){
+  if(!data.tools.includes(value))data.tools.push(value);
+  selectedToolIndex=data.tools.indexOf(value);
+ }else if(kind==="suggest-kpi"){
+  if(data.kpiName&&data.kpiName!==value&&!confirm("De bestaande KPI-omschrijving vervangen door dit voorstel?"))return;
+  data.kpiName=value;
+ }
+ save();render(true);return;
+}
+
 var q=e.target.closest("[data-quick-key]");
 if(q){data[q.dataset.quickKey]=q.dataset.quickValue;save();render(true);return}
 var cand=e.target.closest("[data-candidate-task]");
