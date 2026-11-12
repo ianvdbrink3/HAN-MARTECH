@@ -409,7 +409,38 @@ phase5=function(){
  compactField("overrideReason","Als je afwijkt van de cijfers: waarom? (optioneel)","Een afwijking moet gemotiveerd worden. Bij kritieke signalen blijft het een open waarschuwing.","Strategische reden met expliciete goedkeuring van de directeur.")+
  signal)+v2Footer(4);
 };
-function render(keepScroll){var oldScroll=keepScroll?window.scrollY:0;nav();document.getElementById('dossierBar').innerHTML=dossierUI();var h=current==="home"?home():current==="report"?reportPage():current==="issues"?attention():current==="p0"?phase0():current==="p1"?phase2():current==="p2"?phase3():current==="p3"?phase4():phase5();document.getElementById("view").innerHTML=h;window.scrollTo(0,keepScroll?oldScroll:0)}
+
+/* Management home and G-cluster cross-case synthesis — not an extra advice-model phase. */
+home=function(){
+ head("AI-GROEIKOMPAS","Vijf fasen, één bedrijfsspecifiek besluit");
+ var a=window.GroeikompasReport.analyse(data);
+ var completed=phases.filter(function(_,i){return ready(i)}).length;
+ var rows=phases.map(function(n,i){return '<button class="phase v2-phase-link" data-nav="p'+i+'"><span class="num">'+(i+1)+'</span><strong>'+esc(n)+'</strong><small>'+(ready(i)?"Basis ingevuld":"Nog open")+'</small></button>'}).join("");
+ return '<div class="hero"><div class="eyebrow">PRAKTIJKGERICHT · HAN G-CLUSTER</div><h2>Van marketingprobleem naar een verantwoord besluit.</h2><p>Vul in wat je weet. Het model stelt onzekerheden zichtbaar, vergelijkt AI met eenvoudigere oplossingen en signaleert een onlogisch vervolgadvies. De vijf onderzoeksfasen blijven de basis.</p><div class="hero-actions"><button class="btn" data-nav="p0">Start of vervolg intake</button><button class="btn alt" data-nav="report">Bekijk beslisadvies →</button></div></div>'+
+ '<div class="grid">'+card("Ingevulde fasen",'<div class="big">'+completed+'/5</div><p class="muted">Automatisch op basis van invoer</p><div class="progress"><span style="width:'+(completed*20)+'%"></span></div>')+
+ card("Adviesrichting",'<div class="v2-home-rec">'+esc(a.recommendation)+'</div><p class="muted">'+esc(a.reason)+'</p>')+
+ card("Onderzoeksvragen",'<div class="big">'+(a.issues.length+a.redFlags.length)+'</div><p class="muted">Open acties en kritische signalen</p>')+'</div>'+
+ card("Doorloop de vijf fasen",'<p class="muted small">Kies een fase. Je hoeft niet alle verdiepende 1–5-scores in te vullen om een voorlopig advies te kunnen onderzoeken.</p><div class="phasegrid">'+rows+'</div>')+
+ '<p class="overview-note">Bij onbekende gegevens volgt géén verzonnen antwoord. Risicoafwegingen, investeringen en juridische verplichtingen blijven menselijke verantwoordelijkheden.</p>';
+};
+function companyComparison(){
+ head("Vergelijk bedrijfsdossiers","Vooronderzoek bij vijf MKB-bedrijven — kwalitatieve vergelijking");
+ var companies=vault.cases.map(function(c){return {name:c.name,analysis:window.GroeikompasReport.analyse(c.data),data:c.data}});
+ var facts=companies.map(function(c){var a=c.analysis;return '<article class="company-row"><div><h3>'+esc(c.name)+'</h3><p>'+esc(a.problem||"Marketingprobleem nog niet ingevuld")+'</p></div><div><small>Geselecteerde taak</small><b>'+esc(a.selectedTask||"Nog niet gekozen")+'</b><small>Keuze voor AI</small><b>'+esc(a.alternatives.choice||"Onbekend")+'</b></div><div><small>Adviesrichting</small><b>'+esc(a.recommendation)+'</b><small>Open onderzoeksacties: '+a.issues.length+'</small></div></article>'}).join("");
+ var noAI=companies.filter(c=>c.analysis.alternatives.choice==="zonder_ai").length;
+ var unknown=companies.filter(c=>!c.analysis.selectedTask).length;
+ return '<div class="v2-stage-head"><span>G-CLUSTER · VERGELIJKEND ONDERZOEK</span><h2>Welke verschillen zien we tussen de bedrijven?</h2><p>Vergelijk de antwoorden en adviesrichtingen. Dit zijn beschrijvende casusuitkomsten, geen representatieve statistieken over het Nederlandse MKB.</p></div>'+
+ '<div class="grid">'+card("Bedrijfsdossiers",'<div class="big">'+companies.length+'</div><p class="muted">Afzonderlijke casussen</p>')+
+ card("Eerst zonder AI",'<div class="big">'+noAI+'</div><p class="muted">Voorlopige keuze van respondent/onderzoeker</p>')+
+ card("Taak nog onbekend",'<div class="big">'+unknown+'</div><p class="muted">Nog onvoldoende informatie</p>')+'</div>'+
+ guideCard("Vergelijking per bedrijf",facts)+
+ '<div class="overview-note"><b>Onderzoeksadvies:</b> analyseer overeenkomsten en verschillen in behoeften en onderbouwing in jullie onderzoeksrapport. Gebruik de oorspronkelijke interviewtranscripten en observeer de onafhankelijke taakuitvoering; vijf casussen geven geen betrouwbare algemene percentages.</div>';
+}
+nav=function(){
+ var navs=[["home","Overzicht"]].concat(phases.map(function(p,i){return ["p"+i,(i+1)+". "+p]}),[["report","Mijn AI-advies"],["compare","Bedrijven vergelijken"],["issues","Aandachtspunten ("+(issues.length-progress())+")"]]);
+ document.getElementById("nav").innerHTML=navs.map(function(a){return '<button data-nav="'+a[0]+'" class="'+(current===a[0]?"active":"")+'">'+a[1]+'</button>'}).join("");
+};
+function render(keepScroll){var oldScroll=keepScroll?window.scrollY:0;var openDetails=[...document.querySelectorAll("#view details")].map(function(el,i){return el.open?i:-1}).filter(function(i){return i>=0});nav();document.getElementById("dossierBar").innerHTML=dossierUI();var h=current==="home"?home():current==="report"?reportPage():current==="compare"?companyComparison():current==="issues"?attention():current==="p0"?phase0():current==="p1"?phase2():current==="p2"?phase3():current==="p3"?phase4():phase5();document.getElementById("view").innerHTML=h;if(keepScroll){var ds=document.querySelectorAll("#view details");openDetails.forEach(function(i){if(ds[i])ds[i].open=true})}window.scrollTo(0,keepScroll?oldScroll:0)}
 document.addEventListener("click",function(e){
 var q=e.target.closest("[data-quick-key]");
 if(q){data[q.dataset.quickKey]=q.dataset.quickValue;save();render(true);return}
