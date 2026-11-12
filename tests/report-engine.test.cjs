@@ -50,6 +50,17 @@ assert.equal(engine.analyse(noai).recommendation,"Onderzoek eerst de oplossing z
 assert.equal(engine.analyse(noai).vendorMissing.length,0);
 const unknown=structuredClone(base);unknown.kpiDirection="onbekend";
 assert.equal(engine.analyse(unknown).finalReady,false);
+
+const missingQuality=structuredClone(base);missingQuality.qualityEvidence="";
+assert.equal(engine.analyse(missingQuality).finalReady,false);
+assert.ok(engine.analyse(missingQuality).issues.some(x=>x.includes("kwaliteitsbeoordeling")));
+const compareBoth=structuredClone(base);compareBoth.aiNecessity="onderzoek";
+assert.equal(engine.analyse(compareBoth).recommendation,"Vergelijk AI en eenvoudiger automatisering");
+assert.equal(engine.analyse(compareBoth).finalReady,false);
+const notApplicable=structuredClone(base);
+notApplicable.riskStatus.risk0="nvt";
+notApplicable.riskEvidence.risk0="Er worden geen externe klantgegevens verwerkt";
+assert.equal(engine.analyse(notApplicable).riskReady,true);
 const html=engine.createReport({...base,business:"A <script>alert(1)</script>"}).html;
 assert.match(html,/A &lt;script&gt;/);
 assert.doesNotMatch(html,/<script>alert\(1\)<\/script>/);
