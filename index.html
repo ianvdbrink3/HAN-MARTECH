@@ -253,7 +253,7 @@ function copyChatGPTPrompt(){
  if(!confirm("De prompt bevat gegevens uit dit bedrijfsdossier. Controleer of er geen vertrouwelijke bedrijfsinformatie of persoonsgegevens in staan voordat je deze in ChatGPT plakt. Prompt kopiëren?"))return;
  var a=window.GroeikompasReport.analyse(data);
  var context={
-  bedrijf:a.company,marketingprobleem:a.problem,doel:a.goal,onderzochte_taken:a.tasks.map(function(t){return {taak:t.name,geschiktheid:t.fitScore,prioriteit:t.priorityScore,toelichtingen:t.priority.filter(function(v){return v.note}).map(function(v){return {criterium:v.name,score:v.score,argument:v.note}})}}),
+  bedrijf:a.company,marketingprobleem:a.problem,doel:a.goal,alternatief_zonder_ai:a.alternatives,adviesrichting:a.recommendation,motivatie:a.reason,kritieke_signalen:a.redFlags,overige_waarschuwingen:a.warnings,risicocontroles:a.risks,kwaliteitscontrole:a.kpi.qualityEvidence,onderzochte_taken:a.tasks.map(function(t){return {taak:t.name,geschiktheid:t.fitScore,prioriteit:t.priorityScore,toelichtingen:t.priority.filter(function(v){return v.note}).map(function(v){return {criterium:v.name,score:v.score,argument:v.note}})}}),
   nog_niet_beoordeelde_taken:a.unrated,open_algemene_risicos:a.riskMissing,open_leverancierscontroles:a.vendorMissing,
   gekozen_tool_en_motivatie:a.selectedTool,geteste_tools:a.tools.map(function(t){return {naam:t.name,score:t.mean,toelichtingen:t.items.filter(function(v){return v.note}).map(function(v){return {criterium:v.name,score:v.score,argument:v.note}})}}),
   pilot:a.pilot,kpi:a.kpi,vervolgbesluit:a.decision,toelichting_vervolg:a.notes,open_acties:a.issues
@@ -295,7 +295,7 @@ ready=function(i){
  if(i===0)return !!(sV(data.problem)&&sV(data.goal));
  if(i===1)return !!(data.tasks.length&&data.candidateTask&&data.aiNecessity&&data.aiNecessity!=="onbekend"&&data.aiNecessityReason&&data.nonAiAlternative&&data.alternativeComparison);
  if(i===2)return risks.every(function(r,j){var key="risk"+j;return ["beoordeeld","nvt"].includes((data.riskStatus||{})[key])&&sV((data.riskEvidence||{})[key]).length>=8});
- if(i===3)return data.aiNecessity==="zonder_ai"||!!(data.selectedTool&&data.toolTestEvidence&&data.toolCostEvidence&&data.pilotTask&&data.pilotSuccess);
+ if(i===3)return data.aiNecessity==="zonder_ai"?!!(data.pilotTask&&data.pilotSuccess):!!(data.selectedTool&&data.toolTestEvidence&&data.toolCostEvidence&&data.pilotTask&&data.pilotSuccess);
  if(i===4)return data.kpiBefore!==""&&data.kpiAfter!==""&&data.kpiDirection&&data.kpiDirection!=="onbekend"&&data.qualityStatus&&data.qualityStatus!=="onbekend"&&data.decision;
  return false;
 };
@@ -475,7 +475,7 @@ if(el.dataset.riskEvidence!==undefined){data.riskEvidence=data.riskEvidence||{};
 if(el.dataset.scoreNoteGroup&&el.dataset.scoreNoteKey!==undefined){
  var notes=el.dataset.scoreNoteGroup==="tool"?data.toolScoreNotes:data.ratingNotes;
  notes[el.dataset.scoreNoteKey]=el.value;save();return;
-}if(el.dataset.key){data[el.dataset.key]=el.value;save()}if(el.dataset.note!==undefined){data.issueNotes[el.dataset.note]=el.value;save()}if(el.dataset.rate){var val=el.value===""?0:Math.min(5,Math.max(1,Number(el.value)||1));data.ratings[el.dataset.rate]=val;save()}if(el.dataset.toolscore){data.toolScores[el.dataset.toolscore]=el.value===""?0:Math.min(5,Math.max(1,Number(el.value)||1));save()}if(el.dataset.toolname!==undefined){data.tools[Number(el.dataset.toolname)]=el.value;save()}});
+}if(el.dataset.key){if(el.dataset.key==="business"&&el.value.trim()&&(activeCase().name===data.business||/^Bedrijf [0-9]+$/.test(activeCase().name)))activeCase().name=el.value.trim().slice(0,90);data[el.dataset.key]=el.value;save()}if(el.dataset.note!==undefined){data.issueNotes[el.dataset.note]=el.value;save()}if(el.dataset.rate){var val=el.value===""?0:Math.min(5,Math.max(1,Number(el.value)||1));data.ratings[el.dataset.rate]=val;save()}if(el.dataset.toolscore){data.toolScores[el.dataset.toolscore]=el.value===""?0:Math.min(5,Math.max(1,Number(el.value)||1));save()}if(el.dataset.toolname!==undefined){data.tools[Number(el.dataset.toolname)]=el.value;save()}});
 document.addEventListener("change",function(e){var el=e.target;if(el.dataset.key&&el.dataset.key==="decision"){data.decision=el.value;save();render(true);return}if(el.id==="caseSelect"){selectCase(el.value);return}if(el.dataset.issue!==undefined){data.issueChecks[el.dataset.issue]=el.checked;save();render()}else if(el.dataset.check){data.checks[el.dataset.check]=el.checked;save();render()}else if(el.dataset.phase!==undefined){if(el.checked&&!ready(Number(el.dataset.phase))){alert("Vul eerst de minimale voorwaarden in.");render();return}data.phaseDone[el.dataset.phase]=el.checked;save();render()}else if(el.dataset.key){data[el.dataset.key]=el.value;save()}else if(el.dataset.rate||el.dataset.toolscore){save();render()}});
 document.getElementById("export").onclick=function(){var blob=new Blob([JSON.stringify({format:"HAN-AI-GROEIKOMPAS-DOSSIERS",version:1,cases:vault.cases,active:vault.active},null,2)],{type:"application/json"});var u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download="AI-Groeikompas-alle-bedrijfsdossiers.json";a.click();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
 document.getElementById("import").onclick=function(){document.getElementById("importFile").click()};
