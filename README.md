@@ -76,3 +76,24 @@ De gebruikersroute is korter gemaakt: ondernemers beginnen met bedrijfsfeiten en
 Testen:
 `node tests/report-engine.test.cjs`
 Bekijk de preview in een echte browser en toets scenario's met lage scores, negatieve KPI's, blokkades en een eenvoudiger alternatief zonder AI.
+
+## Adaptieve fase-overgangen (Preview)
+
+Het AI-GROEIKOMPAS behoudt **dezelfde vijf stappen**. Bij het openen van een volgende fase leest de nieuwe `assets/guidance-engine.js` de antwoorden van het actieve bedrijfsdossier en genereert een *voorlopige* vervolgsuggestie.
+
+- **Fase 1 → 2:** voorstel voor een concrete marketingtaak en een alternatief zonder AI. De gebruiker neemt een suggestie expliciet over.
+- **Fase 2 → 3:** risicoaandachtspunten en gerichte onderzoeksvragen voor de geselecteerde taak.
+- **Fase 3 → 4:** passend type AI-oplossing en te onderzoeken toolvoorbeelden uit de omschreven taak en bestaande software. Als HubSpot of Microsoft-software wordt genoemd, zijn de aanbevelingen daarop afgestemd. Een kandidaat toevoegen is **geen** onderbouwde selectie of vrijgave.
+- **Fase 4 → 5:** voorlopige KPI-suggestie uit het oorspronkelijke doel en de pilottaak. Het systeem vult nooit echte meetresultaten in.
+- **Eindrapport:** gebruikt de bestaande evidence-gated beslisregels. Niets wat nog onderzocht moet worden wordt als bewezen gepresenteerd.
+
+De suggesties tonen op welke ingevoerde antwoorden ze gebaseerd zijn. De eenvoudige tekstherkenning is **geen autonome AI-assistent en geen gevalideerde toolrecommender**. Vergelijk actuele producten, licentie-eisen, gegevensverwerking, implementatiekosten en testresultaten voordat je een advies definitief maakt.
+
+### Regressietests
+```bash
+node tests/report-engine.test.cjs
+node tests/guidance-engine.test.cjs
+node tests/adaptive-flow.test.cjs
+```
+
+De wijzigingen horen uitsluitend bij de branch `preview/adviesrapport-v1`; niet rechtstreeks naar `main` of Vercel Production publiceren.
