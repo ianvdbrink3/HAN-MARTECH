@@ -226,7 +226,7 @@ function reportPage(){
  var result=window.GroeikompasReport.createReport(data),a=result.analysis;
  var tone=a.finalReady?"ready":a.provisional?"partial":"empty";
  var status='<div class="report-status '+tone+'"><div><small>STATUS ADVIES</small><strong>'+esc(a.status)+'</strong><p>'+ (a.finalReady?"Alle minimale invulvoorwaarden zijn aanwezig. Laat een deskundige het advies controleren.":a.provisional?"Er is een voorlopige proceskandidaat. Werk de risico’s, toolkeuze en pilot verder uit.":"Begin met de probleemdefinitie en beoordeel minimaal één marketingtaak.")+'</p></div><span>'+ (a.finalReady?"✓":"!")+'</span></div>';
- var actions='<div class="report-buttons"><button type="button" id="reportPrint" class="btn">Afdrukken / opslaan als PDF</button><button type="button" id="reportDownload" class="btn alt">Download rapport (HTML)</button><button type="button" id="reportCopy" class="btn alt">Kopieer samenvatting</button></div>';
+ var actions='<div class="report-buttons"><button type="button" id="reportPrint" class="btn">Afdrukken / opslaan als PDF</button><button type="button" id="reportDownload" class="btn alt">Download rapport (HTML)</button><button type="button" id="reportCopy" class="btn alt">Kopieer samenvatting</button><button type="button" id="reportChatGPT" class="btn alt">Kopieer prompt voor ChatGPT</button></div>';
  return '<section class="report-intro"><span class="eyebrow">BEDRIJFSSPECIFIEKE ADVIESOUTPUT</span><h2>Van ingevulde gegevens naar een controleerbaar advies</h2><p>Dit rapport groeit automatisch mee met het dossier van <b>'+esc(a.company)+'</b>. Het systeem verzint geen kosten, resultaten, bronnen of juridisch oordeel. Ontbrekende informatie blijft zichtbaar als open actie.</p></section>'+status+actions+
  '<section id="reportPaper" class="report-paper">'+result.html+'</section>'+
  '<div class="report-afterword"><b>Onderzoekskwaliteit:</b> deze rapportgenerator gebruikt vaste beslisregels. De prioriteitswegingen zijn nog een voorstel van de GHUB-groep en vereisen toetsing bij MKB-bedrijven. De managementsamenvatting is geen onafhankelijk AI-oordeel.</div>';
@@ -248,6 +248,19 @@ function printReport(){
  w.document.open();w.document.write(printableDocument());w.document.close();w.focus();
  w.print();
 }
+function copyChatGPTPrompt(){
+ if(!confirm("De prompt bevat gegevens uit dit bedrijfsdossier. Controleer of er geen vertrouwelijke bedrijfsinformatie of persoonsgegevens in staan voordat je deze in ChatGPT plakt. Prompt kopiëren?"))return;
+ var a=window.GroeikompasReport.analyse(data);
+ var context={
+  bedrijf:a.company,marketingprobleem:a.problem,doel:a.goal,onderzochte_taken:a.tasks.map(function(t){return {taak:t.name,geschiktheid:t.fitScore,prioriteit:t.priorityScore,toelichtingen:t.priority.filter(function(v){return v.note}).map(function(v){return {criterium:v.name,score:v.score,argument:v.note}})}}),
+  nog_niet_beoordeelde_taken:a.unrated,open_algemene_risicos:a.riskMissing,open_leverancierscontroles:a.vendorMissing,
+  gekozen_tool_en_motivatie:a.selectedTool,geteste_tools:a.tools.map(function(t){return {naam:t.name,score:t.mean,toelichtingen:t.items.filter(function(v){return v.note}).map(function(v){return {criterium:v.name,score:v.score,argument:v.note}})}}),
+  pilot:a.pilot,kpi:a.kpi,vervolgbesluit:a.decision,toelichting_vervolg:a.notes,open_acties:a.issues
+ };
+ var prompt="Je bent een kritische HBO Commerciële Economie-adviseur. Help bij het controleren en redigeren van een bedrijfsspecifiek AI-implementatieadvies. Baseer je uitsluitend op de onderstaande gegevens; verzin nooit interviews, kosten, resultaten, regelgeving, ROI, klantenfeedback of wetenschappelijke validatie. Maak expliciet onderscheid tussen gemeten feiten, inschattingen en voorlopige voorstellen. De prioriteitsgewichten van het AI-GROEIKOMPAS zijn nog niet gevalideerd. Geef eerst ontbrekend bewijs en kritische vragen, vervolgens een helder conceptadvies met vervolgstappen. Gebruik een zakelijke Nederlandse stijl. Gebruik geen uitspraken over juridische naleving zonder externe verificatie.\n\nBEDRIJFSDOSSIER (door gebruiker eerst controleren op vertrouwelijkheid):\n"+JSON.stringify(context,null,2);
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(prompt).then(function(){alert("Prompt gekopieerd. Open ChatGPT en plak de gecontroleerde tekst in een nieuw gesprek.")}).catch(function(){alert("Kopiëren is in deze browser niet toegestaan. Gebruik de rapportdownload als alternatief.")});
+ else alert("Clipboard is niet beschikbaar in deze browser.");
+}
 function copyReport(){
  var text=window.GroeikompasReport.createReport(data).text;
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(function(){alert("Samenvatting gekopieerd.")}).catch(function(){alert("Kopiëren niet toegestaan in deze browser. Gebruik rapportdownload.")});
@@ -258,6 +271,7 @@ document.addEventListener("click",function(e){
 if(e.target.id==="reportPrint"){printReport();return}
 if(e.target.id==="reportDownload"){downloadReport();return}
 if(e.target.id==="reportCopy"){copyReport();return}
+if(e.target.id==="reportChatGPT"){copyChatGPTPrompt();return}
 
 if(e.target.id==="newDossier"){createDossier();return}
 if(e.target.id==="renameDossier"){renameDossier();return}
