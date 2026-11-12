@@ -62,3 +62,12 @@ main{margin:0!important;padding:22px 15px calc(98px + env(safe-area-inset-bottom
 }
 @media(max-width:370px){.rating-choice{gap:5px}.rating-button{min-height:49px;border-radius:9px}.card{padding:18px 13px}.guided-head{padding:20px 15px}}
 @media(prefers-reduced-motion:reduce){aside,.rating-button,.task-tab{transition:none}}
+
+/* Qualitative explanation underneath each 1–5 rating, per dossier. */
+.score-explanation{margin-top:17px;display:grid;gap:8px}
+.score-explanation label{color:#25445d;font-weight:750;font-size:13px}
+.score-explanation label span{font-weight:500;color:#71899b}
+.score-explanation textarea{width:100%;min-height:84px;border:1px solid #cbdce6;border-radius:11px;background:#fff;color:#243f56;font:inherit;font-size:14px;line-height:1.6;padding:12px 14px;resize:vertical}
+.score-explanation textarea:focus{outline:2px solid #2aa899;outline-offset:2px}
+.score-explanation small{font-size:12px;color:#708699;line-height:1.5}
+@media(max-width:850px){.score-explanation textarea{font-size:16px;min-height:104px;padding:14px}}
