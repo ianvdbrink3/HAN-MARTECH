@@ -38,7 +38,7 @@ var vaultKey="han-ai-groeikompas-dossiers-v1";
 function freshData(){
  return Object.assign({},defaults,{
   business:"",goal:"",problem:"",baseline:"",experience:"",resources:"",
-  tasks:[],ratings:{},ratingNotes:{},checks:{},issueChecks:{},issueNotes:{},tools:["Optie 1","Optie 2"],toolScores:{},toolScoreNotes:{},
+  tasks:[],ratings:{},ratingNotes:{},candidateTask:"",nonAiAlternative:"",alternativeComparison:"",aiNecessity:"onbekend",aiNecessityReason:"",riskStatus:{},riskEvidence:{},toolTestEvidence:"",toolCostEvidence:"",kpiDirection:"onbekend",sampleCount:"",qualityStatus:"onbekend",qualityEvidence:"",overrideReason:"",checks:{},issueChecks:{},issueNotes:{},tools:["Optie 1","Optie 2"],toolScores:{},toolScoreNotes:{},
   selectedTool:"",pilotTask:"",pilotDuration:"",pilotOwner:"",pilotSuccess:"",
   kpiName:"",kpiBefore:"",kpiAfter:"",kpiTarget:"",decision:"",phaseDone:{},notes:""
  });
@@ -220,6 +220,7 @@ function attention(){head("Aandachtspunten","Verbeterplan op basis van de kritis
 function issueCards(filter){return issues.map(function(x,i){var done=!!data.issueChecks[i],d=issueDetails[i];if(filter==="open"&&done||filter==="high"&&x[1]!=="Hoog")return "";return '<article class="card issue '+(x[1]==="Hoog"?"high":"")+' '+(done?"done":"")+'"><div class="issuehead"><div><div class="eyebrow">'+esc(x[2])+' · PRIORITEIT '+esc(x[1])+'</div><h3>'+(i+1)+'. '+esc(x[0])+'</h3></div><span class="pill '+(done?"ok":x[1]==="Hoog"?"warning":"")+'">'+(done?"Afgevinkt":"Open")+'</span></div><div class="issue-section"><b>Wat gaat er mis?</b><p>'+esc(d[0])+'</p></div><div class="issue-section"><b>Waarom is dit belangrijk?</b><p>'+esc(x[3])+'</p></div><div class="issue-section"><b>Hoe lossen we dit concreet op?</b><p>'+esc(d[1])+'</p></div><div class="evidence-box"><b>Wanneer mag je dit afvinken?</b><p>'+esc(d[2])+'</p></div><label class="checkrow"><input type="checkbox" data-issue="'+i+'" '+(done?"checked":"")+'><span><b>Actie opgelost en onderbouwing gecontroleerd</b><small>Vink pas af wanneer het resultaat beschikbaar is.</small></span></label><div class="field"><label>Feedback, bewijs en vervolgacties</label><textarea data-note="'+i+'" placeholder="Wat is veranderd en waar staat het bewijs?">'+esc(data.issueNotes[i]||"")+'</textarea></div></article>'}).join("")}
 function closeMenu(){document.body.classList.remove("menu-open");var btn=document.getElementById("mobileMenu");btn.setAttribute("aria-expanded","false");btn.textContent="☰"}
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeMenu()});
+document.addEventListener("focusout",function(e){if(e.target&&e.target.dataset&&(e.target.dataset.key||e.target.dataset.riskEvidence!==undefined))setTimeout(function(){if(document.activeElement!==e.target){}},0)});
 
 function reportPage(){
  head("Mijn AI-advies","Een onderbouwd conceptadvies op basis van het actieve bedrijfsdossier");
@@ -266,8 +267,157 @@ function copyReport(){
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(function(){alert("Samenvatting gekopieerd.")}).catch(function(){alert("Kopiëren niet toegestaan in deze browser. Gebruik rapportdownload.")});
  else alert("Clipboard niet beschikbaar. Gebruik rapportdownload.");
 }
+
+/* Experience v2: five stages preserved; shorter, evidence-first, optionally deeper. */
+function compactField(key,label,hint,example,type){
+ type=type||"textarea";
+ return '<div class="compact-field"><label for="new-'+key+'">'+esc(label)+'</label><p>'+esc(hint)+'</p>'+
+ (type==="textarea"?'<textarea id="new-'+key+'" data-key="'+key+'" rows="3" placeholder="'+esc(example)+'">'+esc(data[key]||"")+'</textarea>':
+ '<input id="new-'+key+'" type="'+type+'" data-key="'+key+'" placeholder="'+esc(example)+'" value="'+esc(data[key]||"")+'">')+'</div>';
+}
+function quickOptions(key,label,options,description){
+ return '<div class="choice-block"><strong>'+esc(label)+'</strong>'+(description?'<p>'+esc(description)+'</p>':'')+
+ '<div class="choice-buttons">'+options.map(function(x){
+  return '<button type="button" class="choice-tile '+(data[key]===x[0]?"is-selected":"")+'" data-quick-key="'+key+'" data-quick-value="'+esc(x[0])+'"><b>'+esc(x[1])+'</b>'+(x[2]?'<small>'+esc(x[2])+'</small>':'')+'</button>';
+ }).join("")+'</div></div>';
+}
+function stageHeader(index,title,desc){
+ return '<div class="v2-stage-head"><span>FASE '+index+' VAN 5</span><h2>'+esc(title)+'</h2><p>'+esc(desc)+'</p></div>';
+}
+function v2Footer(i){
+ var good=ready(i);
+ return '<div class="v2-footer"><div class="v2-state">'+(good?'<span class="v2-check">✓ Basisinformatie ingevuld</span>':'<span class="v2-warn">○ Nog te onderzoeken</span>')+
+ '<p>De ingevulde gegevens blijven in dit bedrijfsdossier. Een afgeronde fase is geen bewijs van correcte implementatie.</p></div>'+
+ '<div class="v2-nav">'+(i>0?'<button class="btn alt" data-nav="p'+(i-1)+'">← Vorige</button>':'')+
+ '<button class="btn" data-nav="'+(i<4?"p"+(i+1):"report")+'">'+(i<4?"Volgende fase →":"Bekijk AI-advies →")+'</button></div></div>';
+}
+ready=function(i){
+ if(i===0)return !!(sV(data.problem)&&sV(data.goal));
+ if(i===1)return !!(data.tasks.length&&data.candidateTask&&data.aiNecessity&&data.aiNecessity!=="onbekend"&&data.aiNecessityReason&&data.nonAiAlternative&&data.alternativeComparison);
+ if(i===2)return risks.every(function(r,j){var key="risk"+j;return ["beoordeeld","nvt"].includes((data.riskStatus||{})[key])&&sV((data.riskEvidence||{})[key]).length>=8});
+ if(i===3)return data.aiNecessity==="zonder_ai"||!!(data.selectedTool&&data.toolTestEvidence&&data.toolCostEvidence&&data.pilotTask&&data.pilotSuccess);
+ if(i===4)return data.kpiBefore!==""&&data.kpiAfter!==""&&data.kpiDirection&&data.kpiDirection!=="onbekend"&&data.qualityStatus&&data.qualityStatus!=="onbekend"&&data.decision;
+ return false;
+};
+function sV(v){return typeof v==="string"?v.trim():""}
+phase0=function(){
+ head("Fase 1 · Bedrijfsanalyse","Beschrijf het echte commerciële probleem");
+ return stageHeader(1,"Wat gaat er mis in jullie marketing?","Geef alleen de feiten die je zelf kent. Het model helpt straks bij de technische en commerciële afweging. Je hoeft nog niets over AI-tools te weten.")+
+ guideCard("Bedrijf en werkwijze",
+ compactField("business","Naam van het bedrijf","Alle bedrijfsdossiers staan los van elkaar.","Bouwbedrijf Noordlicht","text")+
+ compactField("experience","Hoe werken jullie nu met AI?","Geen ervaring is ook een geldig antwoord.","We gebruiken ChatGPT soms voor content.","textarea"))+
+ guideCard("Het vraagstuk",
+ compactField("problem","Wat kost tijd, geld of klanten?","Beschrijf één concrete taak of knelpunt, liefst met een voorbeeld.","Iedere maand kost het maken van marketingrapportages acht uur.")+
+ compactField("goal","Wanneer zou het probleem opgelost zijn?","Omschrijf een toetsbaar doel zonder het resultaat alvast te claimen.","Dezelfde rapportage in vier uur met behoud van nauwkeurigheid.")+
+ '<details class="v2-details"><summary>Extra context voor de onderzoeker (optioneel)</summary>'+
+ compactField("resources","Welke middelen en systemen zijn beschikbaar?","Denk aan tools, tijd, budget en medewerkers.","GA4, CRM, twee medewerkers en beperkte tijd.")+
+ compactField("problemEvidence","Waarop is het probleem gebaseerd?","Bijvoorbeeld observatie, tijdregistratie of interview. Geen gevoelige persoonsgegevens.","Tijdregistratie in vier weken.")+'</details>')+v2Footer(0);
+};
+function taskChips(){
+ return '<div class="v2-task-list">'+data.tasks.map(function(t,i){return '<button type="button" data-task-index="'+i+'" class="v2-task '+(data.candidateTask===t?"selected":"")+'">'+esc(t)+(data.candidateTask===t?'<small>Geselecteerde taak</small>':'')+'</button>'}).join("")+'</div>';
+}
+phase2=function(){
+ head("Fase 2 · Procesprioritering","Kies het proces dat het onderzoeken waard is");
+ selectedTaskIndex=Math.max(0,Math.min(selectedTaskIndex,data.tasks.length-1));
+ var task=data.tasks[selectedTaskIndex]||"";
+ var noai=quickOptions("aiNecessity","Wat lijkt op dit moment het verstandigst?",[
+  ["onbekend","Nog onbekend","Eerst onderzoeken"],["onderzoek","AI én eenvoudiger oplossing vergelijken","Nog geen definitief advies"],
+  ["zonder_ai","Eerst zonder AI","Bijvoorbeeld procesoptimalisatie"],["ai","AI lijkt kansrijk","Moet nog bewezen worden"]],"Dit is een voorlopige hypothese van het bedrijf; geen definitieve uitkomst.");
+ var add='<div class="addrow"><input id="newTask" placeholder="Bijv. wekelijkse campagnerapportage" aria-label="Marketingtaak"><button class="btn" id="addTask">Taak toevoegen</button></div>';
+ var candidate=data.candidateTask||"";
+ var tasks=data.tasks.length?'<div class="v2-task-list">'+data.tasks.map(function(t,i){return '<button class="v2-task '+(t===candidate?"selected":"")+'" data-candidate-task="'+esc(t)+'">'+esc(t)+(t===candidate?'<small>Geselecteerd</small>':'')+'</button>'}).join("")+'</div>':'<p class="muted">Er is nog geen marketingtaak toegevoegd.</p>';
+ var advanced='';
+ if(task){
+  var fits=suitability.map(function(c,i){return criterionCard(c,fitExplanations[i],"rate",task+"|fit:"+c,rating(task,"fit:"+c),null)}).join("");
+  var pr=priority.map(function(p,i){return criterionCard(p[0],priorityExplanations[i],"rate",task+"|priority:"+p[0],rating(task,"priority:"+p[0]),p[1])}).join("");
+  advanced='<details class="v2-details"><summary>Verdiepende expertbeoordeling: 1–5-scores (optioneel)</summary><p>Deze dertien criteria zijn nog niet gevalideerd. Gebruik ze voor aanvullende onderbouwing, niet als automatische waarheid.</p>'+
+ '<div class="task-select">'+data.tasks.map(function(t,i){return '<button class="task-tab '+(i===selectedTaskIndex?"selected":"")+'" data-task-index="'+i+'">'+esc(t)+'</button>'}).join("")+'</div>'+
+ '<h3>Geschiktheid</h3>'+fits+'<h3>Prioriteit (voorlopige gewichten)</h3>'+pr+'</details>';
+ }
+ return stageHeader(2,"Welk marketingproces verdient aandacht?","Je kiest een concrete taak, vergelijkt AI met een eenvoudiger oplossing en motiveert waarom. Je hoeft niet dertien scores te geven om verder te mogen.")+
+ guideCard("1. Kies de eerste taak",'<p class="guide-lead">Begin bij werk dat een concreet probleem veroorzaakt. Je kunt meer taken onderzoeken.</p>'+tasks+add)+
+ guideCard("2. Onderzoek eerst het alternatief voor AI",
+ compactField("nonAiAlternative","Hoe kan dit probleem mogelijk zonder AI worden opgelost?","Denk aan een bestaande systeemkoppeling, heldere instructies of gewone automatisering.","Een bestaande rapportagedashboard-koppeling.")+
+ compactField("alternativeComparison","Wat zou AI toevoegen ten opzichte van die oplossing?","Noteer wat je al weet en wat nog moet worden getest.","AI kan mogelijk toelichtingen samenvatten, maar de cijfers kunnen ook met een standaarddashboard.")+
+ noai+compactField("aiNecessityReason","Waarom denk je dit?","Vermeld argumenten en onzekerheden. Kies geen AI omdat het nieuw is.","Eerst de standaardkoppeling testen omdat die minder controlewerk vraagt.") )+
+ (advanced?guideCard("3. Extra verdieping",advanced):"")+v2Footer(1);
+};
+function riskChoices(key){
+ var states=[["onbekend","Nog onbekend"],["beoordeeld","Beoordeeld"],["nvt","Niet van toepassing"],["blokkade","Blokkade"]];
+ var current=(data.riskStatus||{})[key]||"onbekend";
+ return '<div class="risk-options">'+states.map(function(x){return '<button type="button" data-risk-key="'+key+'" data-risk-choice="'+x[0]+'" class="'+(current===x[0]?"selected":"")+'">'+x[1]+'</button>'}).join("")+'</div>';
+}
+function riskItem(key,name,description){
+ var st=(data.riskStatus||{})[key]||"onbekend",ev=(data.riskEvidence||{})[key]||"";
+ return '<div class="v2-risk"><div><b>'+esc(name)+'</b><p>'+esc(description)+'</p></div>'+riskChoices(key)+
+ (st!=="onbekend"?'<label class="risk-evidence">Waarop is deze beoordeling gebaseerd?<textarea data-risk-evidence="'+key+'" rows="2" placeholder="Document, verantwoordelijke, datum of reden waarom dit niet van toepassing is">'+esc(ev)+'</textarea></label>':'')+
+ (st==="beoordeeld"&&ev.trim().length<8?'<small class="warning-text">Zonder controleerbare toelichting wordt dit niet als geverifieerd beschouwd.</small>':'')+
+ '</div>';
+}
+phase3=function(){
+ head("Fase 3 · Randvoorwaarden & risico's","Maak onzekerheid en risico's zichtbaar");
+ var desc=["Zijn de gegevens nodig, actueel en bruikbaar?","Zijn doel en rechtsgrondslag beoordeeld?","Is beoordeeld of een DPIA vereist is?","Welke AI- en marketingregels zijn relevant?","Wie controleert AI-resultaten en beslist?","Wie kan bij de gegevens en systemen?","Wie is verantwoordelijk voor gebruik en opvolging?"];
+ return stageHeader(3,"Wat moet eerst veilig geregeld zijn?","Je hoeft niet alles te weten. Kies bewust ‘Nog onbekend’ of ‘Blokkade’ als iets nog moet worden onderzocht. Afvinken zonder bewijs geldt niet als goedkeuring.")+
+ guideCard("Controleer de zeven randvoorwaarden",risks.map(function(x,i){return riskItem("risk"+i,x,desc[i])}).join("")+
+ '<p class="form-note">Dit is geen juridisch advies. Bij een blokkade wordt de aanbeveling tegengehouden. Bij onbekende informatie is een echte pilot met persoonsgegevens nog niet verantwoord.</p>')+v2Footer(2);
+};
+function toolSummary(){
+ return '<div class="v2-task-list">'+data.tools.map(function(t,i){return '<button class="v2-task '+(i===selectedToolIndex?"selected":"")+'" data-tool-index="'+i+'">'+esc(t||("Optie "+(i+1)))+'</button>'}).join("")+'</div>';
+}
+phase4=function(){
+ head("Fase 4 · AI-selectie & pilot","Selecteer geen tool zonder praktische onderbouwing");
+ selectedToolIndex=Math.max(0,Math.min(selectedToolIndex,data.tools.length-1));
+ var hasNoAI=data.aiNecessity==="zonder_ai";
+ var advanced='';
+ if(!hasNoAI){
+ var tool=data.tools[selectedToolIndex]||"Optie";
+ advanced='<details class="v2-details"><summary>Verdiepende vergelijking: acht AI-selectiecriteria (optioneel)</summary><p>Vul alleen scores in waarvoor je bewijs hebt. De score is nooit automatisch voldoende voor een positieve aanbeveling.</p>'+toolSummary()+
+ '<div class="compact-field"><label>Naam van de gekozen optie</label><input data-toolname="'+selectedToolIndex+'" value="'+esc(tool)+'" placeholder="Naam van de tool"></div>'+
+ toolCriteria.map(function(c,i){return criterionCard(c,toolDescriptions[i],"tool",selectedToolIndex+"|"+c,Number(data.toolScores[selectedToolIndex+"|"+c]||0),null)}).join("")+'</details>';
+ }
+ var vendor=hasNoAI?'<p class="form-note">Geen AI-tool gekozen. Leveranciersspecifieke AI-controles zijn pas nodig als je alsnog een AI-toepassing wilt inzetten.</p>':
+ riskItem("vendorPrivacy","Gegevensverwerking van de gekozen leverancier","Controleer opslag, toegang, training en afspraken.")+
+ riskItem("vendorSecurity","Toegang en menselijke controle","Wie controleert resultaten en beveiliging?");
+ return stageHeader(4,hasNoAI?"Test eerst de oplossing zonder AI":"Welke oplossing is aantoonbaar geschikt?","Kies één oplossingsrichting en leg een controleerbare test vast. Geen leveranciersreclame als bewijs gebruiken.")+
+ (hasNoAI?guideCard("1. Geselecteerd alternatief",'<p><b>'+esc(data.nonAiAlternative||"Nog onbekend")+'</b></p><p>Ook een gewone automatisering moet op kwaliteit, kosten en haalbaarheid worden getoetst.</p>'):
+ guideCard("1. Onderbouw de AI-toolkeuze",compactField("selectedTool","Welke AI-oplossing kies je voorlopig?","Noem waarom deze optie past en welke alternatieven zijn afgevallen.","Een AI-functie binnen het bestaande CRM.")+
+ compactField("toolTestEvidence","Welk bewijs laat zien dat de tool werkt?","Testresultaat, proefopdracht, vergelijking; als dat ontbreekt, schrijf dat op.","Twee vergelijkbare rapportages getest; cijfers gecontroleerd door een marketeer.")+
+ compactField("toolCostEvidence","Wat weten we over de totale kosten?","Noteer licentie, inrichting, training en onderhoud; claim geen ROI zonder gegevens.","€40 per maand; inrichting en training nog onbekend.")+advanced))+
+ guideCard("2. Plan een kleine test",compactField("pilotTask","Welke taak wordt getest?","Houd het bij één concrete taak.","Maandrapportages genereren.","text")+
+ compactField("pilotOwner","Wie voert uit en wie beoordeelt?","Noem de verantwoordelijke rol.","Marketeer test, marketingmanager controleert.","text")+
+ compactField("pilotDuration","Hoeveel herhalingen en binnen welke periode?","Een maandelijkse taak laat zich minder snel testen dan een dagelijkse taak.","Drie vergelijkbare rapportages in zes weken.","text")+
+ compactField("pilotSuccess","Wanneer is doorgaan of stoppen verantwoord?","Leg een kwaliteitsgrens en een meetbaar doel vast vóór de proef.","Minimaal 30% minder nettotijd en geen kritieke cijferfouten.","textarea"))+
+ guideCard("3. Leverancierscontrole",vendor)+v2Footer(3);
+};
+phase5=function(){
+ head("Fase 5 · Meten, evalueren & verbeteren","Kijk of de oplossing echt waarde oplevert");
+ var insight=window.GroeikompasReport.analyse(data);
+ var signal=insight.mismatch||insight.kpi.unfavorable||insight.kpi.quality==="onvoldoende"?
+ '<div class="decision-box v2-danger"><b>Let op: uitkomst vraagt herbeoordeling</b><p>'+esc(insight.redFlags.join(" "))+'</p></div>':
+ '<p class="form-note">Het besluit wordt automatisch getoetst aan de opgegeven richting, meetresultaten en kwaliteit. Dat is nog geen bewijs voor een causaal effect.</p>';
+ return stageHeader(5,"Wat heeft de proef werkelijk opgeleverd?","Vul alleen gemeten cijfers in. Vergelijk de kwaliteit en de tijd vóór en na uitvoering. Een slechter resultaat kan betekenen dat stoppen of bijsturen verstandiger is.")+
+ guideCard("1. Meet de resultaten",compactField("kpiName","Wat meet je?","Gebruik één duidelijke hoofd-KPI.","Minuten per gecontroleerde rapportage.","text")+
+ quickOptions("kpiDirection","Wanneer is de KPI beter?",[["onbekend","Onbekend"],["lager","Lager is beter"],["hoger","Hoger is beter"]],"Bij tijd en kosten is lager vaak gunstig; bij conversie en leads meestal hoger.")+
+ compactField("kpiTarget","Wat was vooraf de doelstelling?","Neem de oorspronkelijke doelstelling over.","Van 90 naar maximaal 60 minuten.","text")+
+ '<div class="measurement-grid">'+compactField("kpiBefore","Nulmeting","Dezelfde taak zonder deze oplossing.","90","number")+
+ compactField("kpiAfter","Effectmeting","Inclusief benodigde controle en correctie.","50","number")+'</div>'+
+ compactField("sampleCount","Hoeveel vergelijkbare uitvoeringen zijn gemeten?","Een eenmalige meting kan vertekend zijn.","3","number")+
+ quickOptions("qualityStatus","Hoe was de kwaliteit?",[["onbekend","Nog onbekend"],["voldoende","Voldoende"],["onvoldoende","Onvoldoende"]],"Tijdsbesparing is geen winst als de uitkomsten onjuist zijn.")+
+ compactField("qualityEvidence","Hoe weet je dat de kwaliteit goed genoeg is?","Beschrijf controles en afwijkingen.","Alle drie rapportages vergeleken met originele cijfers."))+
+ guideCard("2. Neem een onderbouwd besluit",'<div class="compact-field"><label>Voorlopige vervolgbeslissing</label><select data-key="decision"><option value="">Kies een besluit</option>'+["Doorgaan","Bijsturen","Stoppen"].map(function(x){return '<option '+(data.decision===x?"selected":"")+'>'+x+'</option>'}).join("")+'</select></div>'+
+ compactField("notes","Waarom is dit besluit verantwoord?","Benoem ook onzekerheden, risico’s en alternatieven.","Tijd verbeterd, maar aanvullende controles blijven nodig.")+
+ compactField("overrideReason","Als je afwijkt van de cijfers: waarom? (optioneel)","Een afwijking moet gemotiveerd worden. Bij kritieke signalen blijft het een open waarschuwing.","Strategische reden met expliciete goedkeuring van de directeur.")+
+ signal)+v2Footer(4);
+};
 function render(keepScroll){var oldScroll=keepScroll?window.scrollY:0;nav();document.getElementById('dossierBar').innerHTML=dossierUI();var h=current==="home"?home():current==="report"?reportPage():current==="issues"?attention():current==="p0"?phase0():current==="p1"?phase2():current==="p2"?phase3():current==="p3"?phase4():phase5();document.getElementById("view").innerHTML=h;window.scrollTo(0,keepScroll?oldScroll:0)}
 document.addEventListener("click",function(e){
+var q=e.target.closest("[data-quick-key]");
+if(q){data[q.dataset.quickKey]=q.dataset.quickValue;save();render(true);return}
+var cand=e.target.closest("[data-candidate-task]");
+if(cand){data.candidateTask=cand.dataset.candidateTask;selectedTaskIndex=data.tasks.indexOf(data.candidateTask);save();render(true);return}
+var risk=e.target.closest("[data-risk-key]");
+if(risk){data.riskStatus=data.riskStatus||{};data.riskEvidence=data.riskEvidence||{};data.riskStatus[risk.dataset.riskKey]=risk.dataset.riskChoice;save();render(true);return}
+
 if(e.target.id==="reportPrint"){printReport();return}
 if(e.target.id==="reportDownload"){downloadReport();return}
 if(e.target.id==="reportCopy"){copyReport();return}
@@ -289,11 +439,13 @@ var toolSelect=e.target.closest("[data-tool-index]");
 if(toolSelect){selectedToolIndex=Number(toolSelect.dataset.toolIndex);render(true);return}
 var el=e.target.closest("[data-nav]");if(el){current=el.dataset.nav;closeMenu();render();return}if(e.target.id==="addTask"){var v=document.getElementById("newTask").value.trim();if(v&&!data.tasks.includes(v)){data.tasks.push(v);save();render()}return}el=e.target.closest("[data-remove-task]");if(el){data.tasks.splice(Number(el.dataset.removeTask),1);save();render();return}el=e.target.closest("[data-filter]");if(el){document.getElementById("issueslist").innerHTML=issueCards(el.dataset.filter)}});
 document.addEventListener("input",function(e){var el=e.target;
+if(el.dataset.riskEvidence!==undefined){data.riskEvidence=data.riskEvidence||{};data.riskEvidence[el.dataset.riskEvidence]=el.value;save();return}
+
 if(el.dataset.scoreNoteGroup&&el.dataset.scoreNoteKey!==undefined){
  var notes=el.dataset.scoreNoteGroup==="tool"?data.toolScoreNotes:data.ratingNotes;
  notes[el.dataset.scoreNoteKey]=el.value;save();return;
 }if(el.dataset.key){data[el.dataset.key]=el.value;save()}if(el.dataset.note!==undefined){data.issueNotes[el.dataset.note]=el.value;save()}if(el.dataset.rate){var val=el.value===""?0:Math.min(5,Math.max(1,Number(el.value)||1));data.ratings[el.dataset.rate]=val;save()}if(el.dataset.toolscore){data.toolScores[el.dataset.toolscore]=el.value===""?0:Math.min(5,Math.max(1,Number(el.value)||1));save()}if(el.dataset.toolname!==undefined){data.tools[Number(el.dataset.toolname)]=el.value;save()}});
-document.addEventListener("change",function(e){var el=e.target;if(el.id==="caseSelect"){selectCase(el.value);return}if(el.dataset.issue!==undefined){data.issueChecks[el.dataset.issue]=el.checked;save();render()}else if(el.dataset.check){data.checks[el.dataset.check]=el.checked;save();render()}else if(el.dataset.phase!==undefined){if(el.checked&&!ready(Number(el.dataset.phase))){alert("Vul eerst de minimale voorwaarden in.");render();return}data.phaseDone[el.dataset.phase]=el.checked;save();render()}else if(el.dataset.key){data[el.dataset.key]=el.value;save()}else if(el.dataset.rate||el.dataset.toolscore){save();render()}});
+document.addEventListener("change",function(e){var el=e.target;if(el.dataset.key&&el.dataset.key==="decision"){data.decision=el.value;save();render(true);return}if(el.id==="caseSelect"){selectCase(el.value);return}if(el.dataset.issue!==undefined){data.issueChecks[el.dataset.issue]=el.checked;save();render()}else if(el.dataset.check){data.checks[el.dataset.check]=el.checked;save();render()}else if(el.dataset.phase!==undefined){if(el.checked&&!ready(Number(el.dataset.phase))){alert("Vul eerst de minimale voorwaarden in.");render();return}data.phaseDone[el.dataset.phase]=el.checked;save();render()}else if(el.dataset.key){data[el.dataset.key]=el.value;save()}else if(el.dataset.rate||el.dataset.toolscore){save();render()}});
 document.getElementById("export").onclick=function(){var blob=new Blob([JSON.stringify({format:"HAN-AI-GROEIKOMPAS-DOSSIERS",version:1,cases:vault.cases,active:vault.active},null,2)],{type:"application/json"});var u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download="AI-Groeikompas-alle-bedrijfsdossiers.json";a.click();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
 document.getElementById("import").onclick=function(){document.getElementById("importFile").click()};
 document.getElementById("importFile").onchange=function(e){var file=e.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(reader.result);if(obj.format==="HAN-AI-GROEIKOMPAS-DOSSIERS"){
