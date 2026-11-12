@@ -59,3 +59,20 @@ Maak eerst een apart dossier per MKB-bedrijf. Leg probleem en verbeterdoel vast,
 
 ### Deploymentveiligheid
 De featurebranch is uitsluitend voor Vercel **Preview**. Gebruik nooit `vercel --prod` of promoot de deployment zonder nieuwe expliciete toestemming. Bestaande production wordt niet bijgewerkt door deze branch-deployment.
+
+## UX- en beslislogica-herontwerp (preview, november 2026)
+
+**De vijf modelstappen zijn behouden:** Bedrijfsanalyse, Procesprioritering, Randvoorwaarden & risico's, AI-selectie & pilot en Meten & evalueren.
+
+De gebruikersroute is korter gemaakt: ondernemers beginnen met bedrijfsfeiten en een concrete taak; de dertien scores per taak en acht scores per tool zijn optionele expertverdieping. De toepassing vraagt eerst naar alternatieven zonder AI.
+
+- Onbekende risico's zijn niet gelijk aan goedgekeurde risico's. Elke beoordeling krijgt een status en verifieerbare toelichting, inclusief blokkades en 'niet van toepassing'.
+- Een zeer lage procesbeoordeling, een sterke KPI-verslechtering, onvoldoende outputkwaliteit of een strijdig positief vervolgadvies leidt niet langer automatisch tot een positief advies.
+- Fase 5 vraagt nu naar de gewenste KPI-richting, het aantal metingen en een expliciete kwaliteitscontrole. Het dashboard registreert onzekerheid en kan 'geen AI' of 'nader onderzoeken' adviseren.
+- 'Mijn AI-advies' toont de zakelijke beslisrichting vóór de onderzoeksdetails. 'Bedrijven vergelijken' is een **onderzoeksweergave**, geen zesde fase en geen statistische generalisatie.
+- De eerste versie van de verbeterde beslislogica is regelgestuurd. Beoordelingsankers, criteria, juridische checks en commerciële effecten vereisen nog werkveldvalidatie.
+- Externe AI-verwerking is optioneel en gebeurt niet automatisch; de gebruiker moet eerst vertrouwelijkheid controleren.
+
+Testen:
+`node tests/report-engine.test.cjs`
+Bekijk de preview in een echte browser en toets scenario's met lage scores, negatieve KPI's, blokkades en een eenvoudiger alternatief zonder AI.
