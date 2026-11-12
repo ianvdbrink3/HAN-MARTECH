@@ -42,3 +42,20 @@ Gebaseerd op het aangeleverde `Vooronderzoek GHUB M7` en het concept `AI-Groeiko
 - De **exportknop** maakt nu één JSON-back-up met alle bedrijfsdossiers. Import vervangt alle dossiers alleen na een extra bevestiging; het oude exportformaat kan als nieuw dossier worden toegevoegd.
 - **Beperking:** dossiers zijn voorlopig opgeslagen in de browser van dit apparaat; andere groepsleden zien ze niet automatisch. Gebruik export/import voor uitwisseling, maar deel nooit vertrouwelijke of persoonsgegevens in een onveilig bestand. Voor gelijktijdig samenwerken zijn authenticatie en gedeelde opslag nodig.
 - Het verwijderen van een dossier vraagt bevestiging. Maak vooraf een export als back-up.
+
+## Adviesrapport – previewfunctionaliteit
+De branch `preview/adviesrapport-v1` voegt **Mijn AI-advies** toe. De generator:
+- maakt per bedrijfsdossier een controleerbaar voorlopig advies op basis van ingevulde problemen, doelen, proces- en toolscores, kwalitatieve toelichtingen en risico-checklists;
+- onderscheidt een voorlopig advies van een concept-eindadvies ná KPI-effectmeting;
+- toont open onderzoeksvragen en waarschuwt dat scorewegingen, juridische conformiteit en causale effecten niet zijn gevalideerd;
+- ondersteunt afdrukken/opslaan als PDF via de browser, HTML-download, samenvatting kopiëren en vrijwillig een reviewprompt kopiëren voor ChatGPT;
+- stuurt **geen** bedrijfsgegevens automatisch naar ChatGPT. Controleer zelf welke informatie je daar plakt.
+
+### Gebruik tijdens het afstuderen
+Maak eerst een apart dossier per MKB-bedrijf. Leg probleem en verbeterdoel vast, beoordeel taken en AI-opties met argumenten, voer beide risicocontroles uit en bepaal een meetbare pilot. Het rapport wordt telkens opnieuw samengesteld vanuit het actieve dossier. Het is geen autonoom gegenereerde of juridisch gegarandeerde aanbeveling; laat het door bedrijfscoach/onderzoeker beoordelen.
+
+### Uitvoeren van tests
+`node tests/report-engine.test.cjs`
+
+### Deploymentveiligheid
+De featurebranch is uitsluitend voor Vercel **Preview**. Gebruik nooit `vercel --prod` of promoot de deployment zonder nieuwe expliciete toestemming. Bestaande production wordt niet bijgewerkt door deze branch-deployment.
