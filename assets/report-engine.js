@@ -86,11 +86,13 @@ function analyse(raw){
  if(!measured)issues.push("Voer een vergelijkbare nul- en effectmeting in.");
  if(!sample||sample<1)issues.push("Leg vast hoeveel taakuitvoeringen zijn gemeten.");
  if(quality==="onbekend")issues.push("Onderbouw de kwaliteit van de output afzonderlijk van tijdsbesparing.");
+ if(quality==="voldoende"&&!s(d.qualityEvidence))issues.push("Een positieve kwaliteitsbeoordeling moet met een controle of bron worden onderbouwd.");
+ if(sample===1)warnings.push("Er is maar één taakuitvoering gemeten; de onzekerheid is groot.");
  if(!decision)issues.push("Registreer een voorlopig vervolg- of stopbesluit na evaluatie.");
  const verifiedRisk=riskItems.every(x=>x.verified)&&relevantVendor.every(x=>x.verified);
  const phase1=!!s(d.problem)&&!!s(d.goal);
  const evidenceReady=phase1&&!!selectedTask&&!aiUnproven;
- const pilotDone=measured&&direction!=="onbekend"&&!!sample&&quality!=="onbekend"&&!!decision;
+ const pilotDone=measured&&direction!=="onbekend"&&!!sample&&quality!=="onbekend"&&s(d.qualityEvidence).length>=8&&!!decision;
  let recommendation="Nog geen advies mogelijk",reason="Start met het bedrijfsprobleem en een concrete marketingtaak.",severity="empty";
  if(evidenceReady){
   if(blocked.length){recommendation="Eerst risico's oplossen";reason="Er is een expliciete blokkade. Start geen pilot met echte bedrijfsgegevens.";severity="blocked";}
@@ -98,6 +100,7 @@ function analyse(raw){
   else if(veryLow){recommendation="Geen positieve AI-aanbeveling";reason="De ingevulde scores zijn overal ongunstig. Herzie het probleem of de gekozen taak.";severity="blocked";}
   else if(mismatch){recommendation="Besluit herzien";reason="De voorgestelde vervolgbeslissing botst met belangrijke meetgegevens of kwaliteit.";severity="blocked";}
   else if(unfavorable||quality==="onvoldoende"){recommendation="Bijsturen of stoppen onderzoeken";reason="De metingen of outputkwaliteit geven onvoldoende grond om de toepassing voort te zetten.";severity="warning";}
+  else if(alternativeChoice==="onderzoek"){recommendation="Vergelijk AI en eenvoudiger automatisering";reason="De oplossing is nog niet onderbouwd gekozen. Rond de vergelijking en een praktijktest af.";severity="partial";}
   else if(!verifiedRisk){recommendation="Onderzoek voortzetten — nog geen vrijgave";reason="De noodzakelijke risico- en leverancierscontroles zijn nog niet aantoonbaar beoordeeld.";severity="warning";}
   else if(!pilotDone){recommendation="Pilot onder voorwaarden voorbereiden";reason="De eerste keuze is voorbereid, maar een effectmeting en evaluatie ontbreken nog.";severity="partial";}
   else if(!toolEvidence&&alternativeChoice!=="zonder_ai"){recommendation="Toolkeuze nog niet bewezen";reason="Er is onvoldoende verificatie van de geselecteerde AI-oplossing.";severity="warning";}
