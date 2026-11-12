@@ -284,7 +284,7 @@ function quickOptions(key,label,options,description){
 
 function adaptiveGuidance(stageIndex){
  var src=window.GroeikompasGuidance;if(!src)return "";
- var prev=stageIndex-1;
+ var prev=stageIndex>=3?stageIndex:stageIndex-1;
  var advice=src.stage(data,prev,window.GroeikompasReport.analyse(data));
  var justification=advice.reasoning.length?'<details class="auto-proof"><summary>Waarom stelt het model dit voor?</summary><ul>'+advice.reasoning.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul></details>':
  '<p class="auto-muted">Er zijn nog onvoldoende antwoorden om gerichte aanbevelingen te onderbouwen.</p>';
