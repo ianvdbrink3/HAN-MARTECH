@@ -48,15 +48,16 @@ function analyse(raw){
  else if(lowScores.length)warnings.push("Bij de onderzochte taak zijn "+lowScores.length+" criteria laag beoordeeld. Onderzoek deze zwakke punten.");
  const riskItems=risks.map((name,i)=>{
   const key="risk"+i;const status=s(riskStatus[key])||(checks[key]===true?"afgevinkt-zonder-bewijs":"onbekend");const source=s(evidenceMap[key]);
-  const verified=status==="beoordeeld"&&source.length>=8;
+  const verified=(status==="beoordeeld"||status==="nvt")&&source.length>=8;
   return {key,name,status,source,verified};
  });
  const vendorItems=[["vendorPrivacy","Gegevensverwerking en leveranciersvoorwaarden"],["vendorSecurity","Beveiliging en menselijke controle"]].map(([key,name])=>{
   const status=s(riskStatus[key])||(checks[key]===true?"afgevinkt-zonder-bewijs":"onbekend"),source=s(evidenceMap[key]);
-  return {key,name,status,source,verified:status==="beoordeeld"&&source.length>=8};
+  return {key,name,status,source,verified:(status==="beoordeeld"||status==="nvt")&&source.length>=8};
  });
- const blocked=riskItems.concat(vendorItems).filter(r=>r.status==="blokkade");
- const unverified=riskItems.concat(vendorItems).filter(r=>!r.verified&&r.status!=="blokkade");
+ const relevantVendor=alternativeChoice==="zonder_ai"?[]:vendorItems;
+ const blocked=riskItems.concat(relevantVendor).filter(r=>r.status==="blokkade");
+ const unverified=riskItems.concat(relevantVendor).filter(r=>!r.verified&&r.status!=="blokkade");
  if(blocked.length)redFlags.push("Er zijn "+blocked.length+" expliciete juridische, technische of organisatorische blokkades.");
  if(unverified.length)issues.push(unverified.length+" risico-/leverancierscontroles missen bewijs of zijn nog onbekend.");
  const toolRows=(Array.isArray(d.tools)?d.tools:[]).map((name,i)=>{
@@ -86,7 +87,7 @@ function analyse(raw){
  if(!sample||sample<1)issues.push("Leg vast hoeveel taakuitvoeringen zijn gemeten.");
  if(quality==="onbekend")issues.push("Onderbouw de kwaliteit van de output afzonderlijk van tijdsbesparing.");
  if(!decision)issues.push("Registreer een voorlopig vervolg- of stopbesluit na evaluatie.");
- const verifiedRisk=riskItems.every(x=>x.verified)&&vendorItems.every(x=>x.verified);
+ const verifiedRisk=riskItems.every(x=>x.verified)&&relevantVendor.every(x=>x.verified);
  const phase1=!!s(d.problem)&&!!s(d.goal);
  const evidenceReady=phase1&&!!selectedTask&&!aiUnproven;
  const pilotDone=measured&&direction!=="onbekend"&&!!sample&&quality!=="onbekend"&&!!decision;
@@ -110,7 +111,7 @@ function analyse(raw){
   company:s(d.business)||"Onbenoemd bedrijf",problem:s(d.problem),goal:s(d.goal),resources:s(d.resources),experience:s(d.experience),
   tasks,ranked,candidate,selectedTask,unrated:deficient.map(t=>t.name),veryLow,lowScores,
   alternatives:{name:alternative,comparison:alternativeCompared,choice:alternativeChoice,reason:alternativeReason},
-  risks:riskItems,vendors:vendorItems,riskMissing:unverified.map(r=>r.name),vendorMissing:vendorItems.filter(r=>!r.verified).map(r=>r.name),
+  risks:riskItems,vendors:vendorItems,riskMissing:unverified.map(r=>r.name),vendorMissing:relevantVendor.filter(r=>!r.verified).map(r=>r.name),
   blocked,unverified,riskReady:verifiedRisk,selectedTool,tools:toolRows,toolsDone:toolRows.filter(t=>t.complete),toolEvidence,costEvidence,
   pilot:{task:s(d.pilotTask),owner:s(d.pilotOwner),duration:s(d.pilotDuration),success:s(d.pilotSuccess)},
   kpi:{name:s(d.kpiName),target:s(d.kpiTarget),before,after,change:delta,relative:pct,measured,direction,unfavorable,sample,quality,qualityEvidence:s(d.qualityEvidence)},
