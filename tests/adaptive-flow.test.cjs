@@ -38,7 +38,7 @@ assert.equal(vault.cases[0].data.candidateTask,suggestion);
 assert.ok(vault.cases[0].data.tasks.includes(suggestion));
 const phase3=go("p2");
 assert.match(phase3,/risicoanalyse/);
-assert.match(phase3,/Geselecteerde taak/);
+assert.match(phase3,/Taak: Campagnerapportages/);
 const phase4=go("p3");
 assert.match(phase4,/HubSpot Breeze Assistant/);
 assert.match(phase4,/GEGENEREERD UIT EERDERE ANTWOORDEN/);
