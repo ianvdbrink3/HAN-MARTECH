@@ -14,9 +14,9 @@ const groups=[
  {id:"generic",terms:/.*/i,task:"De concrete marketingtaak achter het beschreven probleem",nonai:"Het proces vereenvoudigen en bestaande software beter benutten",value:"Meetbare verbetering van het vastgestelde marketingprobleem",kind:"AI-functie in de software die jullie nu al gebruiken",brands:["AI-functie in bestaande software","Losse gespecialiseerde AI-oplossing"],question:"Wat kan de huidige software al automatiseren zonder een AI-model?",risk:"Datakwaliteit, privacy, menselijke controle en procesverantwoordelijkheid"}
 ];
 const stack=[
- {test:/hubspot/i,option:"HubSpot: bestaande AI- of workflowfunctionaliteit onderzoeken",why:"HubSpot wordt in jullie huidige systemen genoemd."},
+ {test:/hubspot/i,option:"HubSpot Breeze Assistant of bestaande CRM-workflows onderzoeken",why:"HubSpot wordt in jullie huidige systemen genoemd. Controleer huidige abonnement, AI-toegang en dataverwerking."},
  {test:/salesforce/i,option:"Salesforce: bestaande AI- en automatiseringsfuncties onderzoeken",why:"Salesforce wordt in jullie huidige systemen genoemd."},
- {test:/microsoft|office 365|m365|power bi|excel|teams\b/i,option:"Microsoft 365/Power BI: bestaande AI- en rapportagefuncties onderzoeken",why:"Microsoft-software wordt in jullie huidige werkwijze genoemd."},
+ {test:/microsoft|office 365|m365|power bi|excel|teams\b/i,option:"Microsoft Power BI Copilot of bestaande BI-automatisering onderzoeken",why:"Microsoft-software wordt genoemd. Controleer eerst of Power BI aanwezig is en of de benodigde betaalde capaciteit beschikbaar is."},
  {test:/google workspace|google sheets|gmail|gemini/i,option:"Google Workspace: bestaande AI- en automatiseringsfuncties onderzoeken",why:"Google Workspace wordt in jullie bestaande werkwijze genoemd."},
  {test:/mailchimp/i,option:"Mailchimp: bestaande automatisering en eventuele AI-functies onderzoeken",why:"Mailchimp wordt in jullie bestaande werkwijze genoemd."},
  {test:/look(er)? studio|ga4|google ads/i,option:"Bestaande Google-rapportagetools met een afzonderlijke AI-samenvattingsstap onderzoeken",why:"Marketingdata of Google-rapportagetools worden genoemd; controleer eerst een dashboard zonder AI."},
@@ -25,7 +25,7 @@ const stack=[
 function infer(d){
  d=d||{};
  const full=[d.problem,d.goal,d.experience,d.resources,d.candidateTask,d.tasks&&d.tasks.join(" ")].map(norm).filter(Boolean).join(" ");
- let choice=groups.find(g=>g.id!=="generic"&&g.terms.test(full))||groups[groups.length-1];
+ let focus=norm(d.candidateTask);let choice=(focus?groups.find(g=>g.id!=="generic"&&g.terms.test(focus)):null)||groups.find(g=>g.id!=="generic"&&g.terms.test(full))||groups[groups.length-1];
  const stackCandidates=stack.filter(z=>z.test.test([d.resources,d.experience].map(norm).join(" ")));
  const problem=norm(d.problem),goal=norm(d.goal);
  const basis=[problem&&"Marketingprobleem: "+problem,goal&&"Gewenst resultaat: "+goal,norm(d.candidateTask)&&"Gekozen taak: "+d.candidateTask].filter(Boolean);
