@@ -154,7 +154,7 @@ function phase3(){title("Fase 3 · Randvoorwaarden & risico's","Proportionele ei
  fields([["risk.decision","Besluit","Go alleen wanneer alle eisen van het niveau zijn geregeld.","select",[["unknown","Nog geen besluit"],["go","Go — voorbereiden pilot"],["no-go","No-go — eerst maatregelen"]]],["risk.decisionBy","Beslisser","Naam/functie van degene die akkoord geeft."],["risk.actions","Acties bij no-go","Wat moet wanneer worden verbeterd?","textarea"]])+
  note("Het dashboard beoordeelt of het formulier compleet is; het beoordeelt niet zelfstandig de juridische juistheid van ingevulde verklaringen.","warn"))+next(2);
 }
-function toolEditor(t,i){const path="implementation.tools."+i,chk=M.toolCheck(t);
+function toolEditor(t,i){const path="implementation.tools."+i,chk=M.toolCheck(t,M.riskLevel(active.risk));
  return '<div class="taskcard"><div class="taskhead"><b>'+E(t.name||"Nog geen naam")+'</b><span class="pill '+(chk.pass?"good":"")+'">'+(chk.pass?"Klaar voor selectietest":"Niet gekwalificeerd")+'</span>'+button("Selecteer","select-tool","xs",t.id)+button("Verwijder","delete-tool","danger xs",t.id)+'</div>'+
  '<div class="form-grid">'+input(path+".name","Oplossing","Concrete product- of oplossingsnaam.")+
  input(path+".direction","Type oplossing","","select",M.DIRECTIONS.map(x=>[x[0],x[1]]))+'</div>'+
@@ -231,11 +231,13 @@ function phase5(){title("Fase 5 · Meten, evalueren & groeien","Netto-opbrengst,
  ["evaluation.setupMinutes","Inrichttijd in minuten","Eenmalige inrichting.","number"],
  ["evaluation.trainingMinutes","Leertijd in minuten","Alle training meenemen.","number"],
  ["evaluation.reallocated","Waar wordt de vrijgekomen tijd besteed?","Capaciteit is niet automatisch financiële besparing.","textarea"]])+
- note("Netto tijdwinst = (gemiddelde nulmeting − gemiddelde laatste ronde) × uitvoeringen − inrichttijd − leertijd.","blue"))+
+ note("Netto tijdwinst = (gemiddelde nulmeting − gemiddelde laatste ronde) × uitvoeringen − inrichttijd − leertijd. ROI verschijnt alleen wanneer kosten én gerealiseerde financiële baten met bronnen zijn onderbouwd.","blue"))+
  card("2. Kwaliteit, kosten en klantwaarde",'<div class="metricbar"><div class="metric"><strong>'+(ev.qb??"—")+'</strong><small>Blinde kwaliteit vóór</small></div><div class="metric"><strong>'+(ev.qa??"—")+'</strong><small>Blinde kwaliteit ná</small></div><div class="metric"><strong>'+(ev.cost??"—")+'</strong><small>Terugkerende kosten €</small></div><div class="metric"><strong>'+(ev.roi===null?"—":ev.roi+"%")+'</strong><small>Voorwaardelijke ROI</small></div></div>'+
  fields([["evaluation.laborRate","Uurtarief arbeid (€)","Alleen voor onderbouwde scenarioanalyse.","number"],["evaluation.monthlyLicence","Licentiekosten evaluatieperiode (€)","","number"],
  ["evaluation.monthlyMaintenance","Onderhoudskosten (€)","","number"],["evaluation.otherCost","Overige/variabele kosten (€)","","number"],
  ["evaluation.financialBenefit","Aantoonbare financiële baten (€)","Niet invullen als alleen capaciteit is vrijgekomen.","number"],
+ ["evaluation.financialBenefitEvidence","Bron van de financiële baten","Bijvoorbeeld factuur, omzetverschil of aangetoonde besparing.","textarea"],
+ ["evaluation.costEvidence","Bron van de volledige kosten","Onderbouw licentie, inrichten, leren en onderhoud.","textarea"],
  ["evaluation.customerMetric","Klant-KPI","Bijvoorbeeld conversie, CTR of klantrelevantie."],
  ["evaluation.customerBaseline","Klant-KPI vóór","Bij weinig volume slechts indicatief.","number"],
  ["evaluation.customerAfter","Klant-KPI na","Gebruik zo mogelijk controlegroep.","number"],
