@@ -22,7 +22,7 @@ function phase(c,index){
   const chosen=p.chosen;
   out=[
    item("Minstens vijf taken gescoord",p.tasks.filter(t=>t.fit.complete).length>=5,p.tasks.filter(t=>t.fit.complete).length+"/5"),
-   item("Twee beoordelaars: ≥80% overeenstemming",!chosen?null:chosen.fit.agreement===null?null:chosen.fit.agreement>=80,chosen?.fit.agreement===null?"Nog niet gemeten":chosen.fit.agreement+"%"),
+   item("Twee beoordelaars: ≥80% overeenstemming",!chosen?null:chosen.fit.agreement===null?null:chosen.fit.agreement>=80,chosen?.fit.agreement==null?"Nog niet gemeten":chosen.fit.agreement+"%"),
    item("Taaktype voor alle gescoorde taken bekend",p.tasks.length?p.tasks.filter(t=>t.kind!=="unknown").length===p.tasks.length:null,p.tasks.filter(t=>t.kind!=="unknown").length+"/"+p.tasks.length),
    item("Eerste taak: prioriteit ≥60/100",chosen?.priority.total===null||!chosen?null:chosen.priority.total>=60,chosen?.priority.total===null||!chosen?"Nog niet berekend":chosen.priority.total+"/100"),
    item("Eerste-toepassingstoets: 5 van 5 ja",!!chosen&&chosen.first.pass,chosen?chosen.first.rows.filter(y=>y.answer==="yes").length+"/5":"Kies een taak"),
