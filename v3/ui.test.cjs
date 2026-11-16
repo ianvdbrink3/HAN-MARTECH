@@ -1,5 +1,5 @@
 const assert=require("node:assert/strict"),fs=require("node:fs"),vm=require("node:vm");
-const MCODE=fs.readFileSync("v3/model.js","utf8"),ACODE=fs.readFileSync("v3/app.js","utf8"),GCODE=fs.readFileSync("v3/advisor.js","utf8");
+const MCODE=fs.readFileSync("v3/model.js","utf8"),ACODE=fs.readFileSync("v3/app.js","utf8"),GCODE=fs.readFileSync("v3/advisor.js","utf8"),RCODE=fs.readFileSync("v3/report.js","utf8");
 function build(initialStore={}){
  const storage={...initialStore},elems={},events={};
  const element=id=>elems[id]||(elems[id]={innerHTML:"",textContent:"",value:"",dataset:{},options:[],classList:{add(){},remove(){},toggle(){}},setAttribute(){},addEventListener(k,fn){this["_event_"+k]=fn},click(){}});
@@ -7,7 +7,7 @@ function build(initialStore={}){
  const win={scrollY:0,scrollTo(){},print(){}};
  const localStorage={getItem(k){return storage[k]??null},setItem(k,v){storage[k]=v}};
  const context=vm.createContext({document:doc,window:win,localStorage,FileReader:function(){},URL:{createObjectURL(){return"blob:x"},revokeObjectURL(){}},Blob:function(){},setTimeout:fn=>fn(),alert(){},confirm(){return true},prompt(){return "Nieuw testbedrijf"},console});
- vm.runInContext(MCODE,context);vm.runInContext(GCODE,context);vm.runInContext(ACODE,context);
+ vm.runInContext(MCODE,context);vm.runInContext(GCODE,context);vm.runInContext(RCODE,context);vm.runInContext(ACODE,context);
  function nav(route){const target={dataset:{nav:route},closest(q){return q==="[data-nav]"?this:null}};events.click({target});return elems.view.innerHTML}
  function choice(path,value){const target={dataset:{choice:path,value},closest(q){return q==="[data-choice]"?this:null}};events.click({target})}
  function action(command,value=""){const target={dataset:{action:command,value},closest(q){return q==="[data-action]"?this:null}};events.click({target})}
