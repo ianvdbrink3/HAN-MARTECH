@@ -1,0 +1,63 @@
+const fs=require("node:fs"),vm=require("node:vm"),assert=require("node:assert/strict");
+const context={window:{}};vm.runInNewContext(fs.readFileSync("v3/model.js","utf8"),context,{filename:"v3/model.js"});
+const M=context.window.GK3;
+const validRun=(time,quality=4,name="")=>({taskName:name,date:"2026-11-16",usedAI:"yes",prepare:String(time-15),prompt:"5",check:"5",correct:"5",quality:Object.fromEntries(M.QUALITY.map(x=>[x[0],String(quality)]))});
+function modelCase(){
+ const c=M.newCase("Bouwbedrijf fictief");const co=c.company;
+ Object.assign(co,{strategy:"Meer marketingresultaat",marketingGoal:"Meer kwalitatieve leads",knowledge:"Twee marketeers",capacity:"4 uur/week",culture:"Open voor leren",currentAI:"Niet",systems:"CRM, GA4",environment:"Bouwmarkt",problem:"Rapportages kosten 90 minuten",goal:"Halveren zonder fouten",indicator:"Minuten",commercialUse:"Leadopvolging",owner:"Directeur",reviewer:"Marketingmanager",issues:["Rapportage kost tijd","Data versnipperd","Onvoldoende inzicht"]});
+ for(let i=0;i<5;i++){const t=M.newTask("Marketingtaak "+(i+1));t.kind=i===0?"executive":"analytical";t.riskLevel="low";t.aiNeeded="yes";for(const x of M.FIT)t.fit[x[0]]="4";for(const x of M.PRIORITY)t.priority[x[0]]="4";for(const x of M.FIRST)t.startTests[x[0]]="yes";c.process.tasks.push(t)}
+ c.process.selectedTaskId=c.process.tasks[0].id;
+ const r=c.risk;r.profile="no";r.personal="no";r.direct="no";r.owner="Directeur";r.usageAgreement="Toegestane tools, data, controle en transparantie";r.decision="go";r.decisionBy="Directeur";
+ for(const x of M.CONTROLS.low)r.controls[x[0]]={status:"done",evidence:"Beoordeeld op 16-11 door manager"};
+ const i=c.implementation;i.roles={owner:"Directeur",executor:"Marketeer",reviewer:"Manager",coach:"Onderzoeker"};
+ i.training.practice="Praktijksessie op eigen werk";i.training.literacy="Cursus evaluatie AI-output";
+ i.training.acceptance={usefulness:"4",quality:"4",ease:"4",support:"4"};
+ for(let n=0;n<2;n++){const t=M.newTool("Tool "+(n+1));t.blind="yes";t.monthlyCost=n?"20":"30";t.setupCost="10";
+  for(const x of M.TOOL)t.ratings[x[0]]="4";
+  for(let j=0;j<3;j++)t.tests.push(validRun(n===0?22:25,n===0?5:4,"Opdracht "+(j+1)));
+  i.tools.push(t)}
+ i.selectedToolId=i.tools[0].id;
+ const p=i.pilot;p.task="Marketingtaak 1";p.period="6 weken";p.success="Kwaliteit gelijk, 25% minder tijd";p.stop="Kritieke fouten";p.decisionDate="2026-12-21";p.usedCount="9";p.totalCount="10";p.handover="Werkinstructie met controles";
+ for(let j=0;j<5;j++)p.baseline.push(validRun(90,4,"Nulmeting "+j));
+ p.cycles.forEach((cy,i)=>{Object.assign(cy,{plan:"Proef opzetten",do:"Tool gebruiken",study:"Tijd en kwaliteit meten",act:"Werkwijze verbeteren"});for(let j=0;j<3;j++)cy.runs.push(validRun(i===0?70:50,4,"Pilot "+j))});
+ const e=c.evaluation;Object.assign(e,{frequency:"3",setupMinutes:"30",trainingMinutes:"30",laborRate:"30",monthlyLicence:"20",monthlyMaintenance:"5",otherCost:"5",financialBenefit:"200",costEvidence:"Leveranciersofferte en urenschatting",financialBenefitEvidence:"Facturabele baten uit administratie",reallocated:"Leadopvolging",evidenceLevel:"2",decision:"continue",decisionReason:"Meetresultaten positief, kwaliteit gelijk",nextTaskId:c.process.tasks[1].id});
+ return c;
+}
+const cases={};
+let c=modelCase();
+assert.equal(M.PHASES.length,5);
+for(let v=1;v<=5;v++){const t=M.newTask();for(const x of M.PRIORITY)t.priority[x[0]]=String(v);assert.equal(M.priorityCheck(t,"light",{}).total,(v-1)*25)}
+const fit=M.newTask();for(const x of M.FIT)fit.fit[x[0]]="4";
+assert.equal(M.fitCheck(fit).pass,true);fit.fit[M.FIT[0][0]]="2";assert.equal(M.fitCheck(fit).pass,false);
+const pairs={};for(let i=0;i<6;i++)for(let j=i+1;j<6;j++)pairs[i+"-"+j]="1";
+assert.equal(M.ahp(pairs).complete,true);assert.equal(M.ahp(pairs).consistent,true);assert.equal(M.ahp(pairs).cr,0);
+assert.equal(M.riskLevel({profile:"yes",personal:"no",direct:"no"}),"high");
+assert.equal(M.riskLevel({profile:"no",personal:"yes",direct:"no"}),"medium");
+assert.equal(M.riskLevel({profile:"no",personal:"no",direct:"no"}),"low");
+assert.equal(M.riskLevel({profile:"unknown",personal:"no",direct:"no"}),"unknown");
+assert.equal(M.riskCheck({...c.risk,profile:"yes"},"light").routeConflict,true);
+assert.equal(M.riskCheck(c.risk,"light").go,true);
+assert.equal(M.selectTools(c.implementation.tools,"low").comparable,true);
+assert.equal(M.selectTools(c.implementation.tools,"low").winner.tool.name,"Tool 1");
+cases.full=M.status(c).phase;
+assert.deepEqual([...cases.full],[true,true,true,true,true]);
+const ev=M.evaluate(c);assert.equal(ev.before,90);assert.equal(ev.after,50);assert.equal(ev.net,60);assert.equal(ev.payback,1.5);
+assert.ok(ev.roi!==null&&ev.roi>0);
+assert.ok(ev.canContinue);
+const report=M.report(c);assert.match(report.html,/Bedrijfsspecifiek advies/);assert.match(report.html,/Netto tijdwinst/);
+const lo=modelCase();lo.process.tasks[0].fit[M.FIT[0][0]]="1";
+assert.equal(M.processCheck(lo).chosen.eligible,false);
+assert.equal(M.status(lo).phase[1],false);
+const bad=modelCase();bad.implementation.pilot.cycles[1].runs=[validRun(105,2,"Pilot 0")];
+assert.equal(M.evaluate(bad).conflict,true);assert.equal(M.evaluate(bad).canContinue,false);
+const noRisk=modelCase();noRisk.risk.controls.owner={status:"unknown",evidence:""};
+assert.equal(M.riskCheck(noRisk.risk,"light").go,false);
+assert.equal(M.status(noRisk).phase[3],false);
+const notblind=modelCase();notblind.implementation.tools[0].blind="no";
+assert.equal(M.selectTools(notblind.implementation.tools,"low").comparable,false);
+const noROI=modelCase();noROI.evaluation.financialBenefitEvidence="";
+assert.equal(M.evaluate(noROI).roi,null);
+const xss=modelCase();xss.name="<img src=x onerror=alert(1)>";
+assert.doesNotMatch(M.report(xss).html,/<img src=x onerror/);assert.match(M.report(xss).html,/&lt;img/);
+const noahp=modelCase();noahp.route="full";assert.equal(M.status(noahp).phase[1],false);
+console.log(JSON.stringify({result:"PASS",checks:"five phases, 0-100 scoring, fit gates, AHP, risk levels, blind trials, PDSA, real measurements, ROI evidence, conflicts, XSS, full-route gate",allPhases:cases.full,netMinutes:ev.net,paybackRuns:ev.payback,ROI:ev.roi},null,2));

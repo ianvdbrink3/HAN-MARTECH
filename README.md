@@ -1,3 +1,17 @@
+# AI-GROEIKOMPAS — V3 Onderzoekswerkruimte (Preview)
+
+**Deze branch bevat de documentgetrouwe V3.** De vijf fasen zijn afgeleid van `AI - Groeikompas-2.docx` (30 november 2026). De werkende applicatie begint bij `index.html` en gebruikt `v3/model.js`, `v3/advisor.js`, `v3/report.js`, `v3/app.js` en `v3/style.css`.
+
+- [Gebruikershandleiding en scope](v3/README.md)
+- [Traceerbaarheid naar bronpagina's](v3/METHODOLOGIE.md)
+- [V3-tests](tests/v3-model.test.cjs) · [Advies-tests](tests/v3-advisor.test.cjs) · [UI-tests](tests/v3-ui.test.cjs)
+
+**Status:** draft research prototype; tests lokaal geslaagd, werkveldvalidatie en geautoriseerde Vercel Preview-deployment staan nog open. Niet op production publiceren zonder beoordeling.
+
+---
+
+## Archief: eerdere dashboardversies
+
 # AI-GROEIKOMPAS — HAN Martech
 
 Interactief prototype van het GHUB-adviesmodel voor AI-implementatie in MKB-marketingprocessen.
