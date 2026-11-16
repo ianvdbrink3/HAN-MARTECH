@@ -2,7 +2,7 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),vm=require("nod
 const MCODE=fs.readFileSync("v3/model.js","utf8"),ACODE=fs.readFileSync("v3/app.js","utf8"),GCODE=fs.readFileSync("v3/advisor.js","utf8");
 function build(initialStore={}){
  const storage={...initialStore},elems={},events={};
- const element=id=>elems[id]||(elems[id]={innerHTML:"",textContent:"",value:"",dataset:{},options:[],setAttribute(){},addEventListener(k,fn){this["_event_"+k]=fn},click(){}});
+ const element=id=>elems[id]||(elems[id]={innerHTML:"",textContent:"",value:"",dataset:{},options:[],classList:{add(){},remove(){},toggle(){}},setAttribute(){},addEventListener(k,fn){this["_event_"+k]=fn},click(){}});
  const doc={getElementById:element,querySelectorAll(){return []},addEventListener(k,fn){events[k]=fn},createElement(){return {setAttribute(){},click(){}}}};
  const win={scrollY:0,scrollTo(){},print(){}};
  const localStorage={getItem(k){return storage[k]??null},setItem(k,v){storage[k]=v}};
