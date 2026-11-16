@@ -74,7 +74,7 @@ function evaluate(c){const im=implementationCheck(c),p=c.implementation.pilot,e=
 }
 function status(c){const p=processCheck(c),r=riskCheck(c.risk,c.route),i=implementationCheck(c),e=evaluate(c),x=c.company;
  const one=!!(s(x.problem)&&s(x.goal)&&s(x.indicator)&&s(x.commercialUse)&&s(x.owner)&&s(x.reviewer));
- const two=!!(p.chosen&&p.chosen.fit.complete&&p.chosen.priority.complete&&p.chosen.first.pass),three=r.level!=="unknown"&&["go","no-go"].includes(c.risk.decision)&&s(c.risk.decisionBy),four=two&&r.go&&i.complete,five=four&&c.evaluation.decision!=="unknown"&&s(c.evaluation.decisionReason)&&e.proof;
+ const two=!!(p.chosen&&p.chosen.fit.complete&&p.chosen.priority.complete&&p.chosen.first.pass),three=!!(r.level!=="unknown"&&["go","no-go"].includes(c.risk.decision)&&s(c.risk.decisionBy)),four=two&&r.go&&i.complete,five=four&&c.evaluation.decision!=="unknown"&&s(c.evaluation.decisionReason)&&e.proof;
  return {phase:[one,!!two,three,!!four,!!five],process:p,risk:r,implementation:i,evaluation:e}
 }
 function guidance(c){const st=status(c),p=st.process,r=st.risk,i=st.implementation,e=st.evaluation,chosen=p.chosen||p.ranked[0];
