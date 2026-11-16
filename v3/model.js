@@ -27,13 +27,13 @@ const fix=(v,p=1)=>v===null||!Number.isFinite(v)?null:Number(v.toFixed(p));
 const arr=v=>Array.isArray(v)?v:[];
 const uid=()=>Math.random().toString(36).slice(2,10);
 const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function newTask(name=""){return {id:uid(),name,kind:"unknown",contentType:"unknown",nonAI:"",aiNeeded:"unknown",fit:{},priority:{},riskLevel:"unknown",startTests:{},notes:""}}
+function newTask(name=""){return {id:uid(),name,kind:"unknown",contentType:"unknown",nonAI:"",aiNeeded:"unknown",fit:{},fitReviewer2:{},priority:{},riskLevel:"unknown",startTests:{},notes:""}}
 function newTool(name=""){return {id:uid(),name,direction:"embedded",hard:{},ratings:{},tests:[],blind:"unknown",setupCost:"",monthlyCost:"",notes:""}}
 function newCase(name="Bedrijf"){
  return {id:uid(),name,route:"light",phase:0,created:new Date().toISOString(),
  company:{size:"micro",employees:"",strategy:"",marketingGoal:"",knowledge:"",capacity:"",culture:"",currentAI:"",systems:"",environment:"",owner:"",reviewer:"",recurrence:"",measurementCapacity:"",problem:"",goal:"",indicator:"",commercialUse:"",issues:["","",""],surveyCovered:"",surveyInvited:"",evidence:""},
  process:{sipoc:{supplier:"",input:"",steps:"",output:"",customer:""},tasks:[],selectedTaskId:"",pairs:{},notes:""},
- risk:{profile:"unknown",personal:"unknown",direct:"unknown",dataQuality:"",brandContext:"",channel:"",privacy:"",aiAct:"",humanReview:"",usageAgreement:"",owner:"",controls:{},decision:"unknown",decisionBy:"",actions:"",incidentLog:[]},
+ risk:{profile:"unknown",personal:"unknown",direct:"unknown",dataQuality:"",brandContext:"",channel:"",privacy:"",aiAct:"",humanReview:"",usageAgreement:"",owner:"",controls:{},decision:"unknown",decisionBy:"",startedAt:"",decisionAt:"",actions:"",incidentLog:[]},
  implementation:{function:"",direction:"unknown",tools:[],selectedToolId:"",roles:{owner:"",executor:"",reviewer:"",coach:""},training:{practice:"",literacy:"",support:"",feedback:"",acceptance:{}},pilot:{task:"",period:"",success:"",stop:"",baseline:[],cycles:[{name:"PDSA 1",plan:"",do:"",study:"",act:"",runs:[]},{name:"PDSA 2",plan:"",do:"",study:"",act:"",runs:[]}],decisionDate:"",usedCount:"",totalCount:"",handover:""}},
  evaluation:{frequency:"",setupMinutes:"",trainingMinutes:"",laborRate:"",monthlyLicence:"",monthlyMaintenance:"",otherCost:"",financialBenefit:"",reallocated:"",customerMetric:"",customerBaseline:"",customerAfter:"",userFeedback:"",financialBenefitEvidence:"",costEvidence:"",evidenceLevel:"unknown",decision:"unknown",decisionReason:"",nextTaskId:"",incidents:"",limitations:""}
  };
@@ -41,7 +41,13 @@ function newCase(name="Bedrijf"){
 function riskLevel(r){if(r.profile==="yes")return "high";if(r.profile!=="no")return "unknown";if(r.personal==="yes"||r.direct==="yes")return "medium";if(r.personal!=="no"||r.direct!=="no")return "unknown";return "low"}
 function requiredControls(level){if(level==="unknown")return [];return CONTROLS.low.concat(level==="medium"||level==="high"?CONTROLS.medium:[],level==="high"?CONTROLS.high:[])}
 function riskCheck(r,route){const level=riskLevel(r),controls=requiredControls(level).map(x=>({key:x[0],label:x[1],ok:r.controls?.[x[0]]?.status==="done"&&s(r.controls[x[0]].evidence).length>=8}));const blocked=Object.values(r.controls||{}).some(x=>x.status==="blocked"),incomplete=controls.filter(x=>!x.ok),routeConflict=route==="light"&&level!=="low";const ready=level!=="unknown"&&!blocked&&!routeConflict&&!incomplete.length&&!!s(r.owner)&&!!s(r.usageAgreement);return {level,controls,incomplete,blocked,routeConflict,ready,go:ready&&r.decision==="go"}}
-function fitCheck(t){const rows=FIT.map(x=>({key:x[0],label:x[1],score:sc(t.fit?.[x[0]])})),complete=rows.every(x=>x.score!==null),fails=rows.filter(x=>x.score!==null&&x.score<3);return {rows,complete,fails,pass:complete&&!fails.length,average:complete?fix(avg(rows.map(x=>x.score)),2):null}}
+function fitCheck(t){
+ const rows=FIT.map(x=>({key:x[0],label:x[1],score:sc(t.fit?.[x[0]]),second:sc(t.fitReviewer2?.[x[0]])}));
+ const complete=rows.every(x=>x.score!==null),fails=rows.filter(x=>x.score!==null&&x.score<3);
+ const paired=rows.filter(x=>x.score!==null&&x.second!==null);
+ const agreement=paired.length===FIT.length?fix(paired.filter(x=>Math.abs(x.score-x.second)<=1).length/paired.length*100,1):null;
+ return {rows,complete,fails,pass:complete&&!fails.length,agreement,agreementOK:agreement!==null&&agreement>=80,average:complete?fix(avg(rows.map(x=>x.score)),2):null}
+}
 function ahp(pairs){const z=6,m=Array.from({length:z},(_,i)=>Array.from({length:z},(_,j)=>i===j?1:0));for(let i=0;i<z;i++)for(let j=i+1;j<z;j++){let v=n((pairs||{})[i+"-"+j]);if(v===null||v<1/9-1e-8||v>9+1e-8)return {complete:false,cr:null,weights:null};v=Math.min(9,Math.max(1/9,v));m[i][j]=v;m[j][i]=1/v}
  let w=Array(z).fill(1/z);for(let i=0;i<120;i++){let u=m.map(row=>row.reduce((total,v,j)=>total+v*w[j],0));let sum=u.reduce((a,b)=>a+b,0);u=u.map(x=>x/sum);if(u.every((v,j)=>Math.abs(v-w[j])<1e-11)){w=u;break}w=u}
  const lambda=avg(m.map((row,i)=>row.reduce((v,x,j)=>v+x*w[j],0)/w[i])),cr=Math.max(0,(lambda-z)/(z-1)/1.24);return {complete:true,cr:fix(cr,3),weights:w.map(x=>x*100),consistent:cr<=.1}
@@ -83,7 +89,7 @@ function evaluate(c){const im=implementationCheck(c),p=c.implementation.pilot,e=
  const qb=first.length&&first.every(x=>x.quality.complete)?avg(first.map(x=>x.quality.mean)):null,qa=last.length&&last.every(x=>x.quality.complete)?avg(last.map(x=>x.quality.mean)):null,qualityOK=qb!==null&&qa!==null&&qa>=qb;
  const monthly=["monthlyLicence","monthlyMaintenance","otherCost"].map(k=>n(e[k]));const rate=n(e.laborRate),selected=c.implementation.tools.find(t=>t.id===c.implementation.selectedToolId),setupEuro=selected?n(selected.setupCost):0;const cost=monthly.every(x=>x!==null)&&setup!==null&&training!==null&&rate!==null&&setupEuro!==null?fix(monthly.reduce((a,b)=>a+b,0)+(setup+training)/60*rate+setupEuro,2):null,benefit=n(e.financialBenefit),roi=cost!==null&&cost>0&&benefit!==null&&s(e.costEvidence).length>=8&&s(e.financialBenefitEvidence).length>=8?fix((benefit-cost)/cost*100,1):null;
  const incidents=arr(c.risk.incidentLog).some(x=>x.status!=="closed"),conflict=e.decision==="continue"&&(net===null||net<=0||!qualityOK||incidents),next=c.process.tasks.find(x=>x.id===e.nextTaskId)||null;
- return {before:fix(before,2),after:fix(after,2),per:fix(per,2),net:fix(net,2),payback,qb:fix(qb,2),qa:fix(qa,2),qualityOK,cost,roi,incidents,conflict,next,evidence:e.evidenceLevel,proof:e.evidenceLevel!=="unknown",canContinue:e.decision==="continue"&&!conflict&&e.evidenceLevel!=="unknown"&&!!s(e.reallocated)};
+ return {before:fix(before,2),after:fix(after,2),per:fix(per,2),net:fix(net,2),payback,qb:fix(qb,2),qa:fix(qa,2),qualityOK,cost,roi,incidents,conflict,next,evidence:e.evidenceLevel,proof:e.evidenceLevel!=="unknown",canContinue:e.decision==="continue"&&!conflict&&n(e.evidenceLevel)>=2&&!!s(e.reallocated)};
 }
 function status(c){const p=processCheck(c),r=riskCheck(c.risk,c.route),i=implementationCheck(c),e=evaluate(c),x=c.company;
  const one=!!(s(x.problem)&&s(x.goal)&&s(x.indicator)&&s(x.commercialUse)&&s(x.owner)&&s(x.reviewer));
