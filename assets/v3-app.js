@@ -392,6 +392,20 @@ function stageKpis(result){
  ["5","Meten & groeien",fmt(k.phase5.timeGain," min"),fmt(k.phase5.netHours," netto uur"),"Bewijsniveau "+k.phase5.evidence]
  ];
 }
+function nextActions(r){
+ const actions=[];
+ const add=(phase,title,why)=>actions.push({phase,title,why});
+ if(!r.gates[0])add(1,"Maak het bedrijfsprobleem meetbaar","Leg TOE-context, minimaal drie knelpunten, eigenaar en commercieel doel vast.");
+ if(!r.chosen||!r.gates[1])add(2,"Onderbouw de eerste marketingtaak","Doorloop SIPOC, de zeven geschiktheidscriteria, prioriteit en de eerste-toepassingstoets.");
+ if(!r.risk.go)add(3,"Maak de risicocontrole af","Bepaal laag/middel/hoog, verzamel controleerbaar bewijs en laat de eigenaar go/no-go vastleggen.");
+ if(!r.tools.validChoice)add(4,"Test twee alternatieven op identieke opdrachten","Doe minstens drie blinde, vergelijkbare selectietests en controleer kwaliteit én volledige tijd.");
+ if(r.metrics.baselineCount<5)add(4,"Leg vijf nulmetingen vast","Meet voorbereiding, uitvoering, controle en correctie van de huidige werkwijze.");
+ if(r.metrics.pdsacycles<2)add(4,"Voltooi twee verbetercycli","Documenteer wat je leert en hoe de werkwijze per ronde verandert.");
+ if(r.metrics.afterCount===0)add(5,"Meet de laatste proefronde","De uitkomst komt uit de laatste PDSA-cyclus, niet uit een verwachting.");
+ if(r.conflict||r.metrics.gain!==null&&r.metrics.gain<=0||r.metrics.qualityAfter!==null&&!r.metrics.qualityOK)add(5,"Herzie het voorgestelde vervolg","De resultaten of kwaliteit ondersteunen een onvoorwaardelijk 'doorgaan' niet.");
+ if(actions.length===0)add(2,"Begin de volgende groeironde","Kies na het besluit een andere taak uit de gevalideerde rangorde.");
+ return actions.slice(0,3);
+}
 function bannerStatus(r){
  const list=r.alerts.length?'<div class="alerts"><h3>Directe aandacht</h3>'+r.alerts.map(x=>'<p>⚠ '+esc(x)+'</p>').join("")+'</div>':"";
  return '<div class="verdict '+(r.conflict?"critical":r.risk.go?"go":"pending")+'"><div><small>BESTE VERDEDIGBARE CONCLUSIE OP DIT MOMENT</small><h2>'+esc(r.conflict?"Niet doorgaan zonder herbeoordeling":r.goStatus)+'</h2><p>'+
@@ -418,9 +432,10 @@ function report(result){
  const missing='<ul class="report-bullets">'+r.issues.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>';
  const alerts='<ul class="report-bullets">'+r.alerts.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>';
  const next= r.decision==="doorgaan"&&r.nextTask?"Start de volgende groeironde met "+r.nextTask.name+".":"Evalueer eerst de huidige toepassing en open acties voordat het bedrijf verder groeit.";
+ const plan='<div class="action-plan">'+nextActions(r).map((a,i)=>'<div class="action-step"><span>ACTIE '+(i+1)+' · FASE '+a.phase+'</span><b>'+esc(a.title)+'</b><p>'+esc(a.why)+'</p></div>').join("")+'</div>';
  return '<div class="report-toolbar"><div><span class="eyebrow">CONCEPT ADVIESRAPPORT · ONDERZOEKSMODEL</span><h1>Een beslissing die je kunt verantwoorden.</h1><p>Geen marketingtekst, maar een herleidbaar onderzoeksdossier met ontbrekend bewijs en voorlopige aannames.</p></div><div class="report-controls"><button class="button outline" data-action="print">Afdrukken / PDF</button><button class="button primary" data-action="download-report">Download HTML</button></div></div>'+
  '<article class="report-sheet" id="reportPrint"><div class="report-cover"><div class="report-mark">✦ AI-GROEIKOMPAS</div><h1>AI-implementatieadvies</h1><p>'+esc(p.name||c.title)+'</p><div class="report-under">G-cluster · Onderzoeksversie · 30 november 2026</div></div>'+
- '<div class="report-section"><h2>Managementsamenvatting</h2>'+profile+bannerStatus(r)+'<p><b>Marketingdoel:</b> '+esc(p.goal||"Nog niet vastgelegd")+'. <b>Commerciële koppeling:</b> '+esc(p.commercialUse||"Ontbreekt")+'.</p>'+
+ '<div class="report-section"><h2>Managementsamenvatting</h2>'+profile+bannerStatus(r)+'<h3 class="action-plan-title">Drie concrete vervolgstappen</h3>'+plan+'<p><b>Marketingdoel:</b> '+esc(p.goal||"Nog niet vastgelegd")+'. <b>Commerciële koppeling:</b> '+esc(p.commercialUse||"Ontbreekt")+'.</p>'+
  '<p><b>Eerste taak:</b> '+esc(selected?.name||"Nog niet aangetoond")+'. <b>Beslisregel:</b> geen scores onder 3 en geen verboden/ongecontroleerde risico’s.</p></div>'+
  '<div class="report-section"><h2>Fase 1 — Bedrijfsanalyse</h2><p>'+esc((p.problems||[]).map(x=>x.description).join("; ")||"Knelpunten nog te beschrijven")+'</p><p><b>TOE-context:</b> '+esc(p.strategy||"strategie onbekend")+' · '+esc(p.systems||"technologie onbekend")+' · '+esc(p.environment||"omgeving onbekend")+'</p></div>'+
  '<div class="report-section"><h2>Fase 2 — Procesprioritering</h2><div class="table-scroller">'+taskTable+'</div><p>Correcte schaal: score 1 → 0; score 3 → 50; score 5 → 100. '+esc(r.w.mode)+'.</p>'+
@@ -517,7 +532,7 @@ function render(keepScroll=false){
  '<div class="workspace"><header class="topbar"><button class="hamburger" data-action="toggle-menu" aria-label="Open navigatiemenu">☰</button>'+
  '<div class="topbar-path"><b>HAN · Martech & Innovatie</b><small>Van marketingvraagstuk naar meetbare waarde</small></div>'+
  '<div class="topbar-actions"><button class="top-minor" data-action="export">Export</button><button class="top-minor" data-action="import">Import</button></div></header>'+
- '<div class="casebar"><div class="casebar-name"><div class="case-avatar">⌁</div><div><small>ACTIEF BEDRIJFSDOSSIER</small><select id="case-picker" aria-label="Kies bedrijfsdossier">'+vault.cases.map(x=>'<option value="'+x.id+'" '+(x.id===vault.active?"selected":"")+'>'+esc(x.profile.name||x.title)+'</option>').join("")+'</select></div></div>'+
+ '<div class="casebar"><div class="casebar-name"><div class="case-avatar">⌁</div><div><small>ACTIEF BEDRIJFSDOSSIER</small><select id="case-picker" aria-label="Kies bedrijfsdossier">'+vault.cases.map(x=>'<option value="'+esc(x.id)+'" '+(x.id===vault.active?"selected":"")+'>'+esc(x.profile.name||x.title)+'</option>').join("")+'</select></div></div>'+
  '<div class="casebar-buttons"><button class="case-button" data-action="add-case">+ Bedrijf</button><button class="case-button secondary" data-action="demo">Demo</button><button class="case-button ghost" data-action="delete-case">Verwijder</button></div></div>'+
  '<main class="main" id="content">'+content+'</main>'+
  '<footer class="app-footer">AI-GROEIKOMPAS · Praktisch onderzoek, geen onbewezen automatiseringsbelofte. Gegevens blijven lokaal op dit apparaat.</footer></div></div>'+
@@ -592,7 +607,8 @@ document.addEventListener("change",function(e){
  if(el.dataset.check!==undefined){set(el.dataset.check,el.checked);render(true);return}
  if(el.dataset.bind!==undefined){set(el.dataset.bind,el.value);render(true);return}
  if(el.id==="importer"&&el.files[0]){
-  const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(data.format!=="AI-GROEIKOMPAS-V3"||!Array.isArray(data.cases)||!data.cases.length)throw Error("Geen geldig v3-dossierbestand");if(!confirm("Alle huidige dossiers vervangen door dit bestand? Exporteer eerst een back-up als je ze wilt bewaren."))return;vault={cases:data.cases,active:data.active,version:3};if(!vault.cases.some(x=>x.id===vault.active))vault.active=vault.cases[0].id;page="home";save();render();notify("Dossiers geïmporteerd.");}catch(err){alert("Import mislukt: "+err.message)}};reader.readAsText(el.files[0]);
+  const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(data.format!=="AI-GROEIKOMPAS-V3"||!Array.isArray(data.cases)||!data.cases.length)throw Error("Geen geldig v3-dossierbestand");
+  if(data.cases.length>100||!data.cases.every(c=>c&&/^[a-zA-Z0-9_-]{3,40}$/.test(c.id)&&c.profile&&typeof c.profile==="object"&&Array.isArray(c.tasks)&&c.tasks.every(t=>/^[a-zA-Z0-9_-]{3,40}$/.test(t.id))&&Array.isArray(c.selection?.options)&&c.selection.options.every(o=>/^[a-zA-Z0-9_-]{3,40}$/.test(o.id))))throw Error("Dossierbestand bevat ongeldige of onveilige IDs");if(!confirm("Alle huidige dossiers vervangen door dit bestand? Exporteer eerst een back-up als je ze wilt bewaren."))return;vault={cases:data.cases,active:data.active,version:3};if(!vault.cases.some(x=>x.id===vault.active))vault.active=vault.cases[0].id;page="home";save();render();notify("Dossiers geïmporteerd.");}catch(err){alert("Import mislukt: "+err.message)}};reader.readAsText(el.files[0]);
  }
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&mobile){mobile=false;render(true)}});

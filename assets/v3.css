@@ -36,3 +36,11 @@ p{line-height:1.65}a{color:inherit}.shell{display:grid;grid-template-columns:264
 @media print{body{background:white}.sidebar,.topbar,.casebar,.app-footer,.step-actions,.report-toolbar,.button,.toast,.scrim{display:none!important}.shell,.workspace{display:block}.main{padding:0;max-width:none}.report-sheet{padding:0;border:0;box-shadow:none;max-width:none}.report-section{break-inside:avoid}@page{size:A4;margin:16mm}}
 .standalone-report{background:white}.standalone-report .report-sheet{margin:25px auto}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+
+.action-plan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0 23px}
+.action-plan-title{font-size:13px;letter-spacing:-.01em;color:#2b6258;margin:18px 0 10px}
+.action-step{background:#eff8f3;border:1px solid #d8e9e0;border-radius:10px;padding:15px;min-width:0}
+.action-step span{display:block;color:#3c977e;font-size:9px;font-weight:900;letter-spacing:.7px;margin-bottom:9px}
+.action-step b{display:block;color:#254b49;font-size:12px;line-height:1.4}
+.action-step p{font-size:11px;color:#718f85;line-height:1.55;margin-top:7px}
+@media(max-width:700px){.action-plan{grid-template-columns:1fr}}

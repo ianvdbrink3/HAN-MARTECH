@@ -1,99 +1,52 @@
-# AI-GROEIKOMPAS — HAN Martech
+# AI-GROEIKOMPAS — onderzoeksstudio
 
-Interactief prototype van het GHUB-adviesmodel voor AI-implementatie in MKB-marketingprocessen.
+**Van marketingvraagstuk naar een verantwoorde, geteste en gemeten AI-toepassing voor het MKB.**
 
-## Inhoud
-- Overzicht met voortgang van de vijf fasen
-- Bedrijfsanalyse en probleemdefinitie
-- Procesgeschiktheid en gewogen prioriteitenmatrix
-- Risico- en randvoorwaardencheck
-- Selectiematrix voor AI-oplossingen en pilotplan
-- KPI-nulmeting, effectmeting en vervolgkeuze
-- **Aandachtspunten**: 17 verbeterpunten, ieder met checklist en eigen notities
+Deze repository bevat de digitale uitvoering van het groepsmodel van **GHUB-M7 (HAN, Commerciële Economie, Martech & Innovatie)**. De leidraad is **AI - Groeikompas-2.docx**, de conceptversie met datum **30 november 2026**.
+
+## De vijf fasen
+
+1. **Bedrijfsanalyse en marketingvraagstuk** — TOE-raamwerk, AI-gereedheid, lichte/volledige route, drie problemen, meetbaar doel en commerciële koppeling.
+2. **Procesanalyse en prioritering** — SIPOC, AI-nutvraag, zeven geschiktheidscriteria met harde grens 3, zes criteria en correcte prioriteitsscore 0–100, AHP, eerste-toepassingstoets.
+3. **Randvoorwaarden en risicobeoordeling** — klassering laag/middel/hoog, proportionele maatregelen, documentatie, gebruiksafspraak, eigenaar en expliciet go/no-go-besluit.
+4. **AI-selectie en implementatie** — Task-Technology Fit, de eenvoudigste oplossingsrichting, acht selectiecriteria, vergelijkbare blinde opdrachten, medewerkeracceptatie, vijf nulmetingen en twee PDSA-cycli.
+5. **Meten, evalueren en groeien** — kwaliteit, volledige taakduur, netto tijd, kosten en ROI indien bewezen, bewijsniveau 1–4, besluit en volgende taak.
+
+**Deze vijf modelstappen zijn bewust behouden.** De extra weergaven Adviesrapport, Bedrijven vergelijken en Methodiek zijn hulpmiddelen, geen zesde of zevende fase.
 
 ## Starten
-Open `index.html` rechtstreeks in een browser. Er zijn geen dependencies, buildstappen of API-sleutels nodig.
 
-## Vercel
-Importeer deze repository bij Vercel als statische website (Framework Preset: **Other**, geen build command, root directory `/`). Indien een Vercel-project al aan deze repository is gekoppeld, kan een push naar `main` automatisch worden gedeployed volgens die projectinstellingen.
+De app is statisch en heeft geen externe API-sleutel nodig. Open index.html vanuit een lokale webserver:
 
-## Belangrijke beperkingen
-- De scorewegingen en beslisregels zijn **voorlopige ontwerpkeuzes**, nog niet gevalideerd.
-- De risicochecklist is geen juridisch advies of toestemming om persoonsgegevens te verwerken.
-- De voortgang wordt lokaal per browser opgeslagen. JSON-export/import is beschikbaar; team-synchronisatie en autorisatie zijn nog niet gebouwd.
-- Vul geen privacygevoelige of vertrouwelijke bedrijfsinformatie in bij een onbeheerde of gedeelde computer.
-- Na het selecteren van een concrete AI-tool is aanvullende leveranciersspecifieke risicobeoordeling nodig.
+    python3 -m http.server 8000
 
-## Onderzoek
-Gebaseerd op het aangeleverde `Vooronderzoek GHUB M7` en het concept `AI-Groeikompas`. Voor definitieve oplevering moeten de hulpmiddelen, prioriteitswegingen en MKB-toepasbaarheid worden getest en onderbouwd.
+Open vervolgens localhost:8000 in je browser.
 
-## Mobile UX update (november 2026)
-- Sidebar wordt op smalle schermen een uitschuifbaar menu met overlay en Escape-sluiting.
-- Fase 2 en fase 4 gebruiken mobiele, aantikbare scores van 1–5 in plaats van horizontale scoretabellen.
-- Taken en AI-oplossingen kunnen één voor één worden beoordeeld, met uitleg bij ieder criterium en een teller voor ontbrekende beoordelingen.
-- Er wordt geen totaalscore getoond zolang niet alle betreffende criteria zijn ingevuld.
-- De 1–5-betekenissen en de wegingen zijn nog conceptueel. Toets deze met MKB-gebruikers en deskundigen voordat de score als beoordelingsinstrument wordt gebruikt.
-- HTML/JavaScript-rendertests en gesimuleerde interactietests zijn uitgevoerd; een visuele browsertest op echte telefoons staat nog open.
+Klik op **+ Bedrijf** voor een zelfstandig dossier of gebruik **Demo** voor een fictieve casus. Dossiers blijven lokaal in deze browser opgeslagen. Gebruik **Export** en **Import** voor back-ups en uitwisseling. Het adviesrapport kan als HTML worden gedownload en via de browser als PDF worden afgedrukt.
 
-## Bedrijfsdossiers (november 2026)
-- Gebruik **+ Nieuw bedrijf** om voor ieder MKB-bedrijf een **apart, leeg invulformulier** te starten.
-- Kies een bedrijfsdossier in de selector om tussen de vijf bedrijven te wisselen. Antwoorden, marketingtaken, AI-scores, checklists en fasevoortgang zijn per bedrijf gescheiden.
-- Bestaande gegevens uit de oudere dashboardversie worden bij de eerste opening automatisch behouden in een apart dossier.
-- De **exportknop** maakt nu één JSON-back-up met alle bedrijfsdossiers. Import vervangt alle dossiers alleen na een extra bevestiging; het oude exportformaat kan als nieuw dossier worden toegevoegd.
-- **Beperking:** dossiers zijn voorlopig opgeslagen in de browser van dit apparaat; andere groepsleden zien ze niet automatisch. Gebruik export/import voor uitwisseling, maar deel nooit vertrouwelijke of persoonsgegevens in een onveilig bestand. Voor gelijktijdig samenwerken zijn authenticatie en gedeelde opslag nodig.
-- Het verwijderen van een dossier vraagt bevestiging. Maak vooraf een export als back-up.
+## Beperkingen
 
-## Adviesrapport – previewfunctionaliteit
-De branch `preview/adviesrapport-v1` voegt **Mijn AI-advies** toe. De generator:
-- maakt per bedrijfsdossier een controleerbaar voorlopig advies op basis van ingevulde problemen, doelen, proces- en toolscores, kwalitatieve toelichtingen en risico-checklists;
-- onderscheidt een voorlopig advies van een concept-eindadvies ná KPI-effectmeting;
-- toont open onderzoeksvragen en waarschuwt dat scorewegingen, juridische conformiteit en causale effecten niet zijn gevalideerd;
-- ondersteunt afdrukken/opslaan als PDF via de browser, HTML-download, samenvatting kopiëren en vrijwillig een reviewprompt kopiëren voor ChatGPT;
-- stuurt **geen** bedrijfsgegevens automatisch naar ChatGPT. Controleer zelf welke informatie je daar plakt.
+- Dit is een **onderzoeksprototype**, niet een wetenschappelijk gevalideerd beslisinstrument.
+- De startwegingen, grenswaarden, scoreankers en tijdsindicaties komen uit keuzes van de projectgroep en moeten worden getoetst bij MKB-bedrijven en deskundigen.
+- De ingebrachte softwarevoorbeelden zijn **te onderzoeken categorieën**, geen automatisch geverifieerde leverancierstips.
+- Juridische controles vormen geen automatische juridische vrijgave. Werk met een bevoegde beoordelaar en volg de actuele regels.
+- De app berekent geen ROI zonder verifieerbare financiële baten en kosten.
+- Gegevens staan in browser-localStorage, **niet in een beveiligde gezamenlijke database**. Gebruik geen gevoelige gegevens of persoonsgegevens bij onzekere opslag.
+- Er worden geen externe AI-diensten, analytics of externe lettertypen ingeladen.
 
-### Gebruik tijdens het afstuderen
-Maak eerst een apart dossier per MKB-bedrijf. Leg probleem en verbeterdoel vast, beoordeel taken en AI-opties met argumenten, voer beide risicocontroles uit en bepaal een meetbare pilot. Het rapport wordt telkens opnieuw samengesteld vanuit het actieve dossier. Het is geen autonoom gegenereerde of juridisch gegarandeerde aanbeveling; laat het door bedrijfscoach/onderzoeker beoordelen.
+## Documentatie
 
-### Uitvoeren van tests
-`node tests/report-engine.test.cjs`
+**MODEL_TOEPASSING.md** bevat de koppeling van elk hulpmiddel met de pagina's uit het brondocument, de formules en de meet- en veiligheidsvoorwaarden.
 
-### Deploymentveiligheid
-De featurebranch is uitsluitend voor Vercel **Preview**. Gebruik nooit `vercel --prod` of promoot de deployment zonder nieuwe expliciete toestemming. Bestaande production wordt niet bijgewerkt door deze branch-deployment.
+## Testen
 
-## UX- en beslislogica-herontwerp (preview, november 2026)
+    node --check assets/v3-engine.js
+    node --check assets/v3-app.js
+    node tests/v3-engine.test.cjs
+    node tests/v3-browser.test.cjs
 
-**De vijf modelstappen zijn behouden:** Bedrijfsanalyse, Procesprioritering, Randvoorwaarden & risico's, AI-selectie & pilot en Meten & evalueren.
+De browsertest gebruikt jsdom voor DOM- en interactiesimulatie; hiervoor moet jsdom beschikbaar zijn. Een zelfstandige visuele test in Chrome/Safari op echte telefoon en laptop blijft nodig.
 
-De gebruikersroute is korter gemaakt: ondernemers beginnen met bedrijfsfeiten en een concrete taak; de dertien scores per taak en acht scores per tool zijn optionele expertverdieping. De toepassing vraagt eerst naar alternatieven zonder AI.
+## Deployment
 
-- Onbekende risico's zijn niet gelijk aan goedgekeurde risico's. Elke beoordeling krijgt een status en verifieerbare toelichting, inclusief blokkades en 'niet van toepassing'.
-- Een zeer lage procesbeoordeling, een sterke KPI-verslechtering, onvoldoende outputkwaliteit of een strijdig positief vervolgadvies leidt niet langer automatisch tot een positief advies.
-- Fase 5 vraagt nu naar de gewenste KPI-richting, het aantal metingen en een expliciete kwaliteitscontrole. Het dashboard registreert onzekerheid en kan 'geen AI' of 'nader onderzoeken' adviseren.
-- 'Mijn AI-advies' toont de zakelijke beslisrichting vóór de onderzoeksdetails. 'Bedrijven vergelijken' is een **onderzoeksweergave**, geen zesde fase en geen statistische generalisatie.
-- De eerste versie van de verbeterde beslislogica is regelgestuurd. Beoordelingsankers, criteria, juridische checks en commerciële effecten vereisen nog werkveldvalidatie.
-- Externe AI-verwerking is optioneel en gebeurt niet automatisch; de gebruiker moet eerst vertrouwelijkheid controleren.
-
-Testen:
-`node tests/report-engine.test.cjs`
-Bekijk de preview in een echte browser en toets scenario's met lage scores, negatieve KPI's, blokkades en een eenvoudiger alternatief zonder AI.
-
-## Adaptieve fase-overgangen (Preview)
-
-Het AI-GROEIKOMPAS behoudt **dezelfde vijf stappen**. Bij het openen van een volgende fase leest de nieuwe `assets/guidance-engine.js` de antwoorden van het actieve bedrijfsdossier en genereert een *voorlopige* vervolgsuggestie.
-
-- **Fase 1 → 2:** voorstel voor een concrete marketingtaak en een alternatief zonder AI. De gebruiker neemt een suggestie expliciet over.
-- **Fase 2 → 3:** risicoaandachtspunten en gerichte onderzoeksvragen voor de geselecteerde taak.
-- **Fase 3 → 4:** passend type AI-oplossing en te onderzoeken toolvoorbeelden uit de omschreven taak en bestaande software. Als HubSpot of Microsoft-software wordt genoemd, zijn de aanbevelingen daarop afgestemd. Een kandidaat toevoegen is **geen** onderbouwde selectie of vrijgave.
-- **Fase 4 → 5:** voorlopige KPI-suggestie uit het oorspronkelijke doel en de pilottaak. Het systeem vult nooit echte meetresultaten in.
-- **Eindrapport:** gebruikt de bestaande evidence-gated beslisregels. Niets wat nog onderzocht moet worden wordt als bewezen gepresenteerd.
-
-De suggesties tonen op welke ingevoerde antwoorden ze gebaseerd zijn. De eenvoudige tekstherkenning is **geen autonome AI-assistent en geen gevalideerde toolrecommender**. Vergelijk actuele producten, licentie-eisen, gegevensverwerking, implementatiekosten en testresultaten voordat je een advies definitief maakt.
-
-### Regressietests
-```bash
-node tests/report-engine.test.cjs
-node tests/guidance-engine.test.cjs
-node tests/adaptive-flow.test.cjs
-```
-
-De wijzigingen horen uitsluitend bij de branch `preview/adviesrapport-v1`; niet rechtstreeks naar `main` of Vercel Production publiceren.
+Deze ingrijpende herbouw staat eerst op **preview/modelgetrouw-v3**, los van de huidige productieversie. Publiceer pas naar main/production na review en expliciete keuze.

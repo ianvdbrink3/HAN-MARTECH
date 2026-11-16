@@ -237,7 +237,7 @@ function evaluate(raw){
  const goStatus=gate3?(gate4?"Pilot afgerond en geselecteerd":"Go voor gecontroleerde pilotvoorbereiding"):"Geen vrijgave voor echte AI-pilot";
  return {d,w,tasks,ranked:sorted,chosen,risk,tools:t,metrics:m,acceptanceAvg,issues,alerts,kpis,
   gates:[gate1,gate2,gate3,gate4,!!decision&&m.afterCount>0&&m.net!==null&&m.evidenceLevel>=2],decision,shouldContinue,conflict,goStatus,
-  nextTask:sorted.find(x=>x.id!==chosen?.id)||null,
+  nextTask:sorted.filter(x=>x.id!==chosen?.id).sort((a,b)=>({uitvoerend:0,analytisch:1,relationeel:2}[a.category]??3)-({uitvoerend:0,analytisch:1,relationeel:2}[b.category]??3)||b.priorityScore-a.priorityScore)[0]||null,
   disclaimer:"Startwegingen, normgrenzen, scoreankers en richttijden zijn voorlopige ontwerpkeuzes van de projectgroep. Juridische controles zijn geen rechtszekerheid; veldvalidatie en menselijke beoordeling blijven noodzakelijk."};
 }
 root.GroeikompasV3={FIT,PRIOR,TOOL,QUALITY,RISK,normalize,ahpWeights,weightsFor,taskScore,riskLevel,riskGate,toolScore,toolTest,quality,totalMinutes,measures,evaluate,esc,round};
