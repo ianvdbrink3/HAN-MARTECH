@@ -40,12 +40,10 @@ Klik op **+ Bedrijf** voor een zelfstandig dossier of gebruik **Demo** voor een 
 
 ## Testen
 
-    node --check assets/v3-engine.js
-    node --check assets/v3-app.js
-    node tests/v3-engine.test.cjs
-    node tests/v3-browser.test.cjs
+    npm ci
+    npm test
 
-De browsertest gebruikt jsdom voor DOM- en interactiesimulatie; hiervoor moet jsdom beschikbaar zijn. Een zelfstandige visuele test in Chrome/Safari op echte telefoon en laptop blijft nodig.
+De test-suite gebruikt jsdom voor DOM- en interactiesimulatie; jsdom wordt als ontwikkelafhankelijkheid geïnstalleerd. Voor het openen van de app zelf is geen npm-installatie nodig. Een zelfstandige visuele test in Chrome/Safari op echte telefoon en laptop blijft nodig.
 
 ## Deployment
 

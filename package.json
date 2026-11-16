@@ -1,0 +1,13 @@
+{
+  "name": "ai-groeikompas-modelgetrouw",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Five-phase MKB AI implementation research prototype",
+  "scripts": {
+    "test": "node tests/v3-engine.test.cjs && node tests/v3-browser.test.cjs",
+    "serve": "python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  }
+}

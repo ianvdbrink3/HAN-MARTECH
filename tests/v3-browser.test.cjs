@@ -1,4 +1,4 @@
-const {JSDOM}=require("/tmp/ghub-v3-qa/node_modules/jsdom");
+const {JSDOM}=require("jsdom");
 const fs=require("fs"),assert=require("node:assert/strict");
 const root=__dirname+"/..";
 const html=fs.readFileSync(root+"/index.html","utf8");
