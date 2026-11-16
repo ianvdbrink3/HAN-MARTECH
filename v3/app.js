@@ -239,7 +239,7 @@ function phase5(){title("Fase 5 · Meten, evalueren & groeien","Netto-opbrengst,
  fields([["evaluation.frequency","Aantal herhalingen in evaluatieperiode","Voor netto tijdwinstberekening.","number"],
  ["evaluation.setupMinutes","Inrichttijd in minuten","Eenmalige inrichting.","number"],
  ["evaluation.trainingMinutes","Leertijd in minuten","Alle training meenemen.","number"],
- ["evaluation.reallocated","Waar wordt de vrijgekomen tijd besteed?","Capaciteit is niet automatisch financiële besparing.","textarea",
+ ["evaluation.reallocated","Waar wordt de vrijgekomen tijd besteed?","Capaciteit is niet automatisch financiële besparing.","textarea"],
  ["evaluation.reallocatedShare","Welk percentage van de vrijgekomen tijd gaat naar de benoemde commerciële activiteit?","Fase 5 noemt circa 50% als voorlopige streefwaarde.","number"]])+
  note("Netto tijdwinst = (gemiddelde nulmeting − gemiddelde laatste ronde) × uitvoeringen − inrichttijd − leertijd. ROI verschijnt alleen wanneer kosten én gerealiseerde financiële baten met bronnen zijn onderbouwd.","blue"))+
  card("2. Kwaliteit, kosten en klantwaarde",'<div class="metricbar"><div class="metric"><strong>'+(ev.qb??"—")+'</strong><small>Blinde kwaliteit vóór</small></div><div class="metric"><strong>'+(ev.qa??"—")+'</strong><small>Blinde kwaliteit ná</small></div><div class="metric"><strong>'+(ev.cost??"—")+'</strong><small>Terugkerende kosten €</small></div><div class="metric"><strong>'+(ev.roi===null?"—":ev.roi+"%")+'</strong><small>Voorwaardelijke ROI</small></div></div>'+
