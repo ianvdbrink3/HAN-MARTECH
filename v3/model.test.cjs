@@ -87,6 +87,7 @@ assert.equal(M.evaluate(lowEvidence).canContinue,false);
 const unsafeReport=fs.readFileSync("v3/report.js","utf8");
 const sandbox2={window:{GK3:M},console};
 vm.runInNewContext(unsafeReport,sandbox2);
+noAi.risk.profile="no";noAi.risk.personal="no";noAi.risk.direct="no";
 const report=sandbox2.window.GK3Report.build(noAi);
 assert.match(report.verdict.title,/zonder AI/i);
 assert.doesNotMatch(sandbox2.window.GK3Report.standalone({...noAi,name:"<script>"}),/<script><\/script>/);
