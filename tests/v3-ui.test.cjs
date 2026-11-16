@@ -14,7 +14,7 @@ function input(w,d,path,value){const node=d.querySelector('[data-field="'+path+'
 function click(d,selector){const button=d.querySelector(selector);assert.ok(button,"Missing "+selector);button.click()}
 const {dom,w,d,errors}=makeApp();
 assert.equal(d.querySelectorAll("#navigation button").length,9);
-const expected=["Bedrijfsanalyse","Procesanalyse","Randvoorwaarden","AI-selectie","Meten, evalueren"];
+const expected=["Bedrijfsanalyse","Procesprioritering","Randvoorwaarden","AI-selectie","Meten, evalueren"];
 for(let i=0;i<5;i++){goto(d,"p"+i);assert.match(d.querySelector("#title").textContent,new RegExp(expected[i]));}
 goto(d,"p0");input(w,d,"company.problem","Rapportages kosten acht uur per week");input(w,d,"company.goal","Halveer tijd zonder fouten");
 assert.match(w.localStorage.getItem("ghub-groeikompas-v3"),/Rapportages kosten acht uur/);
