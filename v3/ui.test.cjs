@@ -43,7 +43,7 @@ x.nav("p3");x.action("add-baseline");
 assert.equal(x.vault().cases[0].implementation.pilot.baseline.length,1);
 x.action("add-cycle-run","0");
 assert.equal(x.vault().cases[0].implementation.pilot.cycles[0].runs.length,1);
-x.nav("report");assert.match(x.elems.view.innerHTML,/Bedrijfsspecifiek advies/);
+x.nav("report");assert.match(x.elems.view.innerHTML,/AI-implementatieadvies/);
 x.action("new-company");assert.equal(x.vault().cases.length,2);
 x.nav("compare");assert.match(x.elems.view.innerHTML,/Bedrijf 1/);
 const oldStore={"han-ai-groeikompas-dossiers-v1":JSON.stringify({cases:[{id:"abc",name:"Oud bedrijf",data:{problem:"Oude analyse",goal:"Oud doel",tasks:["Contentcreatie"],ratings:{"bad":"5"}}}]})};
