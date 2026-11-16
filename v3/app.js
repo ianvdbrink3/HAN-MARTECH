@@ -169,6 +169,7 @@ function toolEditor(t,i){const path="implementation.tools."+i,chk=M.toolCheck(t,
  fields([[path+".monthlyCost","Maandelijkse licentiekosten (€)","Controleer actuele contractkosten.","number"],[path+".setupCost","Eenmalige inrichtkosten (€)","","number"],[path+".notes","Voor- en nadelen","Gebruik bronverwijzingen en testresultaten.","textarea"]])+'</div>';
 }
 function runForm(path,run,title,quality=true){let result=M.runCheck(run);return fold(E(title)+' · '+(result.minutes===null?"Nog geen volledige tijdmeting":result.minutes+" min"),'<div class="form-grid">'+
+ (path.includes(".tests.")?input(path+".taskName","Identieke testopdracht","Gebruik bij iedere tool exact dezelfde naam, bijvoorbeeld Opdracht A."):"")+
  input(path+".date","Datum","Datum van de taakuitvoering.","date")+
  input(path+".usedAI","Oplossing gebruikt?","","select",[["unknown","Onbekend"],["yes","Ja"],["no","Nee"]])+
  input(path+".prepare","Voorbereiding (min)","Gemeten tijd.","number")+
@@ -190,7 +191,7 @@ function phase4(){title("Fase 4 · AI-selectie & implementatie","Task-Technology
  '<div class="itembar"><input id="newTool" placeholder="Naam van AI-oplossing">'+button("Tool toevoegen","add-tool","")+'</div>'+
  (i.tools.length?i.tools.map(toolEditor).join(""):note("Nog geen tools toegevoegd. Onderzoek eerst een bestaande AI-functie of gewone automatisering.","blue"))+
  (st.tools.shortlist.length?note("Shortlist na harde eisen en criteria: "+E(st.tools.shortlist.map(x=>x.tool.name).join(", ")),"blue"):"")+
- (st.tools.winner?note("Selectietest wijst voorlopig naar: <b>"+E(st.tools.winner.tool.name)+"</b>. De bedrijfscoach moet de onderliggende metingen controleren.","blue"):note("Nog geen winnaar: minstens twee alternatieven moeten de blinde selectietest hebben doorstaan.","warn")))+
+ (st.tools.winner?note("Selectietest wijst voorlopig naar: <b>"+E(st.tools.winner.tool.name)+"</b>. De bedrijfscoach moet de onderliggende metingen controleren.","blue"):note("Nog geen winnaar: minstens twee alternatieven moeten dezelfde 3–5 opdrachten blind hebben uitgevoerd en beoordeeld.","warn")))+
  card("3. Medewerkers en verantwoordelijkheden",fields([
  ["implementation.roles.owner","Eigenaar","Neemt het besluit."],
  ["implementation.roles.executor","Uitvoerder","Voert uit en registreert tijd."],
@@ -299,7 +300,7 @@ function command(action,value){
  case "add-tool":{const name=$("newTool")?.value.trim();if(!name)return;active.implementation.tools.push(M.newTool(name));persist();render(true);break}
  case "select-tool":active.implementation.selectedToolId=value;persist();render(true);break;
  case "delete-tool":if(confirm("Tool en onderzoeksresultaten verwijderen?")){active.implementation.tools=active.implementation.tools.filter(x=>x.id!==value);persist();render(true)}break;
- case "add-test":{const t=active.implementation.tools.find(x=>x.id===value);if(t){if(t.tests.length>=5)return alert("Het model gebruikt maximaal vijf selectietaken.");t.tests.push({date:"",usedAI:"yes",prepare:"",prompt:"",check:"",correct:"",quality:{},notes:""});persist();render(true)}break}
+ case "add-test":{const t=active.implementation.tools.find(x=>x.id===value);if(t){if(t.tests.length>=5)return alert("Het model gebruikt maximaal vijf selectietaken.");t.tests.push({taskName:"",date:"",usedAI:"yes",prepare:"",prompt:"",check:"",correct:"",quality:{},notes:""});persist();render(true)}break}
  case "add-baseline":active.implementation.pilot.baseline.push({date:"",usedAI:"no",prepare:"",prompt:"",check:"",correct:"",quality:{}});persist();render(true);break;
  case "add-cycle-run":{const x=active.implementation.pilot.cycles[Number(value)];if(x){x.runs.push({date:"",usedAI:"yes",prepare:"",prompt:"",check:"",correct:"",quality:{}});persist();render(true)}break}
  case "add-incident":active.risk.incidentLog.push({issue:"",status:"open"});persist();render(true);break;
