@@ -66,7 +66,7 @@ const e=M.evaluate(c);assert.equal(e.per,40);assert.equal(e.net,710);assert.equa
 c.implementation.pilot.cycles[1].runs=[run(120,true)];
 assert.equal(M.evaluate(c).conflict,true);
 assert.equal(M.evaluate(c).canContinue,false);
-c.risk.decision="no-go";assert.equal(M.status(c).phase[2],true);
+c.risk.decision="no-go";c.risk.decisionBy="Directeur";assert.equal(M.status(c).phase[2],true);
 const escaped=M.report({...c,name:"<img src=x onerror=alert(1)>"}).html;
 assert.match(escaped,/&lt;img/);assert.doesNotMatch(escaped,/<img src/);
 console.log("PASS source compliance: scores, AHP, task suitability, risk ladder, tool test, PDSA, ROI and decision conflicts.");
