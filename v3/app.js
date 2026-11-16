@@ -207,7 +207,7 @@ function phase4(){title("Fase 4 · AI-selectie & implementatie","Task-Technology
  fold("Nulmeting — minimaal vijf taakuitvoeringen",'<p>Voer dezelfde taak op de oude manier uit. Meet voorbereiding, uitvoeren, controle en correctie. Laat kwaliteit waar mogelijk blind beoordelen.</p>'+
  p.baseline.map((run,j)=>runForm("implementation.pilot.baseline."+j,run,"Nulmeting "+(j+1))).join("")+
  button("Nulmeting toevoegen","add-baseline","secondary xs")+
- (st.baseOK?note("De minimale vijf nulmetingen zijn volledig ingevuld.","blue"):note("Nog geen volledige nulmeting met vijf vergelijkbare uitvoeringen.","warn")))+
+ (st.baseOK?note("De minimale vijf nulmetingen zijn volledig ingevuld.","blue"):note("Nog geen volledige nulmeting met vijf vergelijkbare uitvoeringen.","warn"))))+
  card("5. Twee PDSA-verbetercycli",p.cycles.map((cy,j)=>fold(E(cy.name),fields([
  ["implementation.pilot.cycles."+j+".plan","Plan","Wat willen we wijzigen?","textarea"],
  ["implementation.pilot.cycles."+j+".do","Do","Wat hebben we daadwerkelijk uitgevoerd?","textarea"],
