@@ -35,6 +35,7 @@ function build(c){
  if(e.roi===null)warnings.push("Geen aantoonbare ROI berekend. Dat is correct zolang kosten of gerealiseerde financiële baten onvoldoende onderbouwd zijn.");
  let verdict;
  if(r.blocked||r.routeConflict||t?.riskLevel==="high")verdict={tone:"danger",title:"Nog geen veilige eerste toepassing",subtitle:"Eerst risicoblokkades en routeconflicten oplossen. Geen vrijgave voor een live AI-pilot."};
+ else if(t?.aiNeeded==="no")verdict={tone:"good",title:"Onderzoek eerst een oplossing zonder AI",subtitle:"De nutvraag uit fase 2 wijst naar procesoptimalisatie of gewone automatisering. Test die richting vóór een AI-tool."};
  else if(t&&((t.fit.complete&&!t.fit.pass)||(t.priority.complete&&!t.priority.pass)))verdict={tone:"danger",title:"Deze taak is nog geen geschikte AI-start",subtitle:"De selectiegrenzen uit jullie model zijn niet gehaald. Onderzoek een ander proces of los knelpunten op."};
  else if(e.conflict)verdict={tone:"danger",title:"Bijsturen of stoppen is aangewezen",subtitle:"De gekozen beslissing botst met netto tijdwinst, kwaliteit of incidenten."};
  else if(e.canContinue&&st.phase[4])verdict={tone:"good",title:"Voorwaardelijk doorgaan en groeien",subtitle:"De gemeten resultaten zijn voldoende voor een onderbouwd vervolg, na controle door de eigenaar."};
