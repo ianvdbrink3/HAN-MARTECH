@@ -1,39 +1,48 @@
 <!doctype html>
-<html lang="nl"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#101f32">
-<meta name="description" content="AI-Groeikompas: een onderbouwd vijf-fasen onderzoeksmodel voor verantwoorde AI in MKB-marketing.">
+<meta name="description" content="AI-GROEIKOMPAS — Onderbouwde AI-keuzes voor MKB-marketing: van bedrijfsanalyse naar evaluatie in vijf fasen.">
 <title>AI-GROEIKOMPAS | GHUB-M7</title>
 <link rel="stylesheet" href="v3/style.css">
-</head><body>
-<div class="scrim" id="scrim"></div>
-<button class="mobilemenu" id="screenMenu" type="button" aria-label="Open navigatiemenu" aria-expanded="false" aria-controls="sidebar">☰</button>
+</head>
+<body>
 <div class="shell">
-<aside class="side" id="sidebar" aria-label="Hoofdnavigatie">
- <div class="brand"><div class="brandmark">✦</div><div><strong>AI-GROEIKOMPAS</strong><small>GHUB-M7 · HAN MARTECH</small></div></div>
- <nav class="navlist" id="navigation"></nav>
- <div class="sidefooter">Onderzoeksversie · 2026<br>Vijf fasen uit het officiële model<br>Uitkomsten worden pas betrouwbaar na werkveldtoetsing.</div>
-</aside>
-<main class="main">
- <header class="top">
-  <div><div class="eyebrow">GROEIKOMPAS · ONDERZOEKSWERKRUIMTE</div><h1 id="title">AI-GROEIKOMPAS</h1><p class="sub" id="subtitle">Vijf fasen voor verantwoord marketingonderzoek.</p></div>
-  <div class="top-actions"><button class="btn secondary xs" type="button" data-action="export">↓ Back-up</button><button class="btn secondary xs" type="button" data-action="import">↑ Import</button><input type="file" id="fileImport" accept=".json,application/json" hidden></div>
- </header>
- <section class="casebar" aria-label="Bedrijfsdossiers">
-  <label>ACTIEF BEDRIJF<select id="caseList" aria-label="Kies bedrijfsdossier"></select></label>
-  <div class="case-actions">
-   <button class="btn xs" data-action="new-company">+ Nieuw bedrijf</button>
-   <button class="btn secondary xs" data-action="rename-company">Hernoem</button>
-   <button class="btn danger xs" data-action="delete-company">Verwijder</button>
-  </div>
- </section>
- <p class="privacy">Gegevens worden lokaal in deze browser opgeslagen. Gebruik waar mogelijk geanonimiseerde bedrijfsinformatie en exporteer regelmatig een beveiligde back-up.</p>
- <div id="view" role="main" aria-live="polite"><div class="loading">Onderzoeksmodel laden…</div></div>
- <footer class="foot">HAN · Commerciële Economie · AI-Groeikompas · Researchprototype · Geen juridisch advies</footer>
-</main>
+  <aside class="side" id="sidebar">
+    <div class="brand">
+      <div class="brandmark" aria-hidden="true">✦</div>
+      <div><strong>AI-GROEIKOMPAS</strong><small>GHUB-M7 · HAN CE</small></div>
+    </div>
+    <nav id="navigation" class="navlist" aria-label="Hoofdnavigatie"></nav>
+    <div class="sidefooter">Vijf fasen. Eén navolgbaar besluit.<p>Onderzoeksprototype, nog niet onafhankelijk gevalideerd.</p></div>
+  </aside>
+  <div id="scrim" class="scrim" aria-hidden="true"></div>
+  <button id="screenMenu" class="mobilemenu" aria-label="Open navigatiemenu" aria-expanded="false" aria-controls="navigation">☰</button>
+  <main class="main" id="main">
+    <header class="top">
+      <div><div class="eyebrow">HBO Commerciële Economie · Marketingtechnologie & Innovatie</div><h1 id="title">AI-GROEIKOMPAS</h1><p id="subtitle" class="sub">Onderzoek en advies in vijf fasen</p></div>
+      <div class="top-actions">
+        <button class="btn secondary" data-action="export" type="button">↓ Back-up</button>
+        <button class="btn secondary" data-action="import" type="button">↑ Import</button>
+      </div>
+    </header>
+    <section class="casebar" aria-label="Bedrijfsdossier">
+      <label>Actief bedrijfsdossier<select id="caseList" aria-label="Wissel bedrijfsdossier"></select></label>
+      <div class="case-actions">
+        <button type="button" class="btn" data-action="new-company">+ Nieuw bedrijf</button>
+        <button type="button" class="btn secondary" data-action="rename-company">Hernoemen</button>
+        <button type="button" class="btn danger" data-action="delete-company">Verwijderen</button>
+      </div>
+    </section>
+    <p class="privacy">Bedrijfsinformatie wordt op dit apparaat in de browser opgeslagen. Deel geen vertrouwelijke of persoonlijke gegevens zonder passende afspraken.</p>
+    <section id="view" aria-live="polite"></section>
+    <footer class="foot">AI-GROEIKOMPAS · Methodiek: GHUB-M7, 30 november 2026 · Beoordelingscriteria en drempels nog te valideren</footer>
+  </main>
 </div>
+<input type="file" id="fileImport" accept="application/json" hidden>
 <script src="v3/model.js"></script>
-<script src="v3/advisor.js"></script>
-<script src="v3/report.js"></script>
 <script src="v3/app.js"></script>
-</body></html>
+</body>
+</html>
