@@ -57,7 +57,7 @@ function firstCheck(t){const rows=FIRST.map(x=>({key:x[0],label:x[1],answer:t.st
 function processCheck(c){const tasks=arr(c.process.tasks).map(t=>{let fit=fitCheck(t),priority=priorityCheck(t,c.route,c.process.pairs),first=firstCheck(t),determined=t.id===c.process.selectedTaskId?riskLevel(c.risk):"unknown",level=determined!=="unknown"?determined:t.riskLevel;return {...t,riskLevel:level,fit,priority,first,eligible:fit.pass&&priority.pass&&first.pass&&level!=="unknown"&&level!=="high"&&t.aiNeeded!=="no"}});
  const order={executive:0,analytical:1,relational:2,unknown:3},ranked=tasks.filter(t=>t.eligible).sort((a,b)=>b.priority.total-a.priority.total||(order[a.kind]??3)-(order[b.kind]??3));
  const chosen=tasks.find(t=>t.id===c.process.selectedTaskId)||null;
- return {tasks,ranked,chosen,eligible:!!chosen&&chosen.eligible,ahp:ahp(c.process.pairs),fiveTasks:tasks.filter(x=>x.fit.complete).length>=5}
+ return {tasks,ranked,provisional:tasks.filter(x=>x.fit.pass&&x.priority.pass&&x.first.pass&&x.aiNeeded!=="no").sort((a,b)=>b.priority.total-a.priority.total),chosen,eligible:!!chosen&&chosen.eligible,ahp:ahp(c.process.pairs),fiveTasks:tasks.filter(x=>x.fit.complete).length>=5}
 }
 function qualityCheck(q){const rows=QUALITY.map(x=>({key:x[0],label:x[1],value:sc(q?.[x[0]])}));const complete=rows.every(x=>x.value!==null);return {rows,complete,mean:complete?fix(avg(rows.map(x=>x.value)),2):null,min:complete?Math.min(...rows.map(x=>x.value)):null}}
 function runCheck(r){const parts=["prepare","prompt","check","correct"].map(k=>n(r?.[k]));const minutes=parts.every(x=>x!==null&&x>=0)?fix(parts.reduce((a,b)=>a+b,0),2):null;return {minutes,quality:qualityCheck(r?.quality),usedAI:r?.usedAI==="yes"}}
@@ -81,7 +81,7 @@ function implementationCheck(c){const i=c.implementation,p=i.pilot,tools=selectT
  const cycles=arr(p.cycles).map(cy=>({name:cy.name,complete:!!(s(cy.plan)&&s(cy.do)&&s(cy.study)&&s(cy.act)&&arr(cy.runs).length&&cy.runs.every(r=>runCheck(r).minutes!==null&&runCheck(r).quality.complete)),runs:arr(cy.runs).map(runCheck)}));
  const scores=Object.values(i.training.acceptance||{}).map(sc),acceptanceOK=scores.length===4&&scores.every(x=>x!==null)&&avg(scores)>=3.5;
  const utilization=n(p.totalCount)>0&&n(p.usedCount)!==null?fix(Number(p.usedCount)/Number(p.totalCount)*100,1):null;
- const complete=baseOK&&cycles.length>=2&&cycles.every(x=>x.complete)&&!!s(p.decisionDate)&&!!s(p.success)&&!!s(p.stop)&&!!s(i.training.practice)&&!!s(i.training.literacy)&&scores.length===4&&scores.every(x=>x!==null)&&utilization!==null&&tools.comparable;
+ const complete=baseOK&&cycles.length>=2&&cycles.every(x=>x.complete)&&!!s(p.decisionDate)&&!!s(p.success)&&!!s(p.stop)&&!!s(i.training.practice)&&!!s(i.training.literacy)&&acceptanceOK&&utilization!==null&&utilization>=80&&tools.comparable&&!!tools.winner&&!!s(i.roles.owner)&&!!s(i.roles.executor)&&!!s(i.roles.reviewer)&&!!s(i.roles.coach);
  return {tools,baseline,baseOK,cycles,acceptanceOK,utilization,complete}
 }
 function evaluate(c){const im=implementationCheck(c),p=c.implementation.pilot,e=c.evaluation,first=im.baseline.filter(x=>x.minutes!==null),last=im.cycles.at(-1)?.runs.filter(x=>x.minutes!==null)||[],before=first.length?avg(first.map(x=>x.minutes)):null,after=last.length?avg(last.map(x=>x.minutes)):null,per=before!==null&&after!==null?before-after:null;
@@ -93,7 +93,7 @@ function evaluate(c){const im=implementationCheck(c),p=c.implementation.pilot,e=
 }
 function status(c){const p=processCheck(c),r=riskCheck(c.risk,c.route),i=implementationCheck(c),e=evaluate(c),x=c.company;
  const one=!!(s(x.problem)&&s(x.goal)&&s(x.indicator)&&s(x.commercialUse)&&s(x.owner)&&s(x.reviewer));
- const two=!!(p.chosen&&p.chosen.fit.complete&&p.chosen.priority.complete&&p.chosen.first.pass),three=!!(r.level!=="unknown"&&["go","no-go"].includes(c.risk.decision)&&s(c.risk.decisionBy)),four=two&&r.go&&i.complete,five=four&&c.evaluation.decision!=="unknown"&&s(c.evaluation.decisionReason)&&e.proof;
+ const two=!!(p.chosen&&p.chosen.eligible&&(c.route!=="full"||(p.ahp.complete&&p.ahp.consistent))),three=!!(r.level!=="unknown"&&["go","no-go"].includes(c.risk.decision)&&s(c.risk.decisionBy)),four=two&&r.go&&i.complete,five=four&&c.evaluation.decision!=="unknown"&&s(c.evaluation.decisionReason)&&e.proof;
  return {phase:[one,!!two,three,!!four,!!five],process:p,risk:r,implementation:i,evaluation:e}
 }
 function guidance(c){const st=status(c),p=st.process,r=st.risk,i=st.implementation,e=st.evaluation,chosen=p.chosen||p.ranked[0];
