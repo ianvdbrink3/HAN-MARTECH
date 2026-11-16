@@ -55,14 +55,27 @@ function processCheck(c){const tasks=arr(c.process.tasks).map(t=>{let fit=fitChe
 }
 function qualityCheck(q){const rows=QUALITY.map(x=>({key:x[0],label:x[1],value:sc(q?.[x[0]])}));const complete=rows.every(x=>x.value!==null);return {rows,complete,mean:complete?fix(avg(rows.map(x=>x.value)),2):null,min:complete?Math.min(...rows.map(x=>x.value)):null}}
 function runCheck(r){const parts=["prepare","prompt","check","correct"].map(k=>n(r?.[k]));const minutes=parts.every(x=>x!==null&&x>=0)?fix(parts.reduce((a,b)=>a+b,0),2):null;return {minutes,quality:qualityCheck(r?.quality),usedAI:r?.usedAI==="yes"}}
-function trialCheck(t){const tests=arr(t.tests).map(runCheck),complete=tests.length>=3&&tests.length<=5&&tests.every(x=>x.minutes!==null&&x.quality.complete);const means=Object.fromEntries(QUALITY.map(([k])=>[k,complete?fix(avg(t.tests.map(x=>sc(x.quality?.[k]))),2):null]));return {complete,blind:t.blind==="yes",tests,means,pass:complete&&t.blind==="yes"&&Object.values(means).every(x=>x>=3),mean:complete?fix(avg(tests.map(x=>x.quality.mean)),2):null,time:complete?fix(avg(tests.map(x=>x.minutes)),2):null}}
+function trialCheck(t){const tests=arr(t.tests).map(runCheck),taskNames=arr(t.tests).map(x=>s(x.taskName).toLowerCase()),sameTasks=taskNames.length>=3&&taskNames.every(Boolean)&&new Set(taskNames).size===taskNames.length,complete=tests.length>=3&&tests.length<=5&&sameTasks&&tests.every(x=>x.minutes!==null&&x.quality.complete);const means=Object.fromEntries(QUALITY.map(([k])=>[k,complete?fix(avg(t.tests.map(x=>sc(x.quality?.[k]))),2):null]));return {complete,blind:t.blind==="yes",tests,taskNames,means,pass:complete&&t.blind==="yes"&&Object.values(means).every(x=>x>=3),mean:complete?fix(avg(tests.map(x=>x.quality.mean)),2):null,time:complete?fix(avg(tests.map(x=>x.minutes)),2):null}}
 function toolCheck(t,level="unknown"){const rows=TOOL.map(x=>({key:x[0],label:x[1],score:sc(t.ratings?.[x[0]])})),complete=rows.every(x=>x.score!==null);const hard=level==="low"?true:level==="medium"||level==="high"?!!(t.hard?.data==="yes"&&t.hard?.training==="yes"&&t.hard?.agreement==="yes"&&t.hard?.access==="yes"):false;return {tool:t,rows,complete,hard,mean:complete?fix(avg(rows.map(x=>x.score)),2):null,pass:complete&&rows.every(x=>x.score>=3)&&hard,trial:trialCheck(t)}}
-function selectTools(tools,level="unknown"){const checked=arr(tools).map(t=>toolCheck(t,level)),shortlist=checked.filter(x=>x.pass).sort((a,b)=>b.mean-a.mean).slice(0,3),tested=shortlist.filter(x=>x.trial.pass);let winner=tested.length>=2?tested.slice().sort((a,b)=>{if(Math.abs(a.trial.mean-b.trial.mean)>=.5)return b.trial.mean-a.trial.mean;if(a.trial.time!==b.trial.time)return a.trial.time-b.trial.time;return (n(a.tool.monthlyCost)??Infinity)-(n(b.tool.monthlyCost)??Infinity)})[0]:null;return {checked,shortlist,tested,winner,comparable:tested.length>=2}}
+function selectTools(tools,level="unknown"){
+ const checked=arr(tools).map(t=>toolCheck(t,level)),shortlist=checked.filter(x=>x.pass).sort((a,b)=>b.mean-a.mean).slice(0,3);
+ const trialled=shortlist.filter(x=>x.trial.complete&&x.trial.blind);
+ const same=(a,b)=>a.trial.taskNames.slice().sort().join("|")===b.trial.taskNames.slice().sort().join("|");
+ const comparableGroups=trialled.map(x=>trialled.filter(y=>same(x,y))).filter(g=>g.length>=2).sort((a,b)=>b.length-a.length);
+ const cohort=comparableGroups[0]||[];
+ const passed=cohort.filter(x=>x.trial.pass);
+ const winner=passed.length?passed.slice().sort((a,b)=>{
+  if(Math.abs(a.trial.mean-b.trial.mean)>=.5)return b.trial.mean-a.trial.mean;
+  if(a.trial.time!==b.trial.time)return a.trial.time-b.trial.time;
+  return (n(a.tool.monthlyCost)??Infinity)-(n(b.tool.monthlyCost)??Infinity)
+ })[0]:null;
+ return {checked,shortlist,tested:passed,winner,comparable:cohort.length>=2,comparisonCount:cohort.length,identicalTasks:cohort.length>=2};
+}
 function implementationCheck(c){const i=c.implementation,p=i.pilot,tools=selectTools(i.tools,riskLevel(c.risk)),baseline=arr(p.baseline).map(runCheck);const baseOK=baseline.length>=5&&baseline.every(x=>x.minutes!==null&&x.quality.complete);
  const cycles=arr(p.cycles).map(cy=>({name:cy.name,complete:!!(s(cy.plan)&&s(cy.do)&&s(cy.study)&&s(cy.act)&&arr(cy.runs).length&&cy.runs.every(r=>runCheck(r).minutes!==null&&runCheck(r).quality.complete)),runs:arr(cy.runs).map(runCheck)}));
  const scores=Object.values(i.training.acceptance||{}).map(sc),acceptanceOK=scores.length===4&&scores.every(x=>x!==null)&&avg(scores)>=3.5;
  const utilization=n(p.totalCount)>0&&n(p.usedCount)!==null?fix(Number(p.usedCount)/Number(p.totalCount)*100,1):null;
- const complete=baseOK&&cycles.length>=2&&cycles.every(x=>x.complete)&&!!s(p.decisionDate)&&!!s(p.success)&&!!s(p.stop)&&!!s(i.training.practice)&&!!s(i.training.literacy)&&scores.length===4&&scores.every(x=>x!==null)&&utilization!==null&&tools.checked.filter(x=>x.trial.complete).length>=2;
+ const complete=baseOK&&cycles.length>=2&&cycles.every(x=>x.complete)&&!!s(p.decisionDate)&&!!s(p.success)&&!!s(p.stop)&&!!s(i.training.practice)&&!!s(i.training.literacy)&&scores.length===4&&scores.every(x=>x!==null)&&utilization!==null&&tools.comparable;
  return {tools,baseline,baseOK,cycles,acceptanceOK,utilization,complete}
 }
 function evaluate(c){const im=implementationCheck(c),p=c.implementation.pilot,e=c.evaluation,first=im.baseline.filter(x=>x.minutes!==null),last=im.cycles.at(-1)?.runs.filter(x=>x.minutes!==null)||[],before=first.length?avg(first.map(x=>x.minutes)):null,after=last.length?avg(last.map(x=>x.minutes)):null,per=before!==null&&after!==null?before-after:null;
