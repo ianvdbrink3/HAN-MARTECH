@@ -62,7 +62,7 @@ function implementationCheck(c){const i=c.implementation,p=i.pilot,tools=selectT
  const cycles=arr(p.cycles).map(cy=>({name:cy.name,complete:!!(s(cy.plan)&&s(cy.do)&&s(cy.study)&&s(cy.act)&&arr(cy.runs).length&&cy.runs.every(r=>runCheck(r).minutes!==null&&runCheck(r).quality.complete)),runs:arr(cy.runs).map(runCheck)}));
  const scores=Object.values(i.training.acceptance||{}).map(sc),acceptanceOK=scores.length===4&&scores.every(x=>x!==null)&&avg(scores)>=3.5;
  const utilization=n(p.totalCount)>0&&n(p.usedCount)!==null?fix(Number(p.usedCount)/Number(p.totalCount)*100,1):null;
- const complete=tools.comparable&&baseOK&&cycles.length>=2&&cycles.every(x=>x.complete)&&acceptanceOK&&!!s(i.training.practice)&&!!s(i.training.literacy)&&!!s(p.decisionDate)&&!!s(p.success)&&!!s(p.stop)&&utilization!==null&&utilization>=80;
+ const complete=baseOK&&cycles.length>=2&&cycles.every(x=>x.complete)&&!!s(p.decisionDate)&&!!s(p.success)&&!!s(p.stop)&&!!s(i.training.practice)&&!!s(i.training.literacy)&&scores.length===4&&scores.every(x=>x!==null)&&utilization!==null&&tools.checked.filter(x=>x.trial.complete).length>=2;
  return {tools,baseline,baseOK,cycles,acceptanceOK,utilization,complete}
 }
 function evaluate(c){const im=implementationCheck(c),p=c.implementation.pilot,e=c.evaluation,first=im.baseline.filter(x=>x.minutes!==null),last=im.cycles.at(-1)?.runs.filter(x=>x.minutes!==null)||[],before=first.length?avg(first.map(x=>x.minutes)):null,after=last.length?avg(last.map(x=>x.minutes)):null,per=before!==null&&after!==null?before-after:null;
@@ -73,8 +73,8 @@ function evaluate(c){const im=implementationCheck(c),p=c.implementation.pilot,e=
  return {before:fix(before,2),after:fix(after,2),per:fix(per,2),net:fix(net,2),payback,qb:fix(qb,2),qa:fix(qa,2),qualityOK,cost,roi,incidents,conflict,next,evidence:e.evidenceLevel,proof:e.evidenceLevel!=="unknown",canContinue:e.decision==="continue"&&!conflict&&e.evidenceLevel!=="unknown"&&!!s(e.reallocated)};
 }
 function status(c){const p=processCheck(c),r=riskCheck(c.risk,c.route),i=implementationCheck(c),e=evaluate(c),x=c.company;
- const one=!!(s(x.strategy)&&s(x.marketingGoal)&&s(x.problem)&&s(x.goal)&&s(x.indicator)&&s(x.commercialUse)&&s(x.owner)&&s(x.reviewer)&&arr(x.issues).filter(s).length>=3);
- const two=p.eligible&&p.fiveTasks,three=r.go,four=two&&three&&i.complete,five=four&&c.evaluation.decision!=="unknown"&&s(c.evaluation.decisionReason)&&e.proof;
+ const one=!!(s(x.problem)&&s(x.goal)&&s(x.indicator)&&s(x.commercialUse)&&s(x.owner)&&s(x.reviewer));
+ const two=!!(p.chosen&&p.chosen.fit.complete&&p.chosen.priority.complete&&p.chosen.first.pass),three=r.level!=="unknown"&&["go","no-go"].includes(c.risk.decision)&&s(c.risk.decisionBy),four=two&&r.go&&i.complete,five=four&&c.evaluation.decision!=="unknown"&&s(c.evaluation.decisionReason)&&e.proof;
  return {phase:[one,!!two,three,!!four,!!five],process:p,risk:r,implementation:i,evaluation:e}
 }
 function guidance(c){const st=status(c),p=st.process,r=st.risk,i=st.implementation,e=st.evaluation,chosen=p.chosen||p.ranked[0];
