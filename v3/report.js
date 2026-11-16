@@ -12,9 +12,9 @@ function build(c){
  if(!st.phase[0])add(1,"Bedrijfsprofiel onvolledig","Vul het commerciële doel, de indicator, eigenaar en commerciële besteding van capaciteit aan.");
  if(M.FIT.some(z=>!t||t.fit.rows.some(y=>y.key===z[0]&&y.score===null)))add(2,"Geschiktheid ontbreekt","Beoordeel alle zeven taakcriteria op 1–5 en onderbouw lage waarden.");
  if(!p.fiveTasks)warnings.push("Het streefdoel van minimaal vijf gescoorde taken is nog niet gehaald.");
- if(t&&!t.fit.pass)add(2,"Ongeschikte taak","Los de geschiktheidscriteria onder 3 eerst op of kies een andere taak.");
- if(t&&!t.priority.pass)add(2,"Prioriteit onvoldoende","Onderbouw minimaal 60/100 volgens de formule uit het model.");
- if(t&&!t.first.pass)add(2,"Eerste-toepassingstoets","Beantwoord de vijf toepassingsvragen allemaal met ja, of kies een andere taak.");
+ if(t&&t.fit.complete&&!t.fit.pass)add(2,"Ongeschikte taak","Los de geschiktheidscriteria onder 3 eerst op of kies een andere taak.");
+ if(t&&t.priority.complete&&!t.priority.pass)add(2,"Prioriteit onvoldoende","Onderbouw minimaal 60/100 volgens de formule uit het model.");
+ if(t&&t.first.rows.some(x=>x.answer==="no"))add(2,"Eerste-toepassingstoets","Los de afgekeurde startvoorwaarden op of kies een andere taak.");else if(t&&!t.first.pass)add(2,"Eerste-toepassingstoets","Beantwoord de vijf toepassingsvragen voordat de kandidaat wordt vrijgegeven.");
  if(t&&t.riskLevel==="high")add(2,"Hoogrisicotaak","Gebruik deze taak niet als eerste AI-toepassing.");
  if(p.ahp.complete&&!p.ahp.consistent&&c.route==="full")warnings.push("AHP-matrix heeft een inconsistente weging; de startweging blijft leidend.");
  if(r.level==="unknown")add(3,"Risicoklasse ontbreekt","Beoordeel profilering, persoonsgegevens en directe klantoutput.");
@@ -35,7 +35,7 @@ function build(c){
  if(e.roi===null)warnings.push("Geen aantoonbare ROI berekend. Dat is correct zolang kosten of gerealiseerde financiële baten onvoldoende onderbouwd zijn.");
  let verdict;
  if(r.blocked||r.routeConflict||t?.riskLevel==="high")verdict={tone:"danger",title:"Nog geen veilige eerste toepassing",subtitle:"Eerst risicoblokkades en routeconflicten oplossen. Geen vrijgave voor een live AI-pilot."};
- else if(t&&(!t.fit.pass||t.priority.complete&&!t.priority.pass))verdict={tone:"danger",title:"Deze taak is nog geen geschikte AI-start",subtitle:"De selectiegrenzen uit jullie model zijn niet gehaald. Onderzoek een ander proces of los knelpunten op."};
+ else if(t&&((t.fit.complete&&!t.fit.pass)||(t.priority.complete&&!t.priority.pass)))verdict={tone:"danger",title:"Deze taak is nog geen geschikte AI-start",subtitle:"De selectiegrenzen uit jullie model zijn niet gehaald. Onderzoek een ander proces of los knelpunten op."};
  else if(e.conflict)verdict={tone:"danger",title:"Bijsturen of stoppen is aangewezen",subtitle:"De gekozen beslissing botst met netto tijdwinst, kwaliteit of incidenten."};
  else if(e.canContinue&&st.phase[4])verdict={tone:"good",title:"Voorwaardelijk doorgaan en groeien",subtitle:"De gemeten resultaten zijn voldoende voor een onderbouwd vervolg, na controle door de eigenaar."};
  else if(p.chosen&&p.eligible)verdict={tone:"warn",title:"Onderzoekskandidaat geselecteerd",subtitle:"De taak voldoet aan de ingevoerde criteria; veiligheidscontrole, tooltest en effectmeting bepalen de definitieve keuze."};
