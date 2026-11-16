@@ -28,7 +28,7 @@ click(d,'[data-choice="risk.direct"][data-value="no"]');
 assert.match(d.querySelector("#view").textContent,/Afgeleid niveau: Laag risico/);
 goto(d,"p3");assert.match(d.querySelector("#view").textContent,/Taak uit fase 2/);
 goto(d,"p4");assert.match(d.querySelector("#view").textContent,/Netto tijdwinst/);
-goto(d,"report");assert.match(d.querySelector("#view").textContent,/Bedrijfsspecifiek implementatieadvies/);
+goto(d,"report");assert.match(d.querySelector("#view").textContent,/AI-implementatieadvies/);
 goto(d,"about");assert.match(d.querySelector("#view").textContent,/SIPOC/);
 goto(d,"compare");assert.match(d.querySelector("#view").textContent,/Bedrijf 1/);
 click(d,'[data-action="new-company"]');
