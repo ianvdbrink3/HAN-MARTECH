@@ -16,7 +16,7 @@ function build(initialStore={}){
  return {storage,elems,events,win,nav,choice,action,enter,vault};
 }
 const x=build();
-assert.match(x.elems.view.innerHTML,/Van marketingprobleem/);
+assert.match(x.elems.view.innerHTML,/Een echt besluit begint bij het probleem/);
 for(let i=0;i<5;i++){const html=x.nav("p"+i);assert.match(html,new RegExp("FASE "+(i+1)+" VAN 5"));assert.ok(html.length>1000)}
 assert.match(x.nav("p0"),/TOE/);
 assert.match(x.nav("p1"),/SIPOC/);
