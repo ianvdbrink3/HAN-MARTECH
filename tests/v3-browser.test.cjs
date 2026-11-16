@@ -1,0 +1,42 @@
+const {JSDOM}=require("/tmp/ghub-v3-qa/node_modules/jsdom");
+const fs=require("fs"),assert=require("node:assert/strict");
+const root=__dirname+"/..";
+const html=fs.readFileSync(root+"/index.html","utf8");
+const dom=new JSDOM(html,{url:"https://test.example/",runScripts:"outside-only",pretendToBeVisual:true});
+const w=dom.window;
+w.scrollTo=()=>{};w.alert=msg=>{if(String(msg).includes("mislukt"))throw Error(msg)};w.confirm=()=>true;w.prompt=()=>"Testbedrijf";
+w.URL.createObjectURL=()=>"blob:fake";w.URL.revokeObjectURL=()=>{};
+const errors=[];w.addEventListener("error",ev=>errors.push(ev.message));
+w.eval(fs.readFileSync(root+"/assets/v3-engine.js","utf8"));
+w.eval(fs.readFileSync(root+"/assets/v3-app.js","utf8"));
+const $=s=>w.document.querySelector(s);
+function goto(id){const b=$('[data-nav="'+id+'"]');assert.ok(b,"Missing navigation "+id);b.click();assert.ok($("#content").textContent.length>120,"Blank page "+id)}
+const checks={};
+for(let i=0;i<5;i++){goto("p"+i);checks["phase"+(i+1)]=$(".step-hero h1").textContent;assert.ok($("#content .panel"))}
+goto("home");checks.home=$(".welcome h1").textContent;
+goto("report");checks.report=!!$("#reportPrint");
+goto("methods");checks.method=($("#content").textContent.match(/Fase/g)||[]).length;
+goto("compare");checks.compare=!!$(".data-table");
+const caseCountBefore=$$("#case-picker option").length;
+function $$(s){return [...w.document.querySelectorAll(s)]}
+$('[data-action="demo"]').click();checks.demo=$(".casebar-name select").value;
+goto("home");checks.demoProgress=$(".pie strong").textContent;
+goto("p1");
+checks.demoTask=$(".task-tab").textContent.trim();
+let open=$(".disclose");assert.ok(open);open.open=true;
+$('[data-nav="p2"]').click();
+checks.demoRisk=$(".risk-result strong").textContent;
+goto("p3");checks.demoTool=$(".task-tab").textContent.trim();
+goto("p4");checks.demoMetrics=$$(".metric strong").map(x=>x.textContent);checks.evalMetrics=w.GroeikompasV3.evaluate(JSON.parse(w.localStorage.getItem("ai-groeikompas-v3-dossiers")).cases[1]).metrics;
+goto("report");checks.demoReport=$("#reportPrint").textContent.slice(0,250);
+assert.ok(checks.demoMetrics.some(x=>x.includes("45")));
+const report=$("#reportPrint").textContent;
+assert.ok(report.includes("Kwaliteit"));
+assert.ok(/tijdwinst/i.test(report));
+assert.ok(report.includes("Noordlicht Bouwgroep"));
+goto("compare");checks.multiCompanies=$$(".data-table tbody tr").length;
+const local=w.localStorage.getItem("ai-groeikompas-v3-dossiers");
+assert.ok(local&&JSON.parse(local).cases.length===2);
+assert.deepEqual(errors,[]);
+console.log("BROWSER_SIM_OK",JSON.stringify(checks));
+w.close();
