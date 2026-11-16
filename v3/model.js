@@ -81,7 +81,7 @@ function implementationCheck(c){const i=c.implementation,p=i.pilot,tools=selectT
  const cycles=arr(p.cycles).map(cy=>({name:cy.name,complete:!!(s(cy.plan)&&s(cy.do)&&s(cy.study)&&s(cy.act)&&arr(cy.runs).length&&cy.runs.every(r=>runCheck(r).minutes!==null&&runCheck(r).quality.complete)),runs:arr(cy.runs).map(runCheck)}));
  const scores=Object.values(i.training.acceptance||{}).map(sc),acceptanceOK=scores.length===4&&scores.every(x=>x!==null)&&avg(scores)>=3.5;
  const utilization=n(p.totalCount)>0&&n(p.usedCount)!==null?fix(Number(p.usedCount)/Number(p.totalCount)*100,1):null;
- const complete=baseOK&&cycles.length>=2&&cycles.every(x=>x.complete)&&!!s(p.decisionDate)&&!!s(p.success)&&!!s(p.stop)&&!!s(i.training.practice)&&!!s(i.training.literacy)&&acceptanceOK&&utilization!==null&&utilization>=80&&tools.comparable&&!!tools.winner&&!!s(i.roles.owner)&&!!s(i.roles.executor)&&!!s(i.roles.reviewer)&&!!s(i.roles.coach);
+ const complete=baseOK&&cycles.length>=2&&cycles.every(x=>x.complete)&&!!s(p.decisionDate)&&!!s(p.success)&&!!s(p.stop)&&!!s(i.training.practice)&&!!s(i.training.literacy)&&scores.length===4&&scores.every(x=>x!==null)&&utilization!==null&&tools.comparable&&!!s(i.roles.owner)&&!!s(i.roles.executor)&&!!s(i.roles.reviewer)&&!!s(i.roles.coach);
  return {tools,baseline,baseOK,cycles,acceptanceOK,utilization,complete}
 }
 function evaluate(c){const im=implementationCheck(c),p=c.implementation.pilot,e=c.evaluation,first=im.baseline.filter(x=>x.minutes!==null),last=im.cycles.at(-1)?.runs.filter(x=>x.minutes!==null)||[],before=first.length?avg(first.map(x=>x.minutes)):null,after=last.length?avg(last.map(x=>x.minutes)):null,per=before!==null&&after!==null?before-after:null;
