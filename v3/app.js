@@ -40,7 +40,12 @@ function progress(){const st=M.status(active);return '<span class="pill '+(st.ph
 function title(name,sub){$("title").textContent=name;$("subtitle").textContent=sub}
 function nav(){const st=M.status(active);$("navigation").innerHTML=[["overview","Overzicht","⌂"],...M.PHASES.map((n,i)=>["p"+i,(i+1)+". "+n,String(i+1)]),["compare","Bedrijven vergelijken","≡"],["report","Adviesrapport","▤"],["about","Methodiek & bronnen","◈"]].map(x=>'<button class="'+(current===x[0]?"active":"")+'" data-nav="'+x[0]+'"><span class="number">'+E(x[2])+'</span><span>'+E(x[1])+'</span>'+(x[0].startsWith("p")&&st.phase[Number(x[0].slice(1))]?'<span class="tick">✓</span>':"")+'</button>').join("")}
 function headingStage(i,subtitle){return '<header class="stagehero"><span class="stagecount">FASE '+(i+1)+' VAN 5 • BRON: AI-GROEIKOMPAS §1.7</span><h2>'+E(M.PHASES[i])+'</h2><p>'+E(subtitle)+'</p></header>'}
-function guide(i){const g=M.guidance(active)[i];return '<section class="guidance"><span class="eyebrow">✦ AFGELEID UIT JULLIE ANTWOORDEN</span><h3>'+E(g.summary)+'</h3><p>Dit is een voorstel voor de volgende onderzoekshandeling, geen onafhankelijk vastgestelde uitkomst.</p><div class="guide-next">↳ '+E(g.next)+'</div></section>'}
+function guide(i){const g=M.guidance(active)[i],a=window.GK3Advisor?.plan(active,i);
+ const cards=a?.results.map(x=>'<div class="taskcard"><div class="taskhead"><b>'+E(x.title)+'</b>'+(x.action?button("Gebruik voorstel","advisor-"+x.action,"xs",x.value):"")+'</div><p style="font-weight:750;color:#274e62">'+E(x.body)+'</p><small>'+E(x.info)+'</small></div>').join("")||"";
+ const facts=a?.basis.length?fold("Waarop zijn deze voorstellen gebaseerd?",'<ul>'+a.basis.map(x=>'<li>'+E(x)+'</li>').join("")+'</ul>'):"";
+ return '<section class="guidance"><span class="eyebrow">✦ UIT EERDERE BEDRIJFSANTWOORDEN</span><h3>'+E(g.summary)+'</h3><p>Deze voorstellen zijn gerichte onderzoekshypothesen uit het gekozen proces en de beschikbare bedrijfsinformatie — geen geteste productaanbevelingen.</p>'+
+ (cards?'<div class="tasks">'+cards+'</div>':"")+facts+'<div class="guide-next">↳ '+E(g.next)+'</div></section>'
+}
 function next(i){return '<div class="phase-nav">'+(i>0?'<button class="btn secondary" data-nav="p'+(i-1)+'">← Vorige fase</button>':"<span></span>")+'<button class="btn" data-nav="'+(i<4?"p"+(i+1):"report")+'">'+(i===4?"Bekijk adviesrapport →":"Naar fase "+(i+2)+" →")+'</button></div>'}
 function summary(){title("AI-GROEIKOMPAS","Van marketingprobleem naar een verantwoorde, geteste en gemeten toepassing.");
  const st=M.status(active),g=M.guidance(active);
@@ -284,7 +289,9 @@ function command(action,value){
  case "nav":move(value);break;
  case "go-current":move("p"+(active.phase||0));break;
  case "add-task":{const name=$("addTaskName")?.value.trim();if(!name)return;active.process.tasks.push(M.newTask(name));taskIndex=active.process.tasks.length-1;persist();render(true);break}
- case "suggest-task":active.process.tasks.push(M.newTask(guessedTask()));taskIndex=active.process.tasks.length-1;persist();render(true);break;
+ case "suggest-task":active.process.tasks.push(M.newTask(window.GK3Advisor?.classify(active).task||guessedTask()));taskIndex=active.process.tasks.length-1;persist();render(true);break;
+ case "advisor-suggest-task":{if(!active.process.tasks.some(t=>t.name===value))active.process.tasks.push(M.newTask(value));taskIndex=active.process.tasks.findIndex(t=>t.name===value);persist();render(true);break}
+ case "advisor-suggest-function":{if(active.implementation.function&&active.implementation.function!==value&&!confirm("Bestaande AI-functie vervangen door dit voorstel?"))return;active.implementation.function=value;persist();render(true);break}
  case "select-task":active.process.selectedTaskId=value;taskIndex=active.process.tasks.findIndex(x=>x.id===value);persist();render(true);break;
  case "delete-task":if(confirm("Taak verwijderen? De beoordelingen gaan verloren.")){active.process.tasks=active.process.tasks.filter(x=>x.id!==value);if(active.process.selectedTaskId===value)active.process.selectedTaskId="";persist();render(true)}break;
  case "add-tool":{const name=$("newTool")?.value.trim();if(!name)return;active.implementation.tools.push(M.newTool(name));persist();render(true);break}
