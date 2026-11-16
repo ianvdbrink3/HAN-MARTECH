@@ -50,6 +50,7 @@ assert.equal(M.selectTools([tool,toolB],"low").winner.tool.name,"Tool B");
 c.implementation.tools=[tool,toolB];
 c.implementation.pilot.baseline=[run(90,false),run(90,false),run(90,false),run(90,false),run(90,false)];
 for(const cycle of c.implementation.pilot.cycles){cycle.plan="Plan";cycle.do="Do";cycle.study="Study";cycle.act="Act";cycle.runs=[run(50,true),run(50,true),run(50,true)]}
+c.implementation.roles={owner:"Directeur",executor:"Marketeer",reviewer:"Marketingmanager",coach:"Bedrijfscoach"};
 c.implementation.training.practice="Oefenen met eigen taak";
 c.implementation.training.literacy="Basistraining incl. controle";
 c.implementation.training.acceptance={usefulness:"4",quality:"4",ease:"4",support:"4"};
