@@ -109,6 +109,7 @@ function taskEditor(t,i,p){const path="process.tasks."+i;
  input(path+".nonAI","Oplossing zonder AI","Kan een procesafspraak of bestaande automatisering volstaan?","textarea")+
  input(path+".aiNeeded","Is AI nodig?","Zo niet, ga niet met AI door voor deze taak.","select",[["unknown","Nog onderzoeken"],["yes","AI mogelijk nuttig"],["no","Geen AI nodig"]])+'</div>'+
  fold("Stap 4 · Geschiktheidsscan — zeven criteria",scoreGrid(path+".fit",M.FIT,t.fit,"Geen enkel criterium mag lager dan 3 zijn. Score 1–2 = eerst knelpunt oplossen."))+
+ fold("Tweede beoordelaar · interbeoordelaarsbetrouwbaarheid (optioneel)",scoreGrid(path+".fitReviewer2",M.FIT,t.fitReviewer2||{},"Het document streeft naar minstens 80% overeenstemming: de twee scores verschillen maximaal 1 punt.")+(p.fitCheck(t).agreement===null?"<p class=\"muted\">Nog geen volledige vergelijking tussen twee beoordelaars.</p>":note("Overeenstemming: "+p.fitCheck(t).agreement+"% · "+(p.fitCheck(t).agreementOK?"streefwaarde gehaald":"streefwaarde nog niet gehaald"),p.fitCheck(t).agreementOK?"blue":"warn")))+
  fold("Stap 6 · Prioriteitsscore — zes gewogen criteria",scoreGrid(path+".priority",M.PRIORITY,t.priority,"Formule: som ((score − 1) / 4 × gewicht). Minimum voor eerste toepassing is 60/100."))+
  fold("Stap 7 · Eerste-toepassingstoets — vijf ja-vragen",M.FIRST.map(x=>'<div class="criterion"><b>'+E(x[1])+'</b>'+choices(path+".startTests."+x[0],yesno)+'</div>').join(""))+
  input(path+".notes","Onderbouwing van de keuze","Noteer bewijs, onzekerheid en wie heeft beoordeeld.","textarea");
@@ -151,7 +152,7 @@ function phase3(){title("Fase 3 · Randvoorwaarden & risico's","Proportionele ei
  input("risk.controls."+x.key+".status","Beoordeling","","select",[["unknown","Nog onbekend"],["done","Geregeld"],["blocked","Blokkade"]])+
  input("risk.controls."+x.key+".evidence","Bron/bewijs","Vermeld document, verantwoordelijke en controle.","textarea")+'</div></div>').join(""))+
  card("4. Go/no-go vóór de pilot",'<div class="notice '+(st.go?"":"warn")+'">'+(st.go?"Go is geregistreerd en alle digitale minimumcontroles zijn ingevuld.":"Geen onderbouwde go: "+(st.incomplete.length?st.incomplete.length+" verplichte maatregelen ontbreken. ":"")+(!st.ready?"Controleer risico, eigenaar en gebruiksafspraak.":""))+'</div>'+
- fields([["risk.decision","Besluit","Go alleen wanneer alle eisen van het niveau zijn geregeld.","select",[["unknown","Nog geen besluit"],["go","Go — voorbereiden pilot"],["no-go","No-go — eerst maatregelen"]]],["risk.decisionBy","Beslisser","Naam/functie van degene die akkoord geeft."],["risk.actions","Acties bij no-go","Wat moet wanneer worden verbeterd?","textarea"]])+
+ fields([["risk.decision","Besluit","Go alleen wanneer alle eisen van het niveau zijn geregeld.","select",[["unknown","Nog geen besluit"],["go","Go — voorbereiden pilot"],["no-go","No-go — eerst maatregelen"]]],["risk.decisionBy","Beslisser","Naam/functie van degene die akkoord geeft."],["risk.startedAt","Start risicobeoordeling","Richttijd: laag binnen 5 werkdagen, middel binnen 15.","date"],["risk.decisionAt","Datum go/no-go","Vastgelegd besluitmoment.","date"],["risk.actions","Acties bij no-go","Wat moet wanneer worden verbeterd?","textarea"]])+
  note("Het dashboard beoordeelt of het formulier compleet is; het beoordeelt niet zelfstandig de juridische juistheid van ingevulde verklaringen.","warn"))+next(2);
 }
 function toolEditor(t,i){const path="implementation.tools."+i,chk=M.toolCheck(t,M.riskLevel(active.risk));
@@ -177,7 +178,7 @@ function runForm(path,run,title,quality=true){let result=M.runCheck(run);return 
  input(path+".check","Controleren (min)","","number")+
  input(path+".correct","Corrigeren (min)","","number")+'</div>'+
  (quality?fold("Blinde kwaliteitsbeoordeling · vijf criteria",M.QUALITY.map(x=>'<div class="criterion"><b>'+E(x[1])+'</b><p>Score volgens de verankerde kwaliteitsschaal in het document.</p>'+choices(path+".quality."+x[0],[["","Niet beoordeeld"],["1","1"],["2","2"],["3","3"],["4","4"],["5","5"]])+
- '<small>1: '+E(M.ANCHORS[x[0]][0])+' | 5: '+E(M.ANCHORS[x[0]][4])+'</small></div>').join("")):"")+
+ '<small>1: '+E(M.ANCHORS[x[0]][0])+' | 5: '+E(M.ANCHORS[x[0]][4])+'</small>'+fold("Alle vijf ankers",'<ol>'+M.ANCHORS[x[0]].map((anchor,index)=>'<li><b>'+(index+1)+'</b> — '+E(anchor)+'</li>').join("")+'</ol>')+'</div>').join("")):"")+
  input(path+".notes","Observaties en afwijkingen","Beschrijf fouten, herstelwerk en bewijs.","textarea"));
 }
 function phase4(){title("Fase 4 · AI-selectie & implementatie","Task-Technology Fit, blinde selectietest, training en twee PDSA-cycli.");
@@ -252,7 +253,7 @@ function phase5(){title("Fase 5 · Meten, evalueren & groeien","Netto-opbrengst,
  ["evaluation.limitations","Beperkingen van de meting","Bijv. klein aantal uitvoeringen of leercurve.","textarea"],
  ["evaluation.nextTaskId","Volgende taak in de groeiroute","Na doorgaan opnieuw beginnen in fase 2.","select",[["","Nog niet gekozen"],...ps.tasks.filter(t=>t.id!==ps.chosen?.id).map(t=>[t.id,t.name])]]])+
  (ev.canContinue&&ev.next?note("Groeipad: ga voor de volgende toepassing terug naar fase 2 en onderzoek <b>"+E(ev.next.name)+"</b>.","blue"):"")+
- note("Fase 5 is geslaagd wanneer het besluit navolgbaar is, kwaliteit minstens gelijk blijft en netto tijdwinst aantoonbaar is. Bij een laag volume blijft klantimpact vaak een indicatie.","warn"))+next(4);
+ note("Een besluit om door te gaan vraagt minimaal bewijsniveau 2 (voor-/nameting), positieve netto tijdwinst, minstens gelijke kwaliteit en geen open incidenten. Het blijft geen bewijs voor causaliteit. Bij weinig volume is klantimpact vaak indicatief.","warn"))+next(4);
 }
 function compare(){title("Vergelijk de bedrijven","Een kwalitatieve vergelijking van onafhankelijke casussen.");
  return '<header class="stagehero"><span class="stagecount">G-CLUSTER · WERKVELDTOETSING</span><h2>Welke patronen zien we in het MKB?</h2><p>Vergelijk de bedrijfsdossiers, zonder te doen alsof vijf bedrijven statistisch representatief zijn.</p></header>'+
