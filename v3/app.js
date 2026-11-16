@@ -46,6 +46,13 @@ function guide(i){const g=M.guidance(active)[i],a=window.GK3Advisor?.plan(active
  return '<section class="guidance"><span class="eyebrow">✦ UIT EERDERE BEDRIJFSANTWOORDEN</span><h3>'+E(g.summary)+'</h3><p>Deze voorstellen zijn gerichte onderzoekshypothesen uit het gekozen proces en de beschikbare bedrijfsinformatie — geen geteste productaanbevelingen.</p>'+
  (cards?'<div class="tasks">'+cards+'</div>':"")+facts+'<div class="guide-next">↳ '+E(g.next)+'</div></section>'
 }
+function kpiPanel(i){
+ const q=window.GK3Kpis?.phase(active,i);
+ if(!q)return "";
+ return card("KPI's van deze fase — uit het brondocument",'<div class="metricbar"><div class="metric"><strong>'+q.passed+'/'+q.items.length+'</strong><small>Voorlopige doelen behaald</small></div><div class="metric"><strong>'+q.pending+'</strong><small>Nog niet meetbaar</small></div><div class="metric"><strong>'+q.failed+'</strong><small>Streefwaarde nog niet gehaald</small></div></div>'+
+ fold("Bekijk alle fase-indicatoren",q.items.map(x=>'<div class="riskline"><div><strong>'+E(x.label)+'</strong><p>'+E(x.detail)+'</p></div><span class="pill '+(x.ok===true?"good":x.ok===false?"bad":"")+'">'+(x.ok===true?"Streefwaarde gehaald":x.ok===false?"Nog niet gehaald":"Onbekend")+'</span></div>').join(""))+
+ '<p class="muted">Dit zijn voorlopige KPI-streefwaarden van de projectgroep. Een negatieve uitkomst kan methodologisch valide zijn en vormt niet automatisch een onvolledige onderzoeksfase.</p>');
+}
 function next(i){return '<div class="phase-nav">'+(i>0?'<button class="btn secondary" data-nav="p'+(i-1)+'">← Vorige fase</button>':"<span></span>")+'<button class="btn" data-nav="'+(i<4?"p"+(i+1):"report")+'">'+(i===4?"Bekijk adviesrapport →":"Naar fase "+(i+2)+" →")+'</button></div>'}
 function summary(){title("AI-GROEIKOMPAS","Van marketingprobleem naar een verantwoorde, geteste en gemeten toepassing.");
  const st=M.status(active),g=M.guidance(active);
@@ -87,7 +94,7 @@ function phase1(){title("Fase 1 · Bedrijfsanalyse","TOE, AI-gereedheid en een m
  (active.route==="full"?fold("Aanvullend: medewerkersvragenlijst bij volledige route",fields([
  ["company.surveyInvited","Aantal betrokken medewerkers","Uitgenodigd voor kennis/houdingvragenlijst.","number"],
  ["company.surveyCovered","Aantal respondenten","Document streeft naar ≥70% dekking.","number"]])):""))+
- note("Fase 1 is inhoudelijk gereed wanneer het bedrijfsprofiel, drie knelpunten, eigenaar, indicator en commerciële bestemming van vrijgekomen tijd zijn uitgewerkt. Richttermijn in het document: twee weken.")+next(0);
+ note("Fase 1 is inhoudelijk gereed wanneer het bedrijfsprofiel, drie knelpunten, eigenaar, indicator en commerciële bestemming van vrijgekomen tijd zijn uitgewerkt. Richttermijn in het document: twee weken.")+kpiPanel(0)+next(0);
 }
 function guessedTask(){const c=active.company.problem.toLowerCase();return /rapport|dashboard|cijfer/.test(c)?"Campagnerapportages maken":/lead|crm|sales/.test(c)?"Leads opvolgen":/content|social|blog|tekst/.test(c)?"Marketingcontent voorbereiden":/klantvragen|service/.test(c)?"Klantvragen beantwoorden":"Een concrete, herhaalbare marketingtaak"}
 function taskCard(t,i,p){const fit=p.fitCheck(t),pr=p.priorityCheck(t,active.route,active.process.pairs),first=p.firstCheck(t),chosen=t.id===active.process.selectedTaskId;
@@ -129,7 +136,7 @@ function phase2(){title("Fase 2 · Procesprioritering","SIPOC, taakgeschiktheid,
  fold("15 paarsgewijze vergelijkingen",'<div class="form-grid">'+M.PRIORITY.flatMap((a,i)=>M.PRIORITY.slice(i+1).map((b,j)=>[i,i+j+1,a,b])).map(pair=>input("process.pairs."+pair[0]+"-"+pair[1],pair[2][1]+" versus "+pair[3][1],"9 = eerste criterium veel belangrijker; 1/9 = tweede veel belangrijker.","select",[[ "", "Nog niet ingevuld"],["0.1111111111","1/9"],["0.2","1/5"],["0.3333333333","1/3"],["1","1 (gelijk)"],["3","3"],["5","5"],["9","9"]])).join("")+'</div>')+
  note(st.ahp.complete?"Consistentieverhouding CR = "+st.ahp.cr+". "+(st.ahp.consistent?"Eigen gewichten kunnen worden toegepast.":"Matrix inconsistent: startweging blijft actief."):"De startweging van 25/20/15/15/15/10 blijft actief totdat de AHP-vergelijkingen volledig en consistent zijn.","blue")):"")+
  card("4. Rangorde en selectie",st.ranked.length?'<div class="tablewrap"><table><thead><tr><th>Rang</th><th>Taak</th><th>Prioriteit</th><th>Geschiktheid</th></tr></thead><tbody>'+st.ranked.map((t,i)=>'<tr><td>'+(i+1)+'</td><td>'+E(t.name)+'</td><td>'+t.priority.total+'/100</td><td>'+t.fit.average+'/5</td></tr>').join("")+'</tbody></table></div>':note("Nog geen taken voldoen aantoonbaar aan alle selectievoorwaarden. Dat is een geldige uitkomst; er wordt geen winnaar verzonnen.","warn"))+
- note("De risicoklasse per taak is een voorlopige inschatting. Gebruik fase 3 om het risiconiveau vast te stellen. Een hoogrisicotaak mag niet de eerste toepassing worden.")+next(1);
+ note("De risicoklasse per taak is een voorlopige inschatting. Gebruik fase 3 om het risiconiveau vast te stellen. Een hoogrisicotaak mag niet de eerste toepassing worden.")+kpiPanel(1)+next(1);
 }
 function phase3(){title("Fase 3 · Randvoorwaarden & risico's","Proportionele eisen, gebruiksafspraak en onderbouwd go/no-go.");
  const r=active.risk,st=M.riskCheck(r,active.route);
@@ -153,7 +160,7 @@ function phase3(){title("Fase 3 · Randvoorwaarden & risico's","Proportionele ei
  input("risk.controls."+x.key+".evidence","Bron/bewijs","Vermeld document, verantwoordelijke en controle.","textarea")+'</div></div>').join(""))+
  card("4. Go/no-go vóór de pilot",'<div class="notice '+(st.go?"":"warn")+'">'+(st.go?"Go is geregistreerd en alle digitale minimumcontroles zijn ingevuld.":"Geen onderbouwde go: "+(st.incomplete.length?st.incomplete.length+" verplichte maatregelen ontbreken. ":"")+(!st.ready?"Controleer risico, eigenaar en gebruiksafspraak.":""))+'</div>'+
  fields([["risk.decision","Besluit","Go alleen wanneer alle eisen van het niveau zijn geregeld.","select",[["unknown","Nog geen besluit"],["go","Go — voorbereiden pilot"],["no-go","No-go — eerst maatregelen"]]],["risk.decisionBy","Beslisser","Naam/functie van degene die akkoord geeft."],["risk.startedAt","Start risicobeoordeling","Richttijd: laag binnen 5 werkdagen, middel binnen 15.","date"],["risk.decisionAt","Datum go/no-go","Vastgelegd besluitmoment.","date"],["risk.actions","Acties bij no-go","Wat moet wanneer worden verbeterd?","textarea"]])+
- note("Het dashboard beoordeelt of het formulier compleet is; het beoordeelt niet zelfstandig de juridische juistheid van ingevulde verklaringen.","warn"))+next(2);
+ note("Het dashboard beoordeelt of het formulier compleet is; het beoordeelt niet zelfstandig de juridische juistheid van ingevulde verklaringen.","warn"))+kpiPanel(2)+next(2);
 }
 function toolEditor(t,i){const path="implementation.tools."+i,chk=M.toolCheck(t,M.riskLevel(active.risk));
  return '<div class="taskcard"><div class="taskhead"><b>'+E(t.name||"Nog geen naam")+'</b><span class="pill '+(chk.pass?"good":"")+'">'+(chk.pass?"Klaar voor selectietest":"Niet gekwalificeerd")+'</span>'+button("Selecteer","select-tool","xs",t.id)+button("Verwijder","delete-tool","danger xs",t.id)+'</div>'+
@@ -223,7 +230,7 @@ function phase4(){title("Fase 4 · AI-selectie & implementatie","Task-Technology
  cy.runs.map((run,k)=>runForm("implementation.pilot.cycles."+j+".runs."+k,run,"Uitvoering "+(k+1))).join("")+
  button("Meetuitvoering toevoegen","add-cycle-run","secondary xs",String(j)),j===0)).join("")+
  note("De tweede cyclus mag pas inhoudelijk worden geëvalueerd nadat de eerste is uitgevoerd. Meet ook controle- en correctietijd."))+
- card("6. Overdracht",fields([["implementation.pilot.handover","Borgingsafspraken","Eigenaar, instructie, prompts, controlepunten, monitoring en inwerken nieuwe collega's.","textarea"]]))+next(3);
+ card("6. Overdracht",fields([["implementation.pilot.handover","Borgingsafspraken","Eigenaar, instructie, prompts, controlepunten, monitoring en inwerken nieuwe collega's.","textarea"]]))+kpiPanel(3)+next(3);
 }
 function phase5(){title("Fase 5 · Meten, evalueren & groeien","Netto-opbrengst, bewijskracht, besluit en volgende taak.");
  const e=active.evaluation,ev=M.evaluate(active),ps=M.processCheck(active);
@@ -232,7 +239,8 @@ function phase5(){title("Fase 5 · Meten, evalueren & groeien","Netto-opbrengst,
  fields([["evaluation.frequency","Aantal herhalingen in evaluatieperiode","Voor netto tijdwinstberekening.","number"],
  ["evaluation.setupMinutes","Inrichttijd in minuten","Eenmalige inrichting.","number"],
  ["evaluation.trainingMinutes","Leertijd in minuten","Alle training meenemen.","number"],
- ["evaluation.reallocated","Waar wordt de vrijgekomen tijd besteed?","Capaciteit is niet automatisch financiële besparing.","textarea"]])+
+ ["evaluation.reallocated","Waar wordt de vrijgekomen tijd besteed?","Capaciteit is niet automatisch financiële besparing.","textarea",
+ ["evaluation.reallocatedShare","Welk percentage van de vrijgekomen tijd gaat naar de benoemde commerciële activiteit?","Fase 5 noemt circa 50% als voorlopige streefwaarde.","number"]])+
  note("Netto tijdwinst = (gemiddelde nulmeting − gemiddelde laatste ronde) × uitvoeringen − inrichttijd − leertijd. ROI verschijnt alleen wanneer kosten én gerealiseerde financiële baten met bronnen zijn onderbouwd.","blue"))+
  card("2. Kwaliteit, kosten en klantwaarde",'<div class="metricbar"><div class="metric"><strong>'+(ev.qb??"—")+'</strong><small>Blinde kwaliteit vóór</small></div><div class="metric"><strong>'+(ev.qa??"—")+'</strong><small>Blinde kwaliteit ná</small></div><div class="metric"><strong>'+(ev.cost??"—")+'</strong><small>Terugkerende kosten €</small></div><div class="metric"><strong>'+(ev.roi===null?"—":ev.roi+"%")+'</strong><small>Voorwaardelijke ROI</small></div></div>'+
  fields([["evaluation.laborRate","Uurtarief arbeid (€)","Alleen voor onderbouwde scenarioanalyse.","number"],["evaluation.monthlyLicence","Licentiekosten evaluatieperiode (€)","","number"],
@@ -253,7 +261,7 @@ function phase5(){title("Fase 5 · Meten, evalueren & groeien","Netto-opbrengst,
  ["evaluation.limitations","Beperkingen van de meting","Bijv. klein aantal uitvoeringen of leercurve.","textarea"],
  ["evaluation.nextTaskId","Volgende taak in de groeiroute","Na doorgaan opnieuw beginnen in fase 2.","select",[["","Nog niet gekozen"],...ps.tasks.filter(t=>t.id!==ps.chosen?.id).map(t=>[t.id,t.name])]]])+
  (ev.canContinue&&ev.next?note("Groeipad: ga voor de volgende toepassing terug naar fase 2 en onderzoek <b>"+E(ev.next.name)+"</b>.","blue"):"")+
- note("Een besluit om door te gaan vraagt minimaal bewijsniveau 2 (voor-/nameting), positieve netto tijdwinst, minstens gelijke kwaliteit en geen open incidenten. Het blijft geen bewijs voor causaliteit. Bij weinig volume is klantimpact vaak indicatief.","warn"))+next(4);
+ note("Een besluit om door te gaan vraagt minimaal bewijsniveau 2 (voor-/nameting), positieve netto tijdwinst, minstens gelijke kwaliteit en geen open incidenten. Het blijft geen bewijs voor causaliteit. Bij weinig volume is klantimpact vaak indicatief.","warn"))+kpiPanel(4)+next(4);
 }
 function compare(){title("Vergelijk de bedrijven","Een kwalitatieve vergelijking van onafhankelijke casussen.");
  return '<header class="stagehero"><span class="stagecount">G-CLUSTER · WERKVELDTOETSING</span><h2>Welke patronen zien we in het MKB?</h2><p>Vergelijk de bedrijfsdossiers, zonder te doen alsof vijf bedrijven statistisch representatief zijn.</p></header>'+
