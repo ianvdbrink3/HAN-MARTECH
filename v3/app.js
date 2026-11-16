@@ -165,7 +165,7 @@ function toolEditor(t,i){const path="implementation.tools."+i,chk=M.toolCheck(t)
 }
 function runForm(path,run,title,quality=true){let result=M.runCheck(run);return fold(E(title)+' · '+(result.minutes===null?"Nog geen volledige tijdmeting":result.minutes+" min"),'<div class="form-grid">'+
  input(path+".date","Datum","Datum van de taakuitvoering.","date")+
- input(path+".usedAI","Oplossing gebruikt?","","select",[["unknown","Onbekend"],["yes","Ja"],["no","Nee"]]])+
+ input(path+".usedAI","Oplossing gebruikt?","","select",[["unknown","Onbekend"],["yes","Ja"],["no","Nee"]])+
  input(path+".prepare","Voorbereiding (min)","Gemeten tijd.","number")+
  input(path+".prompt","Prompten/invoer (min)","","number")+
  input(path+".check","Controleren (min)","","number")+
