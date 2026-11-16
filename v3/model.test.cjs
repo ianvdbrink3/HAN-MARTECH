@@ -42,11 +42,11 @@ const run=(minutes,usedAI)=>({prepare:String(minutes/4),prompt:String(minutes/4)
 assert.equal(M.runCheck(run(80,true)).minutes,80);
 assert.equal(M.qualityCheck(quality()).mean,4);
 tool.tests=[run(50,true),run(52,true),run(48,true)];tool.blind="yes";
-assert.equal(M.toolCheck(tool).pass,true);
+assert.equal(M.toolCheck(tool,"low").pass,true);
 assert.equal(M.trialCheck(tool).pass,true);
 tool.tests[0].quality.brand="2";tool.tests[1].quality.brand="2";assert.equal(M.trialCheck(tool).pass,false);tool.tests[0].quality.brand="4";tool.tests[1].quality.brand="4";
 const toolB=JSON.parse(JSON.stringify(tool));toolB.id="tool-b";toolB.name="Tool B";toolB.tests=[run(44,true),run(45,true),run(45,true)];
-assert.equal(M.selectTools([tool,toolB]).winner.tool.name,"Tool B");
+assert.equal(M.selectTools([tool,toolB],"low").winner.tool.name,"Tool B");
 c.implementation.tools=[tool,toolB];
 c.implementation.pilot.baseline=[run(90,false),run(90,false),run(90,false),run(90,false),run(90,false)];
 for(const cycle of c.implementation.pilot.cycles){cycle.plan="Plan";cycle.do="Do";cycle.study="Study";cycle.act="Act";cycle.runs=[run(50,true),run(50,true),run(50,true)]}
