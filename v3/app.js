@@ -81,7 +81,7 @@ function phase1(){title("Fase 1 · Bedrijfsanalyse","TOE, AI-gereedheid en een m
  ["company.measurementCapacity","Ruimte voor nulmeting en pilot","Welke tijd is beschikbaar voor vijf nulmetingen en meerdere cycli?"]])+
  (active.route==="full"?fold("Aanvullend: medewerkersvragenlijst bij volledige route",fields([
  ["company.surveyInvited","Aantal betrokken medewerkers","Uitgenodigd voor kennis/houdingvragenlijst.","number"],
- ["company.surveyCovered","Aantal respondenten","Document streeft naar ≥70% dekking.","number"]])):"")+
+ ["company.surveyCovered","Aantal respondenten","Document streeft naar ≥70% dekking.","number"]])):""))+
  note("Fase 1 is inhoudelijk gereed wanneer het bedrijfsprofiel, drie knelpunten, eigenaar, indicator en commerciële bestemming van vrijgekomen tijd zijn uitgewerkt. Richttermijn in het document: twee weken.")+next(0);
 }
 function guessedTask(){const c=active.company.problem.toLowerCase();return /rapport|dashboard|cijfer/.test(c)?"Campagnerapportages maken":/lead|crm|sales/.test(c)?"Leads opvolgen":/content|social|blog|tekst/.test(c)?"Marketingcontent voorbereiden":/klantvragen|service/.test(c)?"Klantvragen beantwoorden":"Een concrete, herhaalbare marketingtaak"}
