@@ -260,7 +260,7 @@ function compare(){title("Vergelijk de bedrijven","Een kwalitatieve vergelijking
  note("Voor een hbo-analyse: koppel deze gegevens aan interviewtranscripten en beschrijf patronen, uitzonderingen en de mate van zelfstandig gebruik. Vergelijk ook de lichte en volledige route.","blue");
 }
 function report(){title("AI-adviesrapport","Bedrijfsspecifieke uitkomsten, berekeningen en ontbrekend bewijs.");
- const r=M.report(active);
+ const r=window.GK3Report.build(active);
  return '<header class="stagehero"><span class="stagecount">DIGITAAL ONDERZOEKSRAPPORT</span><h2>Wat kunnen we op basis van het onderzoek adviseren?</h2><p>Een controleerbare samenvatting van de vijf fasen, niet een willekeurige tekstgenerator. Ontbrekende bewijzen blijven zichtbaar.</p></header>'+
  '<div class="itembar report-actions">'+button("Afdrukken / PDF","print","")+button("Download HTML","download-report","secondary")+button("Terug naar overzicht","nav","secondary","overview")+'</div>'+
  '<article class="report" id="reportPaper">'+r.html+'</article>';
@@ -304,7 +304,7 @@ function command(action,value){
  case "add-cycle-run":{const x=active.implementation.pilot.cycles[Number(value)];if(x){x.runs.push({date:"",usedAI:"yes",prepare:"",prompt:"",check:"",correct:"",quality:{}});persist();render(true)}break}
  case "add-incident":active.risk.incidentLog.push({issue:"",status:"open"});persist();render(true);break;
  case "print":window.print();break;
- case "download-report":{const html='<!DOCTYPE html><html lang="nl"><head><meta charset="utf-8"><title>Groeikompas advies</title><link rel="stylesheet" href="v3/style.css"></head><body><article class="report">'+M.report(active).html+'</article></body></html>';download(html,"AI-Groeikompas-advies-"+active.id+".html","text/html");break}
+ case "download-report":{const html=window.GK3Report.standalone(active);download(html,"AI-Groeikompas-advies-"+active.id+".html","text/html");break}
  case "export":download(JSON.stringify({format:"GROEIKOMPAS-V3",version:3,cases:vault.cases,selected:vault.selected},null,2),"AI-Groeikompas-bedrijfsdossiers.json","application/json");break;
  case "import":$("fileImport").click();break;
  case "new-company":{const name=prompt("Naam van het nieuwe bedrijf:","Bedrijf "+(vault.cases.length+1));if(!s(name))return;const x=M.newCase(name.trim());vault.cases.push(x);chooseCompany(x.id);move("p0");break}
