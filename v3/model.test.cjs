@@ -44,7 +44,7 @@ assert.equal(M.qualityCheck(quality()).mean,4);
 tool.tests=[run(50,true),run(52,true),run(48,true)];tool.blind="yes";
 assert.equal(M.toolCheck(tool).pass,true);
 assert.equal(M.trialCheck(tool).pass,true);
-tool.tests[0].quality.brand="2";assert.equal(M.trialCheck(tool).pass,false);tool.tests[0].quality.brand="4";
+tool.tests[0].quality.brand="2";tool.tests[1].quality.brand="2";assert.equal(M.trialCheck(tool).pass,false);tool.tests[0].quality.brand="4";tool.tests[1].quality.brand="4";
 const toolB=JSON.parse(JSON.stringify(tool));toolB.id="tool-b";toolB.name="Tool B";toolB.tests=[run(44,true),run(45,true),run(45,true)];
 assert.equal(M.selectTools([tool,toolB]).winner.tool.name,"Tool B");
 c.implementation.tools=[tool,toolB];
