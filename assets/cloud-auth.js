@@ -156,6 +156,10 @@
     var submit = node("authSubmit");
     var switchMode = node("toggleAuthMode");
     var forgot = node("forgotPassword");
+    var otpForm = node("authOtpForm");
+    var otpInput = node("authOtpCode");
+    var otpSubmit = node("authOtpSubmit");
+    var otpEmail = "";
     function updateMode() {
       submit.textContent = mode === "login" ? "Inloggen" : "Account aanmaken";
       switchMode.textContent = mode === "login" ? "Nog geen account? Registreren" : "Al een account? Inloggen";
@@ -186,9 +190,13 @@
           });
           if (signUp.error) throw signUp.error;
           passwordInput.value = "";
+          otpEmail = email;
           mode = "login";
           updateMode();
-          node("authMessage").textContent = "Controleer je mailbox voor de verificatielink. Je kunt daarna inloggen. Als het e-mailadres al bestaat, ontvang je mogelijk geen nieuwe bevestiging.";
+          otpInput.value = "";
+          form.hidden = true;
+          otpForm.hidden = false;
+          node("authMessage").textContent = "Er is een e-mail verstuurd. Voer de eenmalige verificatiecode hieronder in. Als je bericht nog een bevestigingslink bevat, moet de beheerder de e-mailtemplate eerst aanpassen.";
         } else {
           var signIn = await client.auth.signInWithPassword({ email: email, password: password });
           if (signIn.error) throw signIn.error;
@@ -201,6 +209,30 @@
         submit.disabled = false;
         switchMode.disabled = false;
       }
+    });
+    otpForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      if (!otpForm.reportValidity()) return;
+      otpSubmit.disabled = true;
+      node("authMessage").textContent = "Verificatiecode controleren…";
+      try {
+        var result = await client.auth.verifyOtp({
+          email: otpEmail, token: otpInput.value.trim(), type: "email"
+        });
+        if (result.error) throw result.error;
+        otpInput.value = "";
+        await loadUser();
+      } catch (error) {
+        node("authMessage").textContent = "Verificatie mislukt: " + error.message;
+      } finally {
+        otpSubmit.disabled = false;
+      }
+    });
+    node("authOtpBack").addEventListener("click", function () {
+      otpForm.hidden = true;
+      form.hidden = false;
+      mode = "login";
+      updateMode();
     });
     forgot.addEventListener("click", async function () {
       if (!emailInput.reportValidity()) {
