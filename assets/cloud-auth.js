@@ -25,7 +25,7 @@
   function showGate(title, detail, signIn) {
     node("authTitle").textContent = title;
     node("authMessage").textContent = detail;
-    node("googleSignIn").hidden = !signIn;
+    node("emailAuthForm").hidden = !signIn;
     node("authGate").hidden = false;
     node("appShell").hidden = true;
   }
@@ -116,12 +116,12 @@
     var sessionResponse = await client.auth.getSession();
     if (sessionResponse.error) throw sessionResponse.error;
     if (!sessionResponse.data.session) {
-      showGate("Welkom bij het AI-Groeikompas", "Log veilig in met Google om je eigen bedrijfsdossiers te openen.", true);
+      showGate("Welkom bij het AI-Groeikompas", "Log in met je e-mailadres of maak een nieuw account aan.", true);
       return;
     }
     var response = await client.auth.getUser();
     if (response.error || !response.data.user) {
-      showGate("Sessie verlopen", "Log opnieuw in met Google.", true);
+      showGate("Sessie verlopen", "Log opnieuw in met je e-mailadres.", true);
       return;
     }
     currentUser = response.data.user;
@@ -149,19 +149,86 @@
     client.auth.onAuthStateChange(function (event) {
       if (event === "SIGNED_OUT" && isStarted) global.location.reload();
     });
-    node("googleSignIn").addEventListener("click", async function () {
-      var button = node("googleSignIn");
-      button.disabled = true;
-      node("authMessage").textContent = "Je wordt doorgestuurd naar Google…";
+    var mode = "login";
+    var form = node("emailAuthForm");
+    var emailInput = node("authEmail");
+    var passwordInput = node("authPassword");
+    var submit = node("authSubmit");
+    var switchMode = node("toggleAuthMode");
+    var forgot = node("forgotPassword");
+    function updateMode() {
+      submit.textContent = mode === "login" ? "Inloggen" : "Account aanmaken";
+      switchMode.textContent = mode === "login" ? "Nog geen account? Registreren" : "Al een account? Inloggen";
+      passwordInput.autocomplete = mode === "login" ? "current-password" : "new-password";
+      forgot.hidden = mode !== "login";
+      node("authMessage").textContent = mode === "login"
+        ? "Log in om je eigen bedrijfsdossiers te openen."
+        : "Registreer met je e-mailadres en een wachtwoord van minimaal 8 tekens. Je ontvangt een bevestigingsmail.";
+    }
+    switchMode.addEventListener("click", function () {
+      mode = mode === "login" ? "signup" : "login";
+      passwordInput.value = "";
+      updateMode();
+    });
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      var email = emailInput.value.trim();
+      var password = passwordInput.value;
+      submit.disabled = true;
+      switchMode.disabled = true;
+      node("authMessage").textContent = "Je aanvraag wordt verwerkt…";
       try {
-        var result = await client.auth.signInWithOAuth({
-          provider: "google",
-          options: { redirectTo: global.location.origin + global.location.pathname }
+        if (mode === "signup") {
+          var signUp = await client.auth.signUp({
+            email: email, password: password,
+            options: { emailRedirectTo: global.location.origin + global.location.pathname }
+          });
+          if (signUp.error) throw signUp.error;
+          passwordInput.value = "";
+          mode = "login";
+          updateMode();
+          node("authMessage").textContent = "Controleer je mailbox voor de verificatielink. Je kunt daarna inloggen. Als het e-mailadres al bestaat, ontvang je mogelijk geen nieuwe bevestiging.";
+        } else {
+          var signIn = await client.auth.signInWithPassword({ email: email, password: password });
+          if (signIn.error) throw signIn.error;
+          passwordInput.value = "";
+          await loadUser();
+        }
+      } catch (error) {
+        node("authMessage").textContent = "Aanmelden mislukt: " + error.message;
+      } finally {
+        submit.disabled = false;
+        switchMode.disabled = false;
+      }
+    });
+    forgot.addEventListener("click", async function () {
+      if (!emailInput.reportValidity()) {
+        node("authMessage").textContent = "Vul eerst je e-mailadres in.";
+        return;
+      }
+      forgot.disabled = true;
+      try {
+        var result = await client.auth.resetPasswordForEmail(emailInput.value.trim(), {
+          redirectTo: global.location.origin + global.location.pathname
         });
         if (result.error) throw result.error;
+        node("authMessage").textContent = "Als dit e-mailadres bekend is, ontvang je een herstelmail.";
       } catch (error) {
-        button.disabled = false;
-        node("authMessage").textContent = "Inloggen is mislukt: " + error.message;
+        node("authMessage").textContent = "Herstelmail aanvragen mislukt: " + error.message;
+      } finally {
+        forgot.disabled = false;
+      }
+    });
+    client.auth.onAuthStateChange(function (event) {
+      if (event === "PASSWORD_RECOVERY") {
+        global.setTimeout(async function () {
+          var replacement = global.prompt("Voer je nieuwe wachtwoord in (minimaal 8 tekens):");
+          if (!replacement) return;
+          if (replacement.length < 8) { alert("Het wachtwoord moet minimaal 8 tekens bevatten."); return; }
+          var response = await client.auth.updateUser({password: replacement});
+          alert(response.error ? "Wachtwoord aanpassen mislukt: "+response.error.message : "Je wachtwoord is gewijzigd.");
+        }, 0);
       }
     });
     node("logout").addEventListener("click", async function () {
