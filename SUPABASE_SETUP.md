@@ -37,6 +37,29 @@ Gebruik uitsluitend een eigen, bereikbare testmailbox. Test eerst registratie �
 
 **Status:** deze stappen zijn nog niet als uitgevoerd geverifieerd. De beschikbare Supabase-integratie kan SQL en RLS beheren, maar biedt geen beheeractie voor Auth-redirects of SMTP-credentials. Een externe Brevo-registratie en verificatie kunnen niet zonder accounttoestemming en een werkende browserverbinding worden afgerond. Het gepubliceerde G-versie blijft onaangetast.
 
+## Beveiliging: voorkomen van automatische e-mailbevestiging
+
+Tijdens de testregistratie op 23 november 2026 zagen we dat Supabase de verificatielink 21 seconden na het aanmaken van het account ontving via een Windows/Chrome-user-agent, terwijl de gebruiker op Safari/Mac werkte. Mogelijk heeft een beveiligingsscanner de bevestigingslink alvast geopend. Daarom is een code-invoerformulier toegevoegd aan de preview.
+
+**Verplicht vóór openbaar gebruik:** verander ook het Supabase-e-mailtemplate, anders blijft de standaardlink auto-verifieerbaar en ontvangt de gebruiker geen code om in te vullen.
+
+1. Open https://supabase.com/dashboard/project/lluklxiwsrpvqzfxlakq/auth/templates
+2. Kies **Confirm signup / Confirm your email**.
+3. Maak de template bijv.:
+
+   ```html
+   <h2>Bevestig je e-mailadres voor AI-Groeikompas</h2>
+   <p>Gebruik onderstaande eenmalige code in de AI-Groeikompas-webapp om je account te activeren:</p>
+   <p style="font-size:26px;font-weight:bold;letter-spacing:3px">{{ .Token }}</p>
+   <p>Heb je geen account aangemaakt? Negeer deze e-mail.</p>
+   ```
+
+4. **Verwijder** `{{ .ConfirmationURL }}` uit de bevestigingsmail, zodat een automatische linkscanner de accountbevestiging niet kan uitvoeren. Laat **Confirm email** in Auth Providers aan.
+5. Na registratie verschijnt in de preview een invoerveld voor de code. De app roept `supabase.auth.verifyOtp({ email, token, type: 'email' })` aan. Gebruik een nieuw testmailadres; een bestaand bevestigd account laat niet opnieuw deze flow zien.
+
+Supabase-documentatie: https://supabase.com/docs/guides/auth/auth-email-templates (onder 'Email prefetching').
+Deze templatewijziging is **nog niet doorgevoerd** in het Supabase-dashboard; de beschikbare connector geeft geen toegang tot Authentication → Templates.
+ 
 ## Acceptatietest voor live gebruik
 1. Maak met een test-e-mailadres een nieuw account aan. Ontvang de bevestigingslink en activeer het account.
 2. Log in, voer gegevens in een dossier in, wacht tot synchronisatie gereed is en controleer dat gegevens na herladen blijven bestaan.
