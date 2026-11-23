@@ -16,6 +16,11 @@
       <div class="auth-switch"><button type="button" id="toggleAuthMode" class="btn alt">Nog geen account? Registreren</button></div>
       <button type="button" id="forgotPassword" class="auth-link">Wachtwoord vergeten?</button>
     </form>
+    <form id="authOtpForm" hidden>
+      <div class="field"><label for="authOtpCode">Verificatiecode uit je e-mail</label><input id="authOtpCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,8}" minlength="6" maxlength="8" required placeholder="Vul de code in"></div>
+      <button type="submit" id="authOtpSubmit" class="btn auth-submit">E-mailadres bevestigen</button>
+      <button type="button" id="authOtpBack" class="btn alt">Terug naar inloggen</button>
+    </form>
     <p class="auth-disclaimer">Registreren kan uitsluitend met een geldig e-mailadres. Je gegevens worden privé opgeslagen per account. Het adviesmodel is nog in ontwikkeling en geen automatische juridische of privacygoedkeuring.</p>
   </section>
 </div>
