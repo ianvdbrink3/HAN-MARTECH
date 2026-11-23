@@ -25,3 +25,8 @@
 .auth-switch {text-align:center;margin-top:7px}
 .auth-switch .btn {width:100%;padding:12px}
 .auth-link {padding:8px;border:0;background:none;color:#27698c;text-decoration:underline;font-size:13px;cursor:pointer}
+
+/* Verificatie door handmatig ingevoerde code, niet door een automatisch bezochte link. */
+.auth-panel #authOtpForm {display:grid;gap:10px;margin-top:18px}
+.auth-panel #authOtpForm input {min-height:48px;font-size:19px;letter-spacing:3px;text-align:center}
+.auth-panel #authOtpBack {margin-top:3px}
