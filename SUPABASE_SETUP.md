@@ -12,11 +12,30 @@
 
 Supabase biedt standaard een beperkte SMTP-testdienst die **alleen naar geautoriseerde team-e-mailadressen** kan verzenden. Daarom werkt e-mailbevestiging voor willekeurige respondenten nog NIET. Laat e-mailbevestiging aan staan; schakel dit niet uit als omweg.
 
-1. Kies een SMTP-aanbieder met een geschikt gratis abonnement (bijvoorbeeld Brevo of Resend, afhankelijk van actuele gratis limieten en domeinvoorwaarden).
-2. Verifieer daar een verzenddomein dat je beheert. Richt de vereiste SPF/DKIM/D(M)ARC-records in.
-3. Ga naar `https://supabase.com/dashboard/project/lluklxiwsrpvqzfxlakq/settings/auth` en stel Custom SMTP in (host, poort, verzendadres, gebruikersnaam en wachtwoord). Bewaar de SMTP-credentials alleen in Supabase, nooit in GitHub, de browsercode of deze chat.
-4. Ga naar `https://supabase.com/dashboard/project/lluklxiwsrpvqzfxlakq/auth/url-configuration`. Stel **Site URL** en de toegestane Redirect URL exact in op: `https://groeikompas-git-preview-supabase-g-fb0158-ianvdbrink3s-projects.vercel.app`.
-5. Controleer onder Authentication → Providers → Email dat e-mailregistratie en bevestiging ingeschakeld zijn. Verifieer dat het aantal registratiebevestigingen past binnen het SMTP-free-abonnement.
+### A. Gratis Brevo SMTP activeren (account en afzenderbevestiging zijn vereist)
+1. Maak zelf een **Brevo Free**-account aan op https://www.brevo.com/ en bevestig het account. Kies uitsluitend Free; geen betaalmethode of upgrade nodig voor ons voorstel. Gratis limiet volgens Brevo: 300 e-mailverzendingen per dag. Verzendlimieten en beschikbaarheid kunnen later veranderen.
+2. Verifieer een verzenddomein dat je daadwerkelijk beheert via de vereiste DKIM/DMARC-records (en eventueel SPF) en stel een afzender in, bijvoorbeeld `no-reply@jouwdomein.nl`. Als je nog geen eigen domein hebt, bespreek dan eerst welke bestaande afzender je mag gebruiken. Brevo vereist soms extra activering van transactionele e-mail. De applicatie mag dit nooit als ingesteld behandelen voordat een echte mail aankomt.
+3. In Brevo → **Settings → SMTP & API → SMTP**: maak een **SMTP key** aan en gebruik de exacte daar getoonde SMTP-login. Dit is niet dezelfde sleutel als de Brevo API-key en niet jouw normale accountwachtwoord.
+4. Open in Supabase [Authentication / Emails / SMTP settings](https://supabase.com/dashboard/project/lluklxiwsrpvqzfxlakq/auth/settings) en activeer **Custom SMTP**. Vul in:
+   - Sender email: je door Brevo geverifieerde afzender
+   - Sender name: `AI-Groeikompas`
+   - Host: `smtp-relay.brevo.com`
+   - Port: `587` (STARTTLS) of `465` (SSL/TLS)
+   - Username: de **SMTP Login** zoals Brevo die toont
+   - Password: jouw **SMTP key** rechtstreeks in Supabase
+   - Minimum interval / rate limit: behoud een conservatieve limiet voor het gratis pakket
+5. Sla op. **Nooit je SMTP key in GitHub, front-end-config of ChatGPT plakken.**
+
+### B. Redirects exact configureren
+1. Open [Supabase URL Configuration](https://supabase.com/dashboard/project/lluklxiwsrpvqzfxlakq/auth/url-configuration).
+2. Zet Site URL op: `https://groeikompas-git-preview-supabase-g-fb0158-ianvdbrink3s-projects.vercel.app`
+3. Voeg onder Additional Redirect URLs exact dezelfde HTTPS-URL toe (met en zonder afsluitende slash indien nodig). Vermijd globaal toegestane `**`-domeinen.
+4. Controleer in [Authentication → Providers → Email](https://supabase.com/dashboard/project/lluklxiwsrpvqzfxlakq/auth/providers) dat e-mailregistratie en **Confirm Email** aan staan. Schakel bevestiging niet uit als omweg.
+
+### C. Regressietest vóór gebruik
+Gebruik uitsluitend een eigen, bereikbare testmailbox. Test eerst registratie → ontvangen bevestigingslink → terugkeer op de preview → inloggen → gegevens opslaan en opnieuw ophalen. Test vervolgens `Wachtwoord vergeten` en controleer de accountisolatie met een tweede geverifieerd account.
+
+**Status:** deze stappen zijn nog niet als uitgevoerd geverifieerd. De beschikbare Supabase-integratie kan SQL en RLS beheren, maar biedt geen beheeractie voor Auth-redirects of SMTP-credentials. Een externe Brevo-registratie en verificatie kunnen niet zonder accounttoestemming en een werkende browserverbinding worden afgerond. Het gepubliceerde G-versie blijft onaangetast.
 
 ## Acceptatietest voor live gebruik
 1. Maak met een test-e-mailadres een nieuw account aan. Ontvang de bevestigingslink en activeer het account.
