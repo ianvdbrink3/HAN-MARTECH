@@ -97,3 +97,15 @@ node tests/adaptive-flow.test.cjs
 ```
 
 De wijzigingen horen uitsluitend bij de branch `preview/adviesrapport-v1`; niet rechtstreeks naar `main` of Vercel Production publiceren.
+
+## Supabase + Google-login (aparte previewbranch, november 2026)
+
+Branch `preview/supabase-google-auth-v1` bevat een **Google-login via Supabase Auth**,
+persoonlijke PostgreSQL-bedrijfsdossiers, RLS-regels per gebruiker, opslaan in de cloud,
+en gecontroleerde migratie/import van bestaande browsergegevens. De huidige vijf fasen en
+adviesrapporten blijven behouden. Dit is **nog niet operationeel** totdat de Supabase
+SQL-migratie, Google OAuth-provider, publieke frontendconfiguratie en echte RLS-toegangstests
+zijn uitgevoerd. De productieversie blijft ongewijzigd.
+
+**Instructies, veiligheidsbeperkingen en acceptatietests:** [SUPABASE_SETUP.md](SUPABASE_SETUP.md).
+
