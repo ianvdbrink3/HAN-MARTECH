@@ -87,6 +87,7 @@ async function testAuthenticatedFlow() {
 
 async function testNotSignedIn() {
   const nodes={};
+  let verified=false, verifiedToken=null, loaded=null;
   const doc={getElementById(id){return nodes[id]??(nodes[id]={textContent:"",hidden:false,disabled:false,value:"",addEventListener(k,fn){this[k]=fn},reportValidity(){return true}})},
     addEventListener(){}};
   const w={
@@ -94,9 +95,18 @@ async function testNotSignedIn() {
     location:{origin:"https://preview.vercel.app",pathname:"/"},
     addEventListener(){},
     supabase:{createClient:()=>({
-      auth:{getSession:async()=>({data:{session:null}}),onAuthStateChange(){},signUp:async()=>({data:{user:{id:"test"}},error:null}),signInWithPassword:async()=>({data:{session:{}},error:null}),resetPasswordForEmail:async()=>({error:null})}
+      auth:{
+        getSession:async()=>({data:{session:verified?{access_token:"test"}:null}}),
+        getUser:async()=>({data:{user:{id:"test-user",email:"tester@example.org"}}}),
+        onAuthStateChange(){},
+        signUp:async()=>({data:{user:{id:"test-user"}},error:null}),
+        signInWithPassword:async()=>({data:{session:{}},error:null}),
+        resetPasswordForEmail:async()=>({error:null}),
+        verifyOtp:async(args)=>{verifiedToken=args;verified=true;return {data:{session:{access_token:"test"}},error:null};}
+      },
+      from:()=>({select:()=>({eq:()=>({order:async()=>({data:[],error:null})})})})
     })},
-    startGroeikompas:()=>{throw Error("Unauthenticated app must not render");}
+    startGroeikompas:(rows,user)=>{loaded={rows,user};}
   };
   const ctx=vm.createContext({window:w,document:doc,Map,Set,Date,JSON,Promise,setTimeout,clearTimeout});
   vm.runInContext(fs.readFileSync("assets/cloud-auth.js","utf8"),ctx);
@@ -106,10 +116,24 @@ async function testNotSignedIn() {
   assert.equal(nodes.emailAuthForm.hidden,false);
   nodes.toggleAuthMode.click();
   assert.equal(nodes.authSubmit.textContent,"Account aanmaken");
+  assert.equal(loaded,null,"Unauthenticated app must not render");
+  nodes.authEmail.value="tester@example.org";
+  nodes.authPassword.value="test-secret-password";
+  await nodes.emailAuthForm.submit({preventDefault(){}});
+  assert.equal(nodes.emailAuthForm.hidden,true);
+  assert.equal(nodes.authOtpForm.hidden,false);
+  nodes.authOtpCode.value="123456";
+  await nodes.authOtpForm.submit({preventDefault(){}});
+  assert.equal(verifiedToken.email,"tester@example.org");
+  assert.equal(verifiedToken.token,"123456");
+  assert.equal(verifiedToken.type,"email");
+  assert.equal(nodes.authGate.hidden,true);
+  assert.equal(nodes.appShell.hidden,false);
+  assert.equal(loaded.user.id,"test-user");
 }
 
 (async()=>{
   await testAuthenticatedFlow();
   await testNotSignedIn();
-  console.log("PASS: Email signup/login gate and scoped Supabase dossier saves/deletes (offline mocks)");
+  console.log("PASS: Email signup, manual OTP verification, and scoped cloud saves/deletes (offline mocks)");
 })().catch(e=>{console.error(e);process.exitCode=1;});
