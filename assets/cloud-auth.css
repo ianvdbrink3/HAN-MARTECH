@@ -16,3 +16,12 @@
 .cloud-toolbar { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
 .cloud-toolbar .btn { padding: 9px 11px; }
 @media(max-width:650px) { .cloud-toolbar { justify-content: flex-start; } }
+
+/* E-mailaccount aanmelden, registreren en herstellen. */
+.auth-panel #emailAuthForm {display:grid;gap:7px;margin-top:18px}
+.auth-panel #emailAuthForm .field {margin:4px 0}
+.auth-panel #emailAuthForm input {min-height:44px}
+.auth-submit {width:100%;padding:14px;margin-top:7px}
+.auth-switch {text-align:center;margin-top:7px}
+.auth-switch .btn {width:100%;padding:12px}
+.auth-link {padding:8px;border:0;background:none;color:#27698c;text-decoration:underline;font-size:13px;cursor:pointer}
