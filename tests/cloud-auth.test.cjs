@@ -24,7 +24,10 @@ async function testAuthenticatedFlow() {
       getSession: async()=>({data:{session:{access_token:"test"}}}),
       getUser: async()=>({data:{user}}),
       onAuthStateChange(){},
-      signInWithOAuth: async()=>({data:{url:"https://accounts.google.com"},error:null}),
+      signInWithPassword: async()=>({data:{session:{access_token:"test"}},error:null}),
+      signUp:async()=>({data:{user},error:null}),
+      resetPasswordForEmail:async()=>({error:null}),
+      updateUser:async()=>({error:null}),
       signOut: async()=>({error:null})
     },
     from(name){
@@ -84,14 +87,14 @@ async function testAuthenticatedFlow() {
 
 async function testNotSignedIn() {
   const nodes={};
-  const doc={getElementById(id){return nodes[id]??(nodes[id]={textContent:"",hidden:false,addEventListener(){}})},
+  const doc={getElementById(id){return nodes[id]??(nodes[id]={textContent:"",hidden:false,disabled:false,value:"",addEventListener(k,fn){this[k]=fn},reportValidity(){return true}})},
     addEventListener(){}};
   const w={
     GROEIKOMPAS_SUPABASE:{url:"https://demo.supabase.co",publishableKey:"sb_publishable_test"},
     location:{origin:"https://preview.vercel.app",pathname:"/"},
     addEventListener(){},
     supabase:{createClient:()=>({
-      auth:{getSession:async()=>({data:{session:null}}),onAuthStateChange(){}}
+      auth:{getSession:async()=>({data:{session:null}}),onAuthStateChange(){},signUp:async()=>({data:{user:{id:"test"}},error:null}),signInWithPassword:async()=>({data:{session:{}},error:null}),resetPasswordForEmail:async()=>({error:null})}
     })},
     startGroeikompas:()=>{throw Error("Unauthenticated app must not render");}
   };
@@ -100,11 +103,13 @@ async function testNotSignedIn() {
   await w.GroeikompasCloud.init();
   assert.equal(nodes.authGate.hidden,false);
   assert.equal(nodes.appShell.hidden,true);
-  assert.equal(nodes.googleSignIn.hidden,false);
+  assert.equal(nodes.emailAuthForm.hidden,false);
+  nodes.toggleAuthMode.click();
+  assert.equal(nodes.authSubmit.textContent,"Account aanmaken");
 }
 
 (async()=>{
   await testAuthenticatedFlow();
   await testNotSignedIn();
-  console.log("PASS: Google auth gate and scoped Supabase dossier saves/deletes (offline mocks)");
+  console.log("PASS: Email signup/login gate and scoped Supabase dossier saves/deletes (offline mocks)");
 })().catch(e=>{console.error(e);process.exitCode=1;});
