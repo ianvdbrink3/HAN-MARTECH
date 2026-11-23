@@ -97,3 +97,12 @@ node tests/adaptive-flow.test.cjs
 ```
 
 De wijzigingen horen uitsluitend bij de branch `preview/adviesrapport-v1`; niet rechtstreeks naar `main` of Vercel Production publiceren.
+
+## Supabase + e-mailaccounts (aparte previewbranch, november 2026)
+
+Branch `preview/supabase-google-auth-v1` (historische naam) gebruikt inmiddels **e-mailadres en wachtwoord via Supabase Auth**, en geen Google OAuth meer. Bedrijfsdossiers worden privé bewaard in PostgreSQL met RLS. Een bevestigde registratie wordt in een afgeschermde wachtrij gezet; een ChatGPT-automatisering controleert deze ieder uur en verstuurt een melding als er nieuwe accounts zijn.
+
+De Supabase Free-database en de RLS-migratie zijn daadwerkelijk ingesteld. Voor registratie door externe gebruikers moet nog een gratis SMTP-aanbieder worden gekoppeld en moeten de Auth Redirect URLs worden ingesteld. Tot die tijd is dit een preview, geen afgeronde openbare registratie. De vijf fasen en het adviesmodel zijn behouden; productie is niet aangepast.
+
+**Instructies en beveiligingscontroles:** [SUPABASE_SETUP.md](SUPABASE_SETUP.md).
+
